@@ -13,6 +13,7 @@ import {
 import Button from './Button'
 import { Actions } from 'react-native-router-flux';
 import backgroundImage from '../images/city.jpeg'
+import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 
 export default class Home extends Component {
@@ -54,16 +55,18 @@ export default class Home extends Component {
             transparent={false}
             visible={!this.props.loggedIn}
         >
-          <View>
+          <View style={{flexDirection:'row'}}>
             <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}>
+            <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
+            </LinearGradient>
               <Text style={styles.title}>
                 Project Now
               </Text>
-              <Button
-                onPress={() => this._login()}
-                style={styles.modalButton}>
-                Login
-              </Button>
+            <Button
+              onPress={() => this._login()}
+              style={styles.modalButton}>
+              Login
+            </Button>
             </Image>
           </View>
         </Modal>
@@ -119,11 +122,29 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
   },
-  title: {
-    color: 'red',
-    backgroundColor: 'transparent',
+  linearGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    opacity: .57,
+  },
+  loginButton: {
+    fontSize: 18,
+    fontFamily: 'Gill Sans',
     textAlign: 'center',
-    top: 50,
+    margin: 10,
+    color: '#ffffff',
+    backgroundColor: 'transparent',
+  },
+  title: {
+    color: 'white',
+    backgroundColor: 'transparent',
+    top: 40,
+    height: 55,
+    textAlign: 'center',
     fontFamily: 'Nexa Bold',
+    fontSize: 42,
   },
 })
