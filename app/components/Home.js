@@ -7,9 +7,13 @@ import {
   TextInput,
   View,
   Modal,
+  Image,
+  Dimensions,
 } from 'react-native'
 import Button from './Button'
 import { Actions } from 'react-native-router-flux';
+import backgroundImage from '../images/city.jpeg'
+var {height, width} = Dimensions.get('window');
 
 export default class Home extends Component {
   constructor(props) {
@@ -50,12 +54,17 @@ export default class Home extends Component {
             transparent={false}
             visible={!this.props.loggedIn}
         >
-          <View style={styles.container}>
-            <Button
-              onPress={() => this._login()}
-              style={styles.modalButton}>
-              Login
-            </Button>
+          <View>
+            <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}>
+              <Text style={styles.title}>
+                Project Now
+              </Text>
+              <Button
+                onPress={() => this._login()}
+                style={styles.modalButton}>
+                Login
+              </Button>
+            </Image>
           </View>
         </Modal>
 
@@ -100,6 +109,21 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 10,
-    backgroundColor: '#F6F6F6',
+  },
+  backgroundImage: {
+    width: width,
+    height: height,
+    resizeMode: 'cover', // or 'stretch'
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 14,
+  },
+  title: {
+    color: 'red',
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+    top: 50,
+    fontFamily: 'Nexa Bold',
   },
 })
