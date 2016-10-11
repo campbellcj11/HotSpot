@@ -26,7 +26,8 @@ export default class Home extends Component {
   }
 
   _login(){
-    var user = {'first_name': 'Larry'};
+    var user = {'email': 'Larry@gmail.com',
+                'password' : 'somePassword'};
     this.props.loginUser(user);
   }
 
@@ -41,7 +42,7 @@ export default class Home extends Component {
     if(this.props.loggedIn && this.props.user != {})
     {
       user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.first_name}</Text>
+      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
     }
     else
     {
