@@ -21,9 +21,6 @@ export default class Button extends Component {
   };
 
   render() {
-    var colorStyle = {
-      color: this.state.active ? '#fff' : '#000',
-    };
     return (
       <TouchableHighlight
         onHideUnderlay={this._onUnhighlight}
@@ -31,7 +28,7 @@ export default class Button extends Component {
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
         underlayColor="#a9d9d4">
-          <Text style={[styles.buttonText,this.props.textStyle, colorStyle]}>{this.props.children}</Text>
+          <Text style={[styles.buttonText,this.props.textStyle]}>{this.props.children}</Text>
       </TouchableHighlight>
     );
   }
@@ -39,14 +36,11 @@ export default class Button extends Component {
 
 var styles = StyleSheet.create({
   button: {
-    flex: 1,
     height: 44,
     alignSelf: 'stretch',
     justifyContent: 'center',
-    overflow: 'hidden',
   },
   buttonText: {
     margin: 5,
-    textAlign: 'center',
   },
 });

@@ -13,6 +13,8 @@ import {
 import Button from './Button'
 import { Actions } from 'react-native-router-flux';
 import backgroundImage from '../images/city.jpeg'
+import userImage from '../images/avatar.png'
+import passwordImage from '../images/key.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 
@@ -41,7 +43,7 @@ export default class Home extends Component {
     if(this.props.loggedIn && this.props.user != {})
     {
       user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.first_name}</Text>
+      readonlyMessage = <Text style={styles.offline}>Logged in as {user.first_name}</Text>
     }
     else
     {
@@ -57,27 +59,55 @@ export default class Home extends Component {
         >
           <View style={{flexDirection:'row'}}>
             <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}>
-            <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
-            </LinearGradient>
+              <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.opacityLinearGradient}>
+              </LinearGradient>
               <Text style={styles.title}>
                 Project Now
               </Text>
-            <Button
-              onPress={() => this._login()}
-              style={styles.modalButton}>
-              Login
-            </Button>
+              <View style={styles.userNameView}>
+                <View style={styles.userNameOpacityView}>
+                </View>
+                <View style={styles.userNameImageView}>
+                  <Image source={userImage} style={styles.userNameImage}>
+                  </Image>
+                </View>
+                <TextInput style={styles.userNameTextInput}>
+                </TextInput>
+              </View>
+
+              <View style={styles.userNameView}>
+                <View style={styles.userNameOpacityView}>
+                </View>
+                <View style={styles.userNameImageView}>
+                  <Image source={passwordImage} style={styles.userNameImage}>
+                  </Image>
+                </View>
+                <TextInput style={styles.userNameTextInput} secureTextEntry={true}>
+                </TextInput>
+              </View>
+              <Button
+                onPress={() => this._login()}
+                style={styles.loginButton}
+                textStyle={styles.buttonText}>
+                Login
+              </Button>
             </Image>
           </View>
         </Modal>
 
         <View style={styles.container}>
+          <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
+          </LinearGradient>
           {readonlyMessage}
           <Button
             onPress={() => this._logout()}
-            style={styles.modalButton}>
+            style={styles.logoutButton}
+            textStyle={styles.buttonText}>
             Logout
           </Button>
+          <View style={styles.bottomBar}>
+
+          </View>
         </View>
       </View>
     )
@@ -89,18 +119,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 40,
   },
-  newItem: {
-    backgroundColor: '#FFFFFF',
-    height: 42,
-    borderColor: '#CCCCCC',
-    borderWidth: 1,
-    marginBottom: 10,
-    marginLeft: 20,
-    marginRight: 20,
-    paddingLeft: 10,
-    borderRadius: 5,
-    fontSize: 20
-  },
   offline: {
     backgroundColor: '#000000',
     color: '#FFFFFF',
@@ -111,18 +129,15 @@ const styles = StyleSheet.create({
     paddingBottom: 5
   },
   modalButton: {
-    marginTop: 10,
+    margin: 10,
+    top: 200,
   },
   backgroundImage: {
     width: width,
     height: height,
     resizeMode: 'cover', // or 'stretch'
   },
-  buttonText: {
-    color: 'white',
-    fontSize: 14,
-  },
-  linearGradient: {
+  opacityLinearGradient: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -130,13 +145,36 @@ const styles = StyleSheet.create({
     bottom: 0,
     opacity: .57,
   },
+  linearGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: width,
+    height: height,
+  },
   loginButton: {
-    fontSize: 18,
-    fontFamily: 'Gill Sans',
+    top: 100,
+    backgroundColor: 'rgb(56,198,95)',
+    height: 50,
+    marginLeft: 50,
+    marginRight: 50,
+  },
+  logoutButton: {
+    top: 100,
+    backgroundColor: '#D73C54',
+    height: 50,
+    marginLeft: 50,
+    marginRight: 50,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
     textAlign: 'center',
-    margin: 10,
-    color: '#ffffff',
-    backgroundColor: 'transparent',
+    fontFamily: 'Nexa Bold',
+    height: 50,
+    lineHeight: 50,
   },
   title: {
     color: 'white',
@@ -146,5 +184,43 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Nexa Bold',
     fontSize: 42,
+  },
+  userNameView: {
+    backgroundColor:'rgba(0,0,0,.5)',
+    height: 50,
+    top: 100,
+    marginLeft:20,
+    marginRight: 20,
+    flexDirection: 'row',
+    marginBottom: 15,
+  },
+  userNameOpacityView: {
+    position: 'absolute',
+    flex: 1,
+    backgroundColor: 'blue',
+  },
+  userNameImageView: {
+    height: 50,
+    backgroundColor: 'rgba(48,232,194,.69)',
+  },
+  userNameImage: {
+    top:10,
+    height:30,
+    resizeMode: 'contain',
+    tintColor: 'white',
+  },
+  userNameTextInput: {
+    flex: .85,
+    height: 50,
+    backgroundColor: 'transparent',
+    color:'white',
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    backgroundColor:'yellow',
   },
 })
