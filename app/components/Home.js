@@ -26,13 +26,21 @@ export default class Home extends Component {
   }
 
   _login(){
-    var user = {'email': 'Larry@gmail.com',
+    //hardcoded for prototype
+    var user = {'email': 'conor@email.sc.edu',
                 'password' : 'somePassword'};
     this.props.loginUser(user);
   }
 
   _logout(){
     this.props.logoutUser();
+  }
+
+  _resetPassword() {
+    //hardcoded for prototype - need to get email from user
+    var user = {'email': 'conor@email.sc.edu',
+                'password' : 'somePassword'};
+    this.props.resetPassword(user.email);
   }
 
   render() {
@@ -67,6 +75,12 @@ export default class Home extends Component {
               onPress={() => this._login()}
               style={styles.modalButton}>
               Login
+            </Button>
+            //reset password button for login
+            <Button
+              onPress={() => this._resetPassword()}
+              style={styles.modalButton}>
+              ResetPassword
             </Button>
             </Image>
           </View>
