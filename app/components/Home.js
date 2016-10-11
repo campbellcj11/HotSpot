@@ -28,12 +28,21 @@ export default class Home extends Component {
   }
 
   _login(){
-    var user = {'first_name': 'Larry'};
+    //hardcoded for prototype
+    var user = {'email': 'conor@email.sc.edu',
+                'password' : 'somePassword'};
     this.props.loginUser(user);
   }
 
   _logout(){
     this.props.logoutUser();
+  }
+
+  _resetPassword() {
+    //hardcoded for prototype - need to get email from user
+    var user = {'email': 'conor@email.sc.edu',
+                'password' : 'somePassword'};
+    this.props.resetPassword(user.email);
   }
 
   render() {
@@ -43,7 +52,7 @@ export default class Home extends Component {
     if(this.props.loggedIn && this.props.user != {})
     {
       user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged in as {user.first_name}</Text>
+      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
     }
     else
     {
