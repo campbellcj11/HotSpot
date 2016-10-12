@@ -21,6 +21,10 @@ var {height, width} = Dimensions.get('window');
 export default class Home extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      email:'',
+      password:'',
+    }
   }
 
   componentWillMount() {
@@ -29,8 +33,8 @@ export default class Home extends Component {
 
   _login(){
     //hardcoded for prototype
-    var user = {'email': 'conor@email.sc.edu',
-                'password' : 'somePassword'};
+    var user = {'email': this.state.email,
+                'password' : this.state.password};
     this.props.loginUser(user);
   }
 
@@ -40,8 +44,8 @@ export default class Home extends Component {
 
   _resetPassword() {
     //hardcoded for prototype - need to get email from user
-    var user = {'email': 'conor@email.sc.edu',
-                'password' : 'somePassword'};
+    var user = {'email': this.state.email,
+                'password' : this.state.password};
     this.props.resetPassword(user.email);
   }
 
@@ -80,7 +84,10 @@ export default class Home extends Component {
                   <Image source={userImage} style={styles.userNameImage}>
                   </Image>
                 </View>
-                <TextInput style={styles.userNameTextInput}>
+                <TextInput style={styles.userNameTextInput}
+                  ref='email'
+                  onChangeText={(email) => this.setState({email})}
+                  placeholder='email'>
                 </TextInput>
               </View>
 
@@ -91,7 +98,11 @@ export default class Home extends Component {
                   <Image source={passwordImage} style={styles.userNameImage}>
                   </Image>
                 </View>
-                <TextInput style={styles.userNameTextInput} secureTextEntry={true}>
+                <TextInput style={styles.userNameTextInput}
+                  secureTextEntry={true}
+                  ref='password'
+                  onChangeText={(password) => this.setState({password})}
+                  placeholder='password'>
                 </TextInput>
               </View>
               <Button
