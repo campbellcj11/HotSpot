@@ -11,6 +11,16 @@ const firebaseConfig = {
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 
+import * as firebase from 'firebase';
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyD6goZSAIkbplE9_ULpJAfHyJGfgnPzR7s",
+  authDomain: "testproject-cca8f.firebaseapp.com ",
+  databaseURL: "https://testproject-cca8f.firebaseio.com/",
+};
+const firebaseApp = firebase.initializeApp(firebaseConfig);
+
 export function loginUser(user){
   console.log('Logging in user');
   firebase.auth().signInWithEmailAndPassword(user.email, user.password).catch(function(error) {
