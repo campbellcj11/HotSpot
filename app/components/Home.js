@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   Modal,
+  TouchableHighlight,
   Image,
   Dimensions,
 } from 'react-native'
@@ -21,10 +22,26 @@ var {height, width} = Dimensions.get('window');
 export default class Home extends Component {
   constructor(props) {
     super(props)
+    const ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
+    this.state = {
+      ds:[{Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')},
+          {Date: "05/05/2016", Event_Name: "Music Festival", Location: "Five Points", image: require('./Resources/woodstock.png')},
+          {Date: "10/31/2016", Event_Name: "29th Annual Chili Cook Off", Location: "Five Points", image: require('./Resources/Chili.png')},
+          {Date: "01/15/2017", Event_Name: "River Rat Brew-fest", Location: "River Rat Brewery", image: require('./Resources/craft.png')},
+          {Date: "11/20/2016", Event_Name: "Oyster Roast", Location: "The Oyster Bar", image: require('./Resources/oyster.jpg')},
+          {Date: "10/22/2016", Event_Name: "Wine & Food Festival", Location: "The Vista", image: require('./Resources/Wine.jpg')},
+          {Date: "11/14/2016", Event_Name: "Food Truck Friday", Location: "Main Street", image: require('./Resources/food.jpg')},
+          {Date: "01/15/2017", Event_Name: "Gamecocks on the Green", Location: "Greene Street", image: require('./Resources/gamecock.png')},
+          {Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')}
+        ],
+      dataSource:ds,
+    }
   }
 
   componentWillMount() {
-
+    this.setState({
+      dataSource:this.state.dataSource.cloneWithRows(this.state.ds),
+    })
   }
 
   _login(){
@@ -45,6 +62,31 @@ export default class Home extends Component {
     this.props.resetPassword(user.email);
   }
 
+  renderRow(rowData){
+    return (
+      <TouchableHighlight
+        onPress={()=> this.pressRow(rowData)}
+        underlayColor = '#dddddd'>
+        <View style={{flex:1}}>
+          <View style = {styles.rowContainer}>
+            <View style={{flex:1}}>
+              <Image style={styles.thumb} source={rowData.image}/>
+              <Text>{rowData.Date}</Text>
+            </View>
+            <View style={{flex:2}}>
+              <Text style={styles.event}>{rowData.Event_Name} </Text>
+              <Text> @ {rowData.Location}</Text>
+            </View>
+          </View>
+          <View style = {styles.seperator}/>
+      </View>
+      </TouchableHighlight>
+    )
+  }
+  pressRow(rowData) {
+
+  }
+
   render() {
     console.log('PROPS!')
     console.log(this.props)
@@ -60,7 +102,7 @@ export default class Home extends Component {
     }
 
     return (
-      <View>
+      <View style={{flex:1}}>
         <Modal
             animationType={'none'}
             transparent={false}
@@ -114,8 +156,11 @@ export default class Home extends Component {
             textStyle={styles.buttonText}>
             Logout
           </Button>
+          <ListView style={styles.scroll}
+            dataSource={this.state.dataSource}
+            renderRow= {this.renderRow.bind(this)}>
+          </ListView>
           <View style={styles.bottomBar}>
-
           </View>
         </View>
       </View>
@@ -171,7 +216,7 @@ const styles = StyleSheet.create({
     marginRight: 50,
   },
   logoutButton: {
-    top: 100,
+    //top: 100,
     backgroundColor: '#D73C54',
     height: 50,
     marginLeft: 50,
@@ -232,4 +277,24 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor:'yellow',
   },
+  scroll: {
+    flex: 1,
+  },
+  rowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    padding:10,
+  },
+  seperator: {
+    height: 1,
+    backgroundColor: '#dddddd'
+  },
+  event: {
+    fontSize: 24,
+    color: '#48BBEC'
+  },
+  thumb: {
+    width: 100,
+    height: 100,
+},
 })
