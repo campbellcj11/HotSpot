@@ -16,9 +16,11 @@ export const DB_CALL = "DB_CALL";
 export const SIGN_UP = "SIGN_UP";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD6goZSAIkbplE9_ULpJAfHyJGfgnPzR7s",
-  authDomain: "testproject-cca8f.firebaseapp.com ",
-  databaseURL: "https://testproject-cca8f.firebaseio.com/",
+  apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
+  authDomain: "projectnow-964ba.firebaseapp.com",
+  databaseURL: "https://projectnow-964ba.firebaseio.com",
+  storageBucket: "projectnow-964ba.appspot.com",
+  messagingSenderId: "14798821887"
 };
 const firebaseApp = firebase.initializeApp(firebaseConfig);
 //initialize database
@@ -32,11 +34,11 @@ export function loginUser(user){
     console.log('ERROR: ' + error.code + ' - ' + error.message);
     if (Platform.OS == 'ios')
     {
-      AlertIOS.alert('Invalid Login for ' + user.email, error.message);
+      AlertIOS.alert('Invalid Login for ' + user.email + user.password, error.message);
     }
     else
     {
-      Alert.alert('Invalid Login for ' + user.email, error.message);
+      Alert.alert('Invalid Login for ' + user.email + user.password, error.message);
     }
   });
   return {

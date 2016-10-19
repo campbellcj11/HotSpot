@@ -52,7 +52,7 @@ export default class Home extends Component {
                 'password' : this.state.password};
     if(this.state.email == '')
     {
-      user = {'email': 'Test@test.com',
+      user = {'email': 'test@test.com',
                   'password' : 'password'};
     }
     this.props.loginUser(user);
