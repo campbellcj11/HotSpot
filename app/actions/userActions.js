@@ -4,14 +4,14 @@ import * as firebase from 'firebase';
 export const LOG_IN = 'LOG_IN'
 export const LOG_OUT = 'LOG_OUT'
 export const RESET_PASSWORD = 'RESET_PASSWORD';
-const firebaseConfig = {
-  apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
-  authDomain: "projectnow-964ba.firebaseapp.com ",
-  databaseURL: "https://projectnow-964ba.firebaseio.com/",
-};
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+//const firebaseConfig = {
+//  apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
+//  authDomain: "projectnow-964ba.firebaseapp.com ",
+//  databaseURL: "https://projectnow-964ba.firebaseio.com/",
+//};
+//const firebaseApp = firebase.initializeApp(firebaseConfig);
 
-import * as firebase from 'firebase';
+//import * as firebase from 'firebase';
 
 // Initialize Firebase
 const firebaseConfig = {
