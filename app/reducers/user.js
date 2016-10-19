@@ -1,6 +1,8 @@
 import {
   LOG_IN,
   LOG_OUT,
+  SIGN_UP,
+  RESET_PASSWORD,
 } from '../actions/userActions'
 
 import offline from 'react-native-simple-store'
@@ -24,6 +26,12 @@ export default function reducer(state = initialState, action) {
       ...state,
       loggedIn: false,
       user: {},
+    }
+  case SIGN_UP:
+    return {
+      ...state,
+      loggedIn: true,
+      user: action.currentUser,
     }
   default:
     return state
