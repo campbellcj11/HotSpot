@@ -50,6 +50,11 @@ export default class Home extends Component {
     //hardcoded for prototype
     var user = {'email': this.state.email,
                 'password' : this.state.password};
+    if(this.state.email == '')
+    {
+      user = {'email': 'Test@test.com',
+                  'password' : 'password'};
+    }
     this.props.loginUser(user);
   }
 
