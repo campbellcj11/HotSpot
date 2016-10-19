@@ -15,6 +15,7 @@ export const RESET_PASSWORD = 'RESET_PASSWORD';
 export const DB_CALL = "DB_CALL";
 export const SIGN_UP = "SIGN_UP";
 
+//initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
   apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
   authDomain: "projectnow-964ba.firebaseapp.com",
