@@ -22,12 +22,10 @@ var {height, width} = Dimensions.get('window');
 export default class Home extends Component {
   constructor(props) {
     super(props)
+    const ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
     this.state = {
       email:'',
       password:'',
-    }
-    const ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
-    this.state = {
       ds:[{Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')},
           {Date: "05/05/2016", Event_Name: "Music Festival", Location: "Five Points", image: require('./Resources/woodstock.png')},
           {Date: "10/31/2016", Event_Name: "29th Annual Chili Cook Off", Location: "Five Points", image: require('./Resources/Chili.png')},

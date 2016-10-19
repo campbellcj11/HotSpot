@@ -11,24 +11,10 @@ var {
 //reducers
 export const LOG_IN = 'LOG_IN'
 export const LOG_OUT = 'LOG_OUT'
-<<<<<<< HEAD
 export const RESET_PASSWORD = 'RESET_PASSWORD';
-//const firebaseConfig = {
-//  apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
-//  authDomain: "projectnow-964ba.firebaseapp.com ",
-//  databaseURL: "https://projectnow-964ba.firebaseio.com/",
-//};
-//const firebaseApp = firebase.initializeApp(firebaseConfig);
-
-//import * as firebase from 'firebase';
-
-// Initialize Firebase
-=======
 export const DB_CALL = "DB_CALL";
 export const SIGN_UP = "SIGN_UP";
 
-//initialize firebase
->>>>>>> origin/Development
 const firebaseConfig = {
   apiKey: "AIzaSyD6goZSAIkbplE9_ULpJAfHyJGfgnPzR7s",
   authDomain: "testproject-cca8f.firebaseapp.com ",
