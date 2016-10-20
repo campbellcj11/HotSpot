@@ -12,10 +12,13 @@ import {
   TouchableHighlight
 } from 'react-native'
 import Button from './Button'
+import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import backgroundImage from '../images/city.jpeg'
 import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
+import logoutImage from '../images/arrows.png'
+import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 
@@ -26,6 +29,9 @@ export default class Home extends Component {
     this.state = {
       email:'',
       password:'',
+      currentSelection:{},
+      hasCurrentSelection: false,
+      transparent: true,
       ds:[{Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')},
           {Date: "05/05/2016", Event_Name: "Music Festival", Location: "Five Points", image: require('./Resources/woodstock.png')},
           {Date: "10/31/2016", Event_Name: "29th Annual Chili Cook Off", Location: "Five Points", image: require('./Resources/Chili.png')},
@@ -73,27 +79,42 @@ export default class Home extends Component {
   return (
     <TouchableHighlight
       onPress={()=> this.pressRow(rowData)}
-      underlayColor = '#dddddd'>
-      <View style={{flex:1}}>
-        <View style = {styles.rowContainer}>
-          <View style={{flex:1}}>
-            <Image style={styles.thumb} source={rowData.image}/>
-            <Text>{rowData.Date}</Text>
+      underlayColor = '#dddddd'
+      style={styles.item}>
+        <Image style={styles.item} source={rowData.image}>
+          <View style={styles.fader}>
+            <Text style={styles.itemText}>{rowData.Event_Name}</Text>
           </View>
-          <View style={{flex:2}}>
-            <Text style={styles.eventName}>{rowData.Event_Name} </Text>
-            <Text> @ {rowData.Location}</Text>
-          </View>
-        </View>
-        <View style = {styles.seperator}/>
-    </View>
+        </Image>
     </TouchableHighlight>
+    // <TouchableHighlight
+    //   onPress={()=> this.pressRow(rowData)}
+    //   underlayColor = '#dddddd'>
+    //   <View style={{flex:1}}>
+    //     <View style = {styles.rowContainer}>
+    //       <View style={{flex:1}}>
+    //         <Image style={styles.thumb} source={rowData.image}/>
+    //         <Text>{rowData.Date}</Text>
+    //       </View>
+    //       <View style={{flex:2}}>
+    //         <Text style={styles.eventName}>{rowData.Event_Name} </Text>
+    //         <Text> @ {rowData.Location}</Text>
+    //       </View>
+    //     </View>
+    //     <View style = {styles.seperator}/>
+    // </View>
+    // </TouchableHighlight>
   )
 }
 pressRow(rowData) {
-
+  console.log('RowData: ',rowData);
+  this.setState({currentSelection:rowData});
+  this.setState({hasCurrentSelection:true});
 }
-
+_closeSelection(){
+  this.setState({currentSelection:{}});
+  this.setState({hasCurrentSelection:false});
+}
   render() {
     console.log('PROPS!')
     console.log(this.props)
@@ -107,6 +128,13 @@ pressRow(rowData) {
     {
       readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
     }
+
+    var modalBackgroundStyle = {
+      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+    };
+    var innerContainerTransparentStyle = this.state.transparent
+      ? {backgroundColor: '#fff'}
+      : null;
 
     return (
       <View style={{flex:1}}>
@@ -132,7 +160,8 @@ pressRow(rowData) {
                 <TextInput style={styles.userNameTextInput}
                   ref='email'
                   onChangeText={(email) => this.setState({email})}
-                  placeholder='email'>
+                  placeholder='email'
+                  placeholderTextColor='#aaa'>
                 </TextInput>
               </View>
 
@@ -147,7 +176,8 @@ pressRow(rowData) {
                   secureTextEntry={true}
                   ref='password'
                   onChangeText={(password) => this.setState({password})}
-                  placeholder='password'>
+                  placeholder='password'
+                  placeholderTextColor='#aaa'>
                 </TextInput>
               </View>
               <Button
@@ -160,22 +190,48 @@ pressRow(rowData) {
           </View>
         </Modal>
 
+        <Modal
+          animationType='fade'
+          transparent={this.state.transparent}
+          visible={this.state.hasCurrentSelection}
+        >
+            <View style={[styles.modalContainer, modalBackgroundStyle]}>
+              <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
+                <View style={styles.eventDateView}>
+                </View>
+                <View style={styles.eventMapView}>
+                </View>
+                <Text>This modal was presented animation.</Text>
+                <Text>It is currently displayed in mode.</Text>
+                <Button
+                  onPress={() => this._closeSelection()}
+                  style={styles.modalButton}
+                  textStyle={styles.buttonText}
+                >
+                  Close
+                </Button>
+              </View>
+            </View>
+        </Modal>
+
+
         <View style={styles.container}>
           <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
           </LinearGradient>
-          {readonlyMessage}
-          <Button
-            onPress={() => this._logout()}
-            style={styles.logoutButton}
-            textStyle={styles.buttonText}>
-            Logout
-          </Button>
           <ListView style={styles.scroll}
+            contentContainerStyle={styles.list}
             dataSource={this.state.dataSource}
             renderRow= {this.renderRow.bind(this)}>
           </ListView>
           <View style={styles.bottomBar}>
-
+            <ImageButton
+              onPress={() => this._logout()}
+              style={styles.logoutButton}
+              image={logoutImage}/>
+            <ImageButton
+              onPress={() => this._logout()}
+              style={styles.searchButton}
+              image={searchImage}/>
           </View>
         </View>
       </View>
@@ -186,7 +242,39 @@ pressRow(rowData) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 10,
+  },
+  innerContainer: {
+
+  },
+  list: {
+    marginTop: 20,
+    paddingTop: 5,
+    paddingBottom: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  item: {
+    backgroundColor: '#CCC',
+    width: width/3,
+    height: 100,
+  },
+  fader: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,.6)',
+  },
+  itemText: {
+    backgroundColor: 'transparent',
+    textAlign: 'center',
+    color: '#48BBEC',
+    fontSize: 15,
+    fontFamily: 'Nexa Bold',
+    padding: 2,
   },
   offline: {
     backgroundColor: '#000000',
@@ -199,7 +287,8 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     margin: 10,
-    top: 200,
+    backgroundColor: 'rgb(56,198,95)',
+    height: 50,
   },
   backgroundImage: {
     width: width,
@@ -212,7 +301,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: .57,
+    opacity: .80,
   },
   linearGradient: {
     position: 'absolute',
@@ -227,15 +316,29 @@ const styles = StyleSheet.create({
     top: 100,
     backgroundColor: 'rgb(56,198,95)',
     height: 50,
-    marginLeft: 50,
-    marginRight: 50,
+    marginLeft: width*.2,
+    marginRight: width*.2,
+  },
+  bottomBar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: height*.1,
+    backgroundColor:'yellow',
   },
   logoutButton: {
-    //top: 100,
     backgroundColor: '#D73C54',
+    height: height*.1,
+    marginLeft: width*.02,
+    marginRight: 10,
+    width: height*.1,
+  },
+  searchButton: {
+    backgroundColor: 'blue',
     height: 50,
-    marginLeft: 50,
-    marginRight: 50,
+    marginLeft: 10,
+    width: 50,
   },
   buttonText: {
     color: 'white',
@@ -283,14 +386,7 @@ const styles = StyleSheet.create({
     height: 50,
     backgroundColor: 'transparent',
     color:'white',
-  },
-  bottomBar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 60,
-    backgroundColor:'yellow',
+    padding: 2,
   },
   scroll: {
     flex: 1,
@@ -311,5 +407,19 @@ const styles = StyleSheet.create({
   thumb: {
     width: 100,
     height: 100,
-},
+  },
+  eventDateView: {
+    backgroundColor:'red',
+    left: 0,
+    top: 0,
+    width: 100,
+    height: 150,
+  },
+  eventMapView: {
+    backgroundColor:'blue',
+    right: 0,
+    top: 0,
+    width: 200,
+    height: 100,
+  },
 })

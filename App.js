@@ -12,7 +12,7 @@ class App extends Component {
     return (
       <Provider store={store}>
         <Router>
-          <Scene key="root">
+          <Scene key="root" hideNavBar>
             <Scene key="Home" component={Home} title="Home" initial={true} />
           </Scene>
         </Router>
