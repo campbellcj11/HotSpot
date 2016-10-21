@@ -21,6 +21,8 @@ import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
+import * as firebase from 'firebase';
+
 
 export default class Home extends Component {
   constructor(props) {
@@ -32,24 +34,36 @@ export default class Home extends Component {
       currentSelection:{},
       hasCurrentSelection: false,
       transparent: true,
-      ds:[{Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')},
-          {Date: "05/05/2016", Event_Name: "Music Festival", Location: "Five Points", image: require('./Resources/woodstock.png')},
-          {Date: "10/31/2016", Event_Name: "29th Annual Chili Cook Off", Location: "Five Points", image: require('./Resources/Chili.png')},
-          {Date: "01/15/2017", Event_Name: "River Rat Brew-fest", Location: "River Rat Brewery", image: require('./Resources/craft.png')},
-          {Date: "11/20/2016", Event_Name: "Oyster Roast", Location: "The Oyster Bar", image: require('./Resources/oyster.jpg')},
-          {Date: "10/22/2016", Event_Name: "Wine & Food Festival", Location: "The Vista", image: require('./Resources/Wine.jpg')},
-          {Date: "11/14/2016", Event_Name: "Food Truck Friday", Location: "Main Street", image: require('./Resources/food.jpg')},
-          {Date: "01/15/2017", Event_Name: "Gamecocks on the Green", Location: "Greene Street", image: require('./Resources/gamecock.png')},
-          {Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')}
-        ],
       dataSource:ds,
     }
+    this.itemsRef = this.getRef().child('events');
   }
 
   componentWillMount() {
-    this.setState({
-      dataSource:this.state.dataSource.cloneWithRows(this.state.ds),
-    })
+    this.listenForItems(this.itemsRef);
+  }
+
+  getRef() {
+    return firebase.database().ref();
+  }
+
+  listenForItems(itemsRef) {
+    itemsRef.on('value', (snap) => {
+      var items = [];
+      snap.forEach((child) => {
+        items.push({
+          Event_Name: child.val().Event_Name,
+          Date: child.val().Date,
+          Location: child.val().Location,
+          image: child.val().image,
+        });
+      });
+
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(items)
+      });
+
+    });
   }
 
   _login(){
@@ -81,7 +95,7 @@ export default class Home extends Component {
       onPress={()=> this.pressRow(rowData)}
       underlayColor = '#dddddd'
       style={styles.item}>
-        <Image style={styles.item} source={rowData.image}>
+        <Image style={styles.item} source={{uri: rowData.image}}>
           <View style={styles.fader}>
             <Text style={styles.itemText}>{rowData.Event_Name}</Text>
           </View>
