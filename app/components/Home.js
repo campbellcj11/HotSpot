@@ -22,6 +22,7 @@ import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 import * as firebase from 'firebase';
+var SearchBar = require('react-native-search-bar');
 
 
 export default class Home extends Component {
@@ -41,6 +42,7 @@ export default class Home extends Component {
 
   componentWillMount() {
     this.listenForItems(this.itemsRef);
+    //this.refs.searchBar.focus();
   }
 
   getRef() {
@@ -232,6 +234,17 @@ _closeSelection(){
         <View style={styles.container}>
           <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
           </LinearGradient>
+          <SearchBar
+            //style={styles.search}
+            ref='searchBar'
+            placeholder='Search'
+            hideBackground={false}
+            barStyle="default"
+            searchBarStyle="default"
+            // onChangeText={...}
+            // onSearchButtonPress={...}
+            // onCancelButtonPress={...}
+          />
           <ListView style={styles.scroll}
             contentContainerStyle={styles.list}
             dataSource={this.state.dataSource}
@@ -254,6 +267,14 @@ _closeSelection(){
 }
 
 const styles = StyleSheet.create({
+  // search: {
+  //   marginTop: 20,
+  //   paddingTop: 5,
+  //   paddingBottom: 5,
+  //   justifyContent: 'center',
+  //   flexDirection: 'row',
+  //   flexWrap: 'wrap'
+  // },
   container: {
     flex: 1,
   },
