@@ -27,7 +27,7 @@ export default class Button extends Component {
         onPress={this.props.onPress}
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
-        underlayColor="#a9d9d4">
+        underlayColor="transparent">
           <View style={styles.imageHolder}>
             <Image style={[styles.buttonImage,this.props.imageStyle]} source={this.props.image}/>
           </View>
@@ -39,17 +39,17 @@ export default class Button extends Component {
 var styles = StyleSheet.create({
   button: {
     height: 44,
-    alignSelf: 'stretch',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   imageHolder: {
-    margin: 7,
-    padding: 5,
     width:45,
     height:45,
     borderWidth: 2,
     borderRadius: 22.5,
     borderColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   buttonImage: {
     width: 30,

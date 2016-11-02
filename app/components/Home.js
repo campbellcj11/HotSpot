@@ -7,9 +7,10 @@ import {
   TextInput,
   View,
   Modal,
-  TouchableHighlight,
   Image,
   Dimensions,
+  TouchableHighlight,
+  Alert,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -88,8 +89,27 @@ export default class Home extends Component {
                 'password' : this.state.password};
     this.props.resetPassword(user.email);
   }
-
-renderRow(rowData){
+  _browse(){
+    Alert.alert(
+      'Coming soon',
+      'This is the browse feature and it will currently being built',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ]
+    )
+  }
+  _openProfile(){
+    Alert.alert(
+      'Coming soon',
+      'The profile feature and it will currently being built',
+      [
+        {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        {text: 'OK', onPress: () => console.log('OK Pressed')},
+      ]
+    )
+  }
+  renderRow(rowData){
   return (
     <TouchableHighlight
       onPress={()=> this.pressRow(rowData)}
@@ -184,6 +204,12 @@ _closeSelection(){
                 textStyle={styles.buttonText}>
                 Login
               </Button>
+              <Button
+                onPress={() => this._login()}
+                style={styles.loginBlankButton}
+                textStyle={styles.buttonBlankText}>
+                Login without an Account
+              </Button>
             </Image>
           </View>
         </Modal>
@@ -195,12 +221,11 @@ _closeSelection(){
         >
             <View style={[styles.modalContainer, modalBackgroundStyle]}>
               <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-                <View style={styles.eventDateView}>
-                </View>
-                <View style={styles.eventMapView}>
-                </View>
-                <Text>This modal was presented animation.</Text>
-                <Text>It is currently displayed in mode.</Text>
+                <Image style={styles.eventDateView}
+                  source={{uri: this.state.currentSelection.image}}>
+                </Image>
+                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:20,fontFamily: 'Nexa Bold'}}>{this.state.currentSelection.Event_Name}</Text>
+                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:15,fontFamily: 'Nexa Light'}}>@ {this.state.currentSelection.Location} on {this.state.currentSelection.Date}</Text>
                 <Button
                   onPress={() => this._closeSelection()}
                   style={styles.modalButton}
@@ -224,12 +249,16 @@ _closeSelection(){
           <View style={styles.bottomBar}>
             <ImageButton
               onPress={() => this._logout()}
-              style={styles.logoutButton}
+              style={styles.bottomBarButton}
               image={logoutImage}/>
             <ImageButton
-              onPress={() => this._logout()}
-              style={styles.searchButton}
+              onPress={() => this._browse()}
+              style={styles.bottomBarButton}
               image={searchImage}/>
+            <ImageButton
+              onPress={() => this._openProfile()}
+              style={styles.bottomBarButton}
+              image={userImage}/>
           </View>
         </View>
       </View>
@@ -317,26 +346,37 @@ const styles = StyleSheet.create({
     marginLeft: width*.2,
     marginRight: width*.2,
   },
+  loginBlankButton: {
+    top: 150,
+    backgroundColor: 'transparent',
+    height: 50,
+    marginLeft: width*.2,
+    marginRight: width*.2,
+  },
+  buttonBlankText: {
+    color: 'white',
+    fontSize: 15,
+    textAlign: 'center',
+    fontFamily: 'Nexa Light',
+    height: 50,
+    lineHeight: 50,
+  },
   bottomBar: {
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     height: height*.1,
-    backgroundColor:'yellow',
+    backgroundColor:'transparent',
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
-  logoutButton: {
-    backgroundColor: '#D73C54',
+  bottomBarButton: {
+    backgroundColor: 'transparent',
     height: height*.1,
-    marginLeft: width*.02,
-    marginRight: 10,
     width: height*.1,
-  },
-  searchButton: {
-    backgroundColor: 'blue',
-    height: 50,
-    marginLeft: 10,
-    width: 50,
+    flex:1,
   },
   buttonText: {
     color: 'white',
@@ -407,11 +447,12 @@ const styles = StyleSheet.create({
     height: 100,
   },
   eventDateView: {
-    backgroundColor:'red',
-    left: 0,
-    top: 0,
-    width: 100,
+    backgroundColor:'transparent',
+    flex: 1,
+    marginLeft: 50,
+    marginRight: 50,
     height: 150,
+    resizeMode: 'contain',
   },
   eventMapView: {
     backgroundColor:'blue',
