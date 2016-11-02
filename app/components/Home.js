@@ -92,7 +92,7 @@ export default class Home extends Component {
   _browse(){
     Alert.alert(
       'Coming soon',
-      'This is the browse feature and it will currently being built',
+      'This is the browse feature and it is currently being built',
       [
         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
         {text: 'OK', onPress: () => console.log('OK Pressed')},
@@ -102,7 +102,7 @@ export default class Home extends Component {
   _openProfile(){
     Alert.alert(
       'Coming soon',
-      'The profile feature and it will currently being built',
+      'The profile feature and it is currently being built',
       [
         {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
         {text: 'OK', onPress: () => console.log('OK Pressed')},
