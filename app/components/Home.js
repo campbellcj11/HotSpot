@@ -10,6 +10,7 @@ import {
   TouchableHighlight,
   Image,
   Dimensions,
+  TouchableHighlight
 } from 'react-native'
 import Button from './Button'
 import { Actions } from 'react-native-router-flux';
@@ -22,6 +23,13 @@ var {height, width} = Dimensions.get('window');
 export default class Home extends Component {
   constructor(props) {
     super(props)
+<<<<<<< HEAD
+=======
+    this.state = {
+      email:'',
+      password:'',
+    }
+>>>>>>> Development
     const ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
     this.state = {
       ds:[{Date: "07/13/2016", Event_Name: "Crabs & Crafts", Location: "AJ's Crabhouse", image: require('./Resources/crab.png')},
@@ -46,8 +54,8 @@ export default class Home extends Component {
 
   _login(){
     //hardcoded for prototype
-    var user = {'email': 'conor@email.sc.edu',
-                'password' : 'somePassword'};
+    var user = {'email': this.state.email,
+                'password' : this.state.password};
     this.props.loginUser(user);
   }
 
@@ -57,12 +65,13 @@ export default class Home extends Component {
 
   _resetPassword() {
     //hardcoded for prototype - need to get email from user
-    var user = {'email': 'conor@email.sc.edu',
-                'password' : 'somePassword'};
+    var user = {'email': this.state.email,
+                'password' : this.state.password};
     this.props.resetPassword(user.email);
   }
 
   renderRow(rowData){
+<<<<<<< HEAD
     return (
       <TouchableHighlight
         onPress={()=> this.pressRow(rowData)}
@@ -86,6 +95,31 @@ export default class Home extends Component {
   pressRow(rowData) {
 
   }
+=======
+  return (
+    <TouchableHighlight
+      onPress={()=> this.pressRow(rowData)}
+      underlayColor = '#dddddd'>
+      <View style={{flex:1}}>
+        <View style = {styles.rowContainer}>
+          <View style={{flex:1}}>
+            <Image style={styles.thumb} source={rowData.image}/>
+            <Text>{rowData.Date}</Text>
+          </View>
+          <View style={{flex:2}}>
+            <Text style={styles.eventName}>{rowData.Event_Name} </Text>
+            <Text> @ {rowData.Location}</Text>
+          </View>
+        </View>
+        <View style = {styles.seperator}/>
+    </View>
+    </TouchableHighlight>
+  )
+}
+pressRow(rowData) {
+
+}
+>>>>>>> Development
 
   render() {
     console.log('PROPS!')
@@ -122,7 +156,10 @@ export default class Home extends Component {
                   <Image source={userImage} style={styles.userNameImage}>
                   </Image>
                 </View>
-                <TextInput style={styles.userNameTextInput}>
+                <TextInput style={styles.userNameTextInput}
+                  ref='email'
+                  onChangeText={(email) => this.setState({email})}
+                  placeholder='email'>
                 </TextInput>
               </View>
 
@@ -133,7 +170,11 @@ export default class Home extends Component {
                   <Image source={passwordImage} style={styles.userNameImage}>
                   </Image>
                 </View>
-                <TextInput style={styles.userNameTextInput} secureTextEntry={true}>
+                <TextInput style={styles.userNameTextInput}
+                  secureTextEntry={true}
+                  ref='password'
+                  onChangeText={(password) => this.setState({password})}
+                  placeholder='password'>
                 </TextInput>
               </View>
               <Button
@@ -289,7 +330,11 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#dddddd'
   },
+<<<<<<< HEAD
   event: {
+=======
+  eventName: {
+>>>>>>> Development
     fontSize: 24,
     color: '#48BBEC'
   },
