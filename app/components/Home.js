@@ -121,23 +121,6 @@ export default class Home extends Component {
           </View>
         </Image>
     </TouchableHighlight>
-    // <TouchableHighlight
-    //   onPress={()=> this.pressRow(rowData)}
-    //   underlayColor = '#dddddd'>
-    //   <View style={{flex:1}}>
-    //     <View style = {styles.rowContainer}>
-    //       <View style={{flex:1}}>
-    //         <Image style={styles.thumb} source={rowData.image}/>
-    //         <Text>{rowData.Date}</Text>
-    //       </View>
-    //       <View style={{flex:2}}>
-    //         <Text style={styles.eventName}>{rowData.Event_Name} </Text>
-    //         <Text> @ {rowData.Location}</Text>
-    //       </View>
-    //     </View>
-    //     <View style = {styles.seperator}/>
-    // </View>
-    // </TouchableHighlight>
   )
 }
 pressRow(rowData) {
@@ -149,6 +132,7 @@ _closeSelection(){
   this.setState({currentSelection:{}});
   this.setState({hasCurrentSelection:false});
 }
+
   render() {
     console.log('PROPS!')
     console.log(this.props)
