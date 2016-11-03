@@ -70,28 +70,14 @@ export function loginUser(user){
           var errorCode = error.code;
           var errorMessage = error.message;
           console.log('ERROR: ' + error.code + ' - ' + error.message);
-          if (Platform.OS == 'ios')
-          {
-            AlertIOS.alert('User does not exist.');
-          }
-          else
-          {
-            Alert.alert('User does not exist.');
-          }
+          Alert.alert('User does not exist.');
         });
       })
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        if (Platform.OS == 'ios')
-        {
-          AlertIOS.alert('Invalid Login for ' + user.email, error.message);
-        }
-        else
-        {
-          Alert.alert('Invalid Login for ' + user.email + user.password, error.message);
-        }
+        Alert.alert('Invalid Login for ' + user.email + user.password, error.message);
     });
   };
 }
@@ -109,14 +95,7 @@ export function logoutUser(){
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        if (Platform.OS == 'ios')
-        {
-          AlertIOS.alert('Invalid Logout for ' + user.email, error.message);
-        }
-        else
-        {
-          Alert.alert('Invalid Logout for ' + user.email, error.message);
-        }
+        Alert.alert('Invalid Logout for ' + user.email, error.message);
       });
   };
 }
@@ -127,14 +106,7 @@ export function signUpUser(user) {
     var errorCode = error.code;
     var errorMessage = error.message;
     console.log('ERROR: ' + error.code + ' - ' + error.message);
-    if (Platform.OS == 'ios')
-    {
-      AlertIOS.alert('Invalid Signup for ' + user.email, error.message);
-    }
-    else
-    {
-      Alert.alert('Invalid Signup for ' + user.email, error.message);
-    }
+    Alert.alert('Invalid Signup for ' + user.email, error.message);
   });
   //add user to user table -- TODO:fix this to not happen unless it is
   firebase.auth().onAuthStateChanged((user) => {
@@ -163,14 +135,7 @@ export function resetPassword(email) {
     var errorCode = error.code;
     var errorMessage = error.message;
     console.log('ERROR: ' + error.code + ' - ' + error.message);
-    if (Platform.OS == 'ios')
-    {
-      AlertIOS.alert('Cannot Reset Password ' + user.email, error.message);
-    }
-    else
-    {
-      Alert.alert('Cannot Reset Password ' + user.email, error.message);
-    }
+    Alert.alert('Cannot Reset Password ' + user.email, error.message);
   });
   return {}
 }
