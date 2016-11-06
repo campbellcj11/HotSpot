@@ -15,7 +15,7 @@ import {
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
-import backgroundImage from '../images/city.jpeg'
+import backgroundImage from '../images/City-Dark.png'
 import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
@@ -162,55 +162,45 @@ _closeSelection(){
             visible={!this.props.loggedIn}
         >
           <View style={{flexDirection:'row'}}>
-            <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}>
-              <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.opacityLinearGradient}>
-              </LinearGradient>
-              <Text style={styles.title}>
-                Project Now
-              </Text>
-              <View style={styles.userNameView}>
-                <View style={styles.userNameOpacityView}>
+              <LinearGradient colors={['#3023AE', '#C86DD7']} style={styles.linearGradient}>
+                <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
+                <Text style={styles.title}>
+                  Project
+                  <Text style={[styles.title,{color:'#FFF907'}]}>
+                    Now
+                  </Text>
+                </Text>
+                <View style={styles.userNameView}>
+                  <TextInput style={styles.userNameTextInput}
+                    ref='email'
+                    onChangeText={(email) => this.setState({email})}
+                    placeholder='Email'
+                    placeholderTextColor='#D3C6E2'>
+                  </TextInput>
                 </View>
-                <View style={styles.userNameImageView}>
-                  <Image source={userImage} style={styles.userNameImage}>
-                  </Image>
-                </View>
-                <TextInput style={styles.userNameTextInput}
-                  ref='email'
-                  onChangeText={(email) => this.setState({email})}
-                  placeholder='email'
-                  placeholderTextColor='#aaa'>
-                </TextInput>
-              </View>
 
-              <View style={styles.userNameView}>
-                <View style={styles.userNameOpacityView}>
+                <View style={styles.userNameView}>
+                  <TextInput style={styles.userNameTextInput}
+                    secureTextEntry={true}
+                    ref='password'
+                    onChangeText={(password) => this.setState({password})}
+                    placeholder='Password'
+                    placeholderTextColor='#D3C6E2'>
+                  </TextInput>
                 </View>
-                <View style={styles.userNameImageView}>
-                  <Image source={passwordImage} style={styles.userNameImage}>
-                  </Image>
-                </View>
-                <TextInput style={styles.userNameTextInput}
-                  secureTextEntry={true}
-                  ref='password'
-                  onChangeText={(password) => this.setState({password})}
-                  placeholder='password'
-                  placeholderTextColor='#aaa'>
-                </TextInput>
-              </View>
-              <Button
-                onPress={() => this._login()}
-                style={styles.loginButton}
-                textStyle={styles.buttonText}>
-                Login
-              </Button>
-              <Button
-                onPress={() => this._login()}
-                style={styles.loginBlankButton}
-                textStyle={styles.buttonBlankText}>
-                Login without an Account
-              </Button>
-            </Image>
+                <Button
+                  onPress={() => this._login()}
+                  style={styles.loginButton}
+                  textStyle={styles.buttonText}>
+                  Login
+                </Button>
+                <Button
+                  onPress={() => this._login()}
+                  style={styles.loginBlankButton}
+                  textStyle={styles.buttonBlankText}>
+                  Login without an Account
+                </Button>
+              </LinearGradient>
           </View>
         </Modal>
 
@@ -224,8 +214,8 @@ _closeSelection(){
                 <Image style={styles.eventDateView}
                   source={{uri: this.state.currentSelection.image}}>
                 </Image>
-                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:20,fontFamily: 'Nexa Bold'}}>{this.state.currentSelection.Event_Name}</Text>
-                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:15,fontFamily: 'Nexa Light'}}>@ {this.state.currentSelection.Location} on {this.state.currentSelection.Date}</Text>
+                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:20,fontFamily: 'Futura-Medium'}}>{this.state.currentSelection.Event_Name}</Text>
+                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:15,fontFamily: 'Futura-Medium'}}>@ {this.state.currentSelection.Location} on {this.state.currentSelection.Date}</Text>
                 <Button
                   onPress={() => this._closeSelection()}
                   style={styles.modalButton}
@@ -300,7 +290,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#48BBEC',
     fontSize: 15,
-    fontFamily: 'Nexa Bold',
+    fontFamily: 'Futura-Medium',
     padding: 2,
   },
   offline: {
@@ -318,17 +308,11 @@ const styles = StyleSheet.create({
     height: 50,
   },
   backgroundImage: {
-    width: width,
-    height: height,
-    resizeMode: 'cover', // or 'stretch'
-  },
-  opacityLinearGradient: {
     position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    opacity: .80,
+    width: width,
+    top: height*.6,
+    height: height*.45,
+    resizeMode: 'stretch', // or 'stretch'
   },
   linearGradient: {
     position: 'absolute',
@@ -341,13 +325,16 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     top: 100,
-    backgroundColor: 'rgb(56,198,95)',
+    backgroundColor: '#C123E2',
     height: 50,
-    marginLeft: width*.2,
-    marginRight: width*.2,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#D200FF',
   },
   loginBlankButton: {
-    top: 150,
+    top: 100,
     backgroundColor: 'transparent',
     height: 50,
     marginLeft: width*.2,
@@ -357,7 +344,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 15,
     textAlign: 'center',
-    fontFamily: 'Nexa Light',
+    fontFamily: 'Futura-Medium',
     height: 50,
     lineHeight: 50,
   },
@@ -382,21 +369,22 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
     textAlign: 'center',
-    fontFamily: 'Nexa Bold',
+    fontFamily: 'Futura-Medium',
     height: 50,
     lineHeight: 50,
+    backgroundColor: 'transparent',
   },
   title: {
     color: 'white',
     backgroundColor: 'transparent',
-    top: 40,
+    top: 55,
     height: 55,
     textAlign: 'center',
-    fontFamily: 'Nexa Bold',
-    fontSize: 42,
+    fontFamily: 'Futura-Medium',
+    fontSize: 36,
   },
   userNameView: {
-    backgroundColor:'rgba(0,0,0,.5)',
+    backgroundColor:'#7148BC22',
     height: 50,
     top: 100,
     marginLeft:20,
@@ -404,27 +392,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 15,
   },
-  userNameOpacityView: {
-    position: 'absolute',
-    flex: 1,
-    backgroundColor: 'blue',
-  },
-  userNameImageView: {
-    height: 50,
-    backgroundColor: 'rgba(48,232,194,.69)',
-  },
-  userNameImage: {
-    top:10,
-    height:30,
-    resizeMode: 'contain',
-    tintColor: 'white',
-  },
   userNameTextInput: {
     flex: .85,
     height: 50,
     backgroundColor: 'transparent',
     color:'white',
+    fontFamily: 'Futura-Medium',
     padding: 2,
+    paddingLeft: 10,
+    borderWidth: 2,
+    borderColor: '#B166CE22',
   },
   scroll: {
     flex: 1,
