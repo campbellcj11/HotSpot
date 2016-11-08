@@ -77,7 +77,7 @@ export function loginUser(user){
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Login for ' + user.email + user.password, error.message);
+        Alert.alert('Invalid Login for ' + user.email + '. ' + error.message);
     });
   };
 }

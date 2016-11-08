@@ -68,14 +68,14 @@ export default class Home extends Component {
   }
 
   _login(){
-    //hardcoded for prototype
     var user = {'email': this.state.email,
                 'password' : this.state.password};
-    if(this.state.email == '')
-    {
-      user = {'email': 'test@test.com',
-                  'password' : 'password'};
-    }
+    this.props.loginUser(user);
+  }
+
+  _loginWithoutAccount() {
+    user = {'email': 'test@test.com',
+            'password' : 'password'};
     this.props.loginUser(user);
   }
 
@@ -195,7 +195,7 @@ _closeSelection(){
                   Login
                 </Button>
                 <Button
-                  onPress={() => this._login()}
+                  onPress={() => this._loginWithoutAccount()}
                   style={styles.loginBlankButton}
                   textStyle={styles.buttonBlankText}>
                   Login without an Account
