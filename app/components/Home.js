@@ -11,6 +11,7 @@ import {
   Dimensions,
   TouchableHighlight,
   Alert,
+  StatusBar,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -156,6 +157,10 @@ _closeSelection(){
 
     return (
       <View style={{flex:1}}>
+        <StatusBar
+          barStyle="light-content"
+        />
+
         <Modal
             animationType={'none'}
             transparent={false}
@@ -229,8 +234,7 @@ _closeSelection(){
 
 
         <View style={styles.container}>
-          <LinearGradient colors={['#30404F', '#22B1C5']} style={styles.linearGradient}>
-          </LinearGradient>
+          
           <ListView style={styles.scroll}
             contentContainerStyle={styles.list}
             dataSource={this.state.dataSource}
@@ -259,6 +263,7 @@ _closeSelection(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 40,
   },
   modalContainer: {
     flex: 1,
