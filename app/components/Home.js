@@ -24,6 +24,7 @@ import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 import * as firebase from 'firebase';
+import MapView from 'react-native-maps';
 
 
 export default class Home extends Component {
@@ -219,6 +220,15 @@ _closeSelection(){
                 <Image style={styles.eventDateView}
                   source={{uri: this.state.currentSelection.image}}>
                 </Image>
+                <MapView
+                   initialRegion={{
+                     latitude: 37.78825,
+                     longitude: -122.4324,
+                     latitudeDelta: 0.0922,
+                     longitudeDelta: 0.0421,
+                   }}
+                   style={{backgroundColor:'red',width:100,height:100}}
+                 />
                 <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:20,fontFamily: 'Futura-Medium'}}>{this.state.currentSelection.Event_Name}</Text>
                 <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:15,fontFamily: 'Futura-Medium'}}>@ {this.state.currentSelection.Location} on {this.state.currentSelection.Date}</Text>
                 <Button
@@ -234,7 +244,7 @@ _closeSelection(){
 
 
         <View style={styles.container}>
-          
+
           <ListView style={styles.scroll}
             contentContainerStyle={styles.list}
             dataSource={this.state.dataSource}

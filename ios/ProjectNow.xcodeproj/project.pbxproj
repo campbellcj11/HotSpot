@@ -22,10 +22,11 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		6484CCE035404F6084FAFD0A /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BD272A6448346BEBDBF0D0D /* libBVLinearGradient.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		90A906981DABFD3500327BF5 /* Nexa Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90A906961DABFD3500327BF5 /* Nexa Bold.otf */; };
-		90A906991DABFD3500327BF5 /* Nexa Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90A906971DABFD3500327BF5 /* Nexa Light.otf */; };
-		90A906BE1DAC04FA00327BF5 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90A906B31DAC04CB00327BF5 /* libBVLinearGradient.a */; };
+		90948FC61DD96AF800CE6351 /* Nexa Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90948FC41DD96AF800CE6351 /* Nexa Bold.otf */; };
+		90948FC71DD96AF800CE6351 /* Nexa Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90948FC51DD96AF800CE6351 /* Nexa Light.otf */; };
+		90948FCE1DD96C3800CE6351 /* libAirMaps.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90948FCD1DD96C1400CE6351 /* libAirMaps.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -106,12 +107,19 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
-		90A906B21DAC04CB00327BF5 /* PBXContainerItemProxy */ = {
+		90948FB81DD969FE00CE6351 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 90A906AE1DAC04CB00327BF5 /* BVLinearGradient.xcodeproj */;
+			containerPortal = FD4BD150CC2C4F88A1463D98 /* BVLinearGradient.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = BVLinearGradient;
+		};
+		90948FCC1DD96C1400CE6351 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90948FC81DD96C1400CE6351 /* AirMaps.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 11FA5C511C4A1296003AC2EE;
+			remoteInfo = AirMaps;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -136,10 +144,12 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ProjectNow/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
+		7BD272A6448346BEBDBF0D0D /* libBVLinearGradient.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libBVLinearGradient.a; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		90A906961DABFD3500327BF5 /* Nexa Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nexa Bold.otf"; sourceTree = "<group>"; };
-		90A906971DABFD3500327BF5 /* Nexa Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nexa Light.otf"; sourceTree = "<group>"; };
-		90A906AE1DAC04CB00327BF5 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
+		90948FC41DD96AF800CE6351 /* Nexa Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nexa Bold.otf"; sourceTree = "<group>"; };
+		90948FC51DD96AF800CE6351 /* Nexa Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nexa Light.otf"; sourceTree = "<group>"; };
+		90948FC81DD96C1400CE6351 /* AirMaps.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AirMaps.xcodeproj; path = "../node_modules/react-native-maps/ios/AirMaps.xcodeproj"; sourceTree = "<group>"; };
+		FD4BD150CC2C4F88A1463D98 /* BVLinearGradient.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = BVLinearGradient.xcodeproj; path = "../node_modules/react-native-linear-gradient/BVLinearGradient.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -155,7 +165,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				90A906BE1DAC04FA00327BF5 /* libBVLinearGradient.a in Frameworks */,
+				90948FCE1DD96C3800CE6351 /* libAirMaps.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
@@ -166,6 +176,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
+				6484CCE035404F6084FAFD0A /* libBVLinearGradient.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,6 +259,8 @@
 		13B07FAE1A68108700A75B9A /* ProjectNow */ = {
 			isa = PBXGroup;
 			children = (
+				90948FC41DD96AF800CE6351 /* Nexa Bold.otf */,
+				90948FC51DD96AF800CE6351 /* Nexa Light.otf */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -278,7 +291,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
-				90A906AE1DAC04CB00327BF5 /* BVLinearGradient.xcodeproj */,
+				90948FC81DD96C1400CE6351 /* AirMaps.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
 				00C302B51ABCB90400DB3ED1 /* RCTGeolocation.xcodeproj */,
@@ -289,6 +302,7 @@
 				832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */,
 				00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */,
 				139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */,
+				FD4BD150CC2C4F88A1463D98 /* BVLinearGradient.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -304,8 +318,6 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				90A906961DABFD3500327BF5 /* Nexa Bold.otf */,
-				90A906971DABFD3500327BF5 /* Nexa Light.otf */,
 				13B07FAE1A68108700A75B9A /* ProjectNow */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ProjectNowTests */,
@@ -324,10 +336,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		90A906AF1DAC04CB00327BF5 /* Products */ = {
+		90948FB51DD969FE00CE6351 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				90A906B31DAC04CB00327BF5 /* libBVLinearGradient.a */,
+				90948FB91DD969FE00CE6351 /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		90948FC91DD96C1400CE6351 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				90948FCD1DD96C1400CE6351 /* libAirMaps.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,15 +397,12 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
+				LastUpgradeCheck = 610;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
-					};
-					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = L49S5QB67W;
 					};
 				};
 			};
@@ -402,8 +419,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 90A906AF1DAC04CB00327BF5 /* Products */;
-					ProjectRef = 90A906AE1DAC04CB00327BF5 /* BVLinearGradient.xcodeproj */;
+					ProductGroup = 90948FC91DD96C1400CE6351 /* Products */;
+					ProjectRef = 90948FC81DD96C1400CE6351 /* AirMaps.xcodeproj */;
+				},
+				{
+					ProductGroup = 90948FB51DD969FE00CE6351 /* Products */;
+					ProjectRef = FD4BD150CC2C4F88A1463D98 /* BVLinearGradient.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -525,11 +546,18 @@
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		90A906B31DAC04CB00327BF5 /* libBVLinearGradient.a */ = {
+		90948FB91DD969FE00CE6351 /* libBVLinearGradient.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
 			path = libBVLinearGradient.a;
-			remoteRef = 90A906B21DAC04CB00327BF5 /* PBXContainerItemProxy */;
+			remoteRef = 90948FB81DD969FE00CE6351 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		90948FCD1DD96C1400CE6351 /* libAirMaps.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAirMaps.a;
+			remoteRef = 90948FCC1DD96C1400CE6351 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -547,8 +575,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				90A906991DABFD3500327BF5 /* Nexa Light.otf in Resources */,
-				90A906981DABFD3500327BF5 /* Nexa Bold.otf in Resources */,
+				90948FC71DD96AF800CE6351 /* Nexa Light.otf in Resources */,
+				90948FC61DD96AF800CE6351 /* Nexa Bold.otf in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -624,6 +652,10 @@
 				INFOPLIST_FILE = ProjectNowTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ProjectNow.app/ProjectNow";
 			};
@@ -637,6 +669,10 @@
 				INFOPLIST_FILE = ProjectNowTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ProjectNow.app/ProjectNow";
 			};
@@ -648,11 +684,11 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = L49S5QB67W;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -671,11 +707,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L49S5QB67W;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -727,6 +763,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -767,6 +804,7 @@
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../node_modules/react-native/React/**",
+					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
