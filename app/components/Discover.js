@@ -19,7 +19,7 @@ import { Actions } from 'react-native-router-flux';
 var {height, width} = Dimensions.get('window');
 
 
-export default class Home extends Component {
+export default class Discover extends Component {
   constructor(props) {
     super(props)
 

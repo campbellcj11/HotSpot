@@ -24,7 +24,7 @@ import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {height, width} = Dimensions.get('window');
 import * as firebase from 'firebase';
-import MapView from 'react-native-maps';
+import EventCard from './EventCard'
 
 
 export default class Home extends Component {
@@ -56,9 +56,11 @@ export default class Home extends Component {
       snap.forEach((child) => {
         items.push({
           Event_Name: child.val().Event_Name,
-          Date: child.val().Date,
+          Date: new Date(child.val().Date),
           Location: child.val().Location,
           image: child.val().image,
+          latitude: child.val().Latitude,
+          longitude: child.val().Longitude,
         });
       });
 
@@ -215,31 +217,7 @@ _closeSelection(){
           transparent={this.state.transparent}
           visible={this.state.hasCurrentSelection}
         >
-            <View style={[styles.modalContainer, modalBackgroundStyle]}>
-              <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-                <Image style={styles.eventDateView}
-                  source={{uri: this.state.currentSelection.image}}>
-                </Image>
-                <MapView
-                   initialRegion={{
-                     latitude: 37.78825,
-                     longitude: -122.4324,
-                     latitudeDelta: 0.0922,
-                     longitudeDelta: 0.0421,
-                   }}
-                   style={{backgroundColor:'red',width:100,height:100}}
-                 />
-                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:20,fontFamily: 'Futura-Medium'}}>{this.state.currentSelection.Event_Name}</Text>
-                <Text style={{flex:1,textAlign:'center',margin:2,height:30,fontSize:15,fontFamily: 'Futura-Medium'}}>@ {this.state.currentSelection.Location} on {this.state.currentSelection.Date}</Text>
-                <Button
-                  onPress={() => this._closeSelection()}
-                  style={styles.modalButton}
-                  textStyle={styles.buttonText}
-                >
-                  Close
-                </Button>
-              </View>
-            </View>
+            <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
         </Modal>
 
 
