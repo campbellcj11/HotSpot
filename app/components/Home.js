@@ -58,7 +58,7 @@ export default class Home extends Component {
           Event_Name: child.val().Event_Name,
           Date: new Date(child.val().Date),
           Location: child.val().Location,
-          image: child.val().image,
+          Image: child.val().Image,
           latitude: child.val().Latitude,
           longitude: child.val().Longitude,
         });
@@ -119,7 +119,7 @@ export default class Home extends Component {
       onPress={()=> this.pressRow(rowData)}
       underlayColor = '#dddddd'
       style={styles.item}>
-        <Image style={styles.item} source={{uri: rowData.image}}>
+        <Image style={styles.item} source={{uri: rowData.Image}}>
           <View style={styles.fader}>
             <Text style={styles.itemText}>{rowData.Event_Name}</Text>
           </View>
