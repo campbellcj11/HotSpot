@@ -12,10 +12,12 @@ var {
 export const LOG_IN = 'LOG_IN'
 export const LOG_OUT = 'LOG_OUT'
 export const RESET_PASSWORD = 'RESET_PASSWORD';
-export const DB_CALL = "DB_CALL";
-export const SIGN_UP = "SIGN_UP";
-export const LOGGING_IN = "LOGGING_IN";
-export const LOGGING_OUT = "LOGGING_OUT";
+export const RESETTING_PASSWORD = 'RESETTING_PASSWORD';
+export const DB_CALL = 'DB_CALL';
+export const SIGN_UP = 'SIGN_UP';
+export const SIGNING_UP = 'SIGNING_UP'
+export const LOGGING_IN = 'LOGGING_IN';
+export const LOGGING_OUT = 'LOGGING_OUT';
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -39,12 +41,30 @@ export function loggingOut() {
   return { type: LOGGING_OUT }
 }
 
+export function sigingUp() {
+  console.log("Signing up");
+  return { type: SIGNING_UP }
+}
+
+export function resettingPassword() {
+  console.log("Resetting password");
+  return { type: RESETTING_PASSWORD }
+}
+
 export function stateLogIn(user) {
   return { type: LOG_IN, currentUser: user };
 }
 
 export function stateLogOut() {
   return { type: LOG_OUT };
+}
+
+export function stateSignUp() {
+  return { type: SIGN_UP };
+}
+
+export function stateResetPassword() {
+  return { type: RESET_PASSWORD };
 }
 
 export function loginUser(user){
@@ -82,7 +102,6 @@ export function loginUser(user){
   };
 }
 
-//TODO: fix logout function -- seems to be logging out to early?
 export function logoutUser(){
   console.log('Logging out user');
   return (dispatch) => {
@@ -100,37 +119,55 @@ export function logoutUser(){
   };
 }
 
+//TODO: Test function
 export function signUpUser(user) {
   console.log('Signing up user');
-  firebase.auth().createUserWithEmailAndPassword(user.email, user.password).catch(function(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    console.log('ERROR: ' + error.code + ' - ' + error.message);
-    Alert.alert('Invalid Signup for ' + user.email, error.message);
-  });
-  //add user to user table -- TODO:fix this to not happen unless it is
-  firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-      console.log('UID: ' + user.uid);
-    }
-  });
-  database.ref('users/' + firebase.auth().currentUser.uid).set({
-    email: user.email,
-    firstName: 'Conor',
-    lastName: 'Campbell',
-    registeredUser: true,
-    adminUser: true,
-    events: null,
-    lastLogin : firebase.database.ServerValue.TIMESTAMP
-  });
-  return {
-    type: SIGN_UP,
-    currentUser: user
-  }
+  return (dispatch) => {
+    dispatch(signingUp());
+    firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+      .then(currentUser => {
+        dispatch(stateSignUp());
+        firebase.auth().onAuthStateChanged((user) => {
+          if (user) {
+            console.log('UID: ' + user.uid);
+          }
+        });
+        //TODO: Once signup page is implemented, match these according fields
+        database.ref('users/' + firebase.auth().currentUser.uid).set({
+          email: user.email,
+          firstName: 'Conor',
+          lastName: 'Campbell',
+          registeredUser: true,
+          adminUser: true,
+          events: null,
+          lastLogin : firebase.database.ServerValue.TIMESTAMP
+        });
+      })
+      .catch(error => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('ERROR: ' + error.code + ' - ' + error.message);
+        Alert.alert('Invalid Signup for ' + user.email, error.message);
+      });
+  };
 }
 
+//TODO: Test function
 export function resetPassword(email) {
   console.log('Resetting Password');
+  return (dispatch) => {
+    dispatch(resettingPassword());
+    firebase.auth().sendPasswordResetEmail(email)
+      .then(currentUser => {
+        dispatch(stateResetPassword())
+      })
+      .catch(error => {
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.log('ERROR: ' + error.code + ' - ' + error.message);
+        Alert.alert('Invalid Signup for ' + user.email, error.message);
+      });
+  };
   firebase.auth().sendPasswordResetEmail(email).catch(function(error) {
     var errorCode = error.code;
     var errorMessage = error.message;
