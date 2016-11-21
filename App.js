@@ -62,11 +62,11 @@ var styles = StyleSheet.create({
   },
   baseBoldFontStyle:
   {
-    fontFamily:'Nexa Bold',
+    fontFamily:'Futura-Medium',
   },
   baseNormalFontStyle:
   {
-    fontFamily:'Nexa Light',
+    fontFamily:'Futura-Medium',
   },
   largeFontSize: {
     fontSize:24,

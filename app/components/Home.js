@@ -12,6 +12,7 @@ import {
   TouchableHighlight,
   Alert,
   StatusBar,
+  ScrollView,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -22,9 +23,15 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import LinearGradient from 'react-native-linear-gradient';
-var {height, width} = Dimensions.get('window');
+var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
+import EventPage from './EventPage'
+
+const HEADER_HEIGHT = 64;
+const TAB_HEIGHT = 50;
+const CARD_WIDTH = width;
+const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
 
 
 export default class Home extends Component {
@@ -38,8 +45,10 @@ export default class Home extends Component {
       hasCurrentSelection: false,
       transparent: true,
       dataSource:ds,
+      items: [],
     }
     this.itemsRef = this.getRef().child('events');
+    this.currentIndex = 0;
   }
 
   componentWillMount() {
@@ -65,7 +74,8 @@ export default class Home extends Component {
       });
 
       this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(items)
+        dataSource: this.state.dataSource.cloneWithRows(items),
+        items: items,
       });
 
     });
@@ -114,29 +124,52 @@ export default class Home extends Component {
     )
   }
   renderRow(rowData){
-  return (
-    <TouchableHighlight
-      onPress={()=> this.pressRow(rowData)}
-      underlayColor = '#dddddd'
-      style={styles.item}>
-        <Image style={styles.item} source={{uri: rowData.Image}}>
-          <View style={styles.fader}>
-            <Text style={styles.itemText}>{rowData.Event_Name}</Text>
-          </View>
-        </Image>
-    </TouchableHighlight>
-  )
-}
-pressRow(rowData) {
-  console.log('RowData: ',rowData);
-  this.setState({currentSelection:rowData});
-  this.setState({hasCurrentSelection:true});
-}
-_closeSelection(){
-  this.setState({currentSelection:{}});
-  this.setState({hasCurrentSelection:false});
-}
+    return (
+      <TouchableHighlight
+        onPress={()=> this.pressRow(rowData)}
+        underlayColor = '#dddddd'
+        style={styles.item}>
+          <Image style={styles.item} source={{uri: rowData.Image}}>
+            <View style={styles.fader}>
+              <Text style={styles.itemText}>{rowData.Event_Name}</Text>
+            </View>
+          </Image>
+      </TouchableHighlight>
+    )
+  }
+  pressRow(rowData) {
+    console.log('RowData: ',rowData);
+    this.setState({currentSelection:rowData});
+    this.setState({hasCurrentSelection:true});
+  }
+  _closeSelection(){
+    this.setState({currentSelection:{}});
+    this.setState({hasCurrentSelection:false});
+  }
+  renderSlides() {
+    this.currentIndex = 0;
+    var colors = ['white'];
+    var eventsPerPage = 3;
+    var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
+    let Arr = new Array(numberOfPages).fill(0).map((a, i) => {
+      // console.log('A:',a);
+      // var data = this.props.template.entities.slides[a];
+      var eventsForPage = []
 
+      for(var j = this.currentIndex ; j < this.currentIndex + eventsPerPage; j++)
+      {
+        if(j < this.state.items.length)
+        {
+          eventsForPage.push(this.state.items[j]);
+        }
+      }
+
+      this.currentIndex = this.currentIndex + eventsPerPage;
+
+      return <EventPage key={i} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
+    })
+    return (Arr)
+  }
   render() {
     console.log('PROPS!')
     console.log(this.props)
@@ -214,7 +247,7 @@ _closeSelection(){
 
         <Modal
           animationType='fade'
-          transparent={this.state.transparent}
+          transparent={false}
           visible={this.state.hasCurrentSelection}
         >
             <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
@@ -222,26 +255,18 @@ _closeSelection(){
 
 
         <View style={styles.container}>
-
-          <ListView style={styles.scroll}
-            contentContainerStyle={styles.list}
-            dataSource={this.state.dataSource}
-            renderRow= {this.renderRow.bind(this)}>
-          </ListView>
-          <View style={styles.bottomBar}>
-            <ImageButton
-              onPress={() => this._logout()}
-              style={styles.bottomBarButton}
-              image={logoutImage}/>
-            <ImageButton
-              onPress={() => this._browse()}
-              style={styles.bottomBarButton}
-              image={searchImage}/>
-            <ImageButton
-              onPress={() => this._openProfile()}
-              style={styles.bottomBarButton}
-              image={userImage}/>
-          </View>
+          <ScrollView
+            style={styles.scrollView}
+            automaticallyAdjustInsets={true}
+            scrollsToTop={true}
+            horizontal={false}
+            decelerationRate={0}
+            snapToInterval={CARD_HEIGHT}
+            snapToAlignment="start"
+            contentContainerStyle={styles.content}
+          >
+            {this.renderSlides()}
+          </ScrollView>
         </View>
       </View>
     )
@@ -251,7 +276,7 @@ _closeSelection(){
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
+    paddingTop: HEADER_HEIGHT,
   },
   modalContainer: {
     flex: 1,
@@ -430,5 +455,20 @@ const styles = StyleSheet.create({
     top: 0,
     width: 200,
     height: 100,
+  },
+  content: {
+    alignItems: 'center',
+    backgroundColor: 'red',
+  },
+  card: {
+    backgroundColor: '#ccc',
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scrollView: {
+    backgroundColor: 'white',
+    height: CARD_HEIGHT,
   },
 })
