@@ -27,6 +27,7 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
+import Swiper from 'react-native-swiper';
 
 const HEADER_HEIGHT = 64;
 const TAB_HEIGHT = 50;
@@ -255,18 +256,9 @@ export default class Home extends Component {
 
 
         <View style={styles.container}>
-          <ScrollView
-            style={styles.scrollView}
-            automaticallyAdjustInsets={true}
-            scrollsToTop={true}
-            horizontal={false}
-            decelerationRate={0}
-            snapToInterval={CARD_HEIGHT}
-            snapToAlignment="start"
-            contentContainerStyle={styles.content}
-          >
-            {this.renderSlides()}
-          </ScrollView>
+          <Swiper ref='swiper' height={height*.9} loop={false} horizontal={false} showsButtons={false} showsPagination={false}>
+              {this.renderSlides()}
+          </Swiper>
         </View>
       </View>
     )
