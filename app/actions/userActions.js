@@ -74,16 +74,14 @@ export function loginUser(user){
     firebase.auth().signInWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         var ref = database.ref("users/" + firebase.auth().currentUser.uid);
-        var userFromTable;
+        //update timestamp
+        ref.update({
+          Last_Login : firebase.database.ServerValue.TIMESTAMP
+        });
         ref.once('value')
           .then(function(snapshot) {
             console.log(snapshot.val())
-            userFromTable = {
-              email : snapshot.val().email,
-              firstName : snapshot.val().firstName,
-              lastName : snapshot.val().lastName
-            };
-            console.log("USERFROMTABLE: " + userFromTable);
+            var userFromTable = snapshot.val();
             dispatch(stateLogIn(userFromTable));
         })
         .catch(function(error) {
