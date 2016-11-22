@@ -71,6 +71,10 @@ export default class Home extends Component {
           Image: child.val().Image,
           latitude: child.val().Latitude,
           longitude: child.val().Longitude,
+          Short_Description: child.val().Short_Description,
+          Long_Description: child.val().Long_Description,
+          Address: child.val().Address,
+          Website: child.val().Website,
         });
       });
 
@@ -140,8 +144,10 @@ export default class Home extends Component {
   }
   pressRow(rowData) {
     console.log('RowData: ',rowData);
-    this.setState({currentSelection:rowData});
-    this.setState({hasCurrentSelection:true});
+    // this.setState({currentSelection:rowData});
+    // this.setState({hasCurrentSelection:true});
+
+    Actions.Event({title:rowData.Event_Name,currentSelection:rowData});
   }
   _closeSelection(){
     this.setState({currentSelection:{}});
@@ -149,6 +155,12 @@ export default class Home extends Component {
   }
   renderSlides() {
     this.currentIndex = 0;
+    var pageLengths = [];
+    var sumOfEvents = 0;
+    while()
+    {
+      
+    }
     var colors = ['white'];
     var eventsPerPage = 3;
     var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
