@@ -65,12 +65,14 @@ export default class Home extends Component {
       var items = [];
       snap.forEach((child) => {
         items.push({
+          Key : child.key,
           Event_Name: child.val().Event_Name,
           Date: new Date(child.val().Date),
           Location: child.val().Location,
           Image: child.val().Image,
           latitude: child.val().Latitude,
           longitude: child.val().Longitude,
+          Tags: child.val().Tags,
         });
       });
 
