@@ -5,7 +5,8 @@ import * as UserActions from '../actions/userActions'
 
 function mapStateToProps(state) {
   return {
-
+    loggedIn: state.user.loggedIn,
+    user: state.user.user,
   }
 }
 
