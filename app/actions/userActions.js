@@ -31,6 +31,11 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 //initialize database
 const database = firebase.database();
 
+/*
+The following functions control the user state during the process of actions
+and also once the action has completed.
+See the reducers to understand the state changes completely.
+*/
 export function loggingIn() {
   console.log('Logging in');
   return { type: LOGGING_IN };
@@ -67,6 +72,11 @@ export function stateResetPassword() {
   return { type: RESET_PASSWORD };
 }
 
+/*
+This function logs a user in to firebase and when successful, it will
+update the last login field in the database under the specified user. This
+also sets the state of the current user.
+*/
 export function loginUser(user){
   console.log('Logging in user');
   return (dispatch) => {
@@ -131,6 +141,7 @@ export function signUpUser(user) {
           }
         });
         //TODO: Once signup page is implemented, match these according fields
+        // to values passed into this function.
         database.ref('users/' + firebase.auth().currentUser.uid).set({
           email: user.email,
           firstName: 'Conor',
@@ -150,7 +161,8 @@ export function signUpUser(user) {
   };
 }
 
-//TODO: Test function
+//TODO: Test function - this function will have issues with the current
+// implementation.
 export function resetPassword(email) {
   console.log('Resetting Password');
   return (dispatch) => {

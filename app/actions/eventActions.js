@@ -10,6 +10,10 @@ var {
 
 const database = firebase.database();
 
+/*
+This function is a prototype for saved events that is not
+currently implemented. 
+*/
 export function getSavedEvents()
 {
   var query = database.ref("savedEvents/" + firebase.auth().currentUser.uid).orderByKey();
