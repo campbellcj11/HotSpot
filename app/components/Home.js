@@ -77,6 +77,7 @@ export default class Home extends Component {
           Long_Description: child.val().Long_Description,
           Address: child.val().Address,
           Website: child.val().Website,
+          MainTag: child.val().Tags ? child.val().Tags[0]:[],
         });
       });
 

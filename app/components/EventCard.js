@@ -36,41 +36,41 @@ export default class EventCard extends Component {
   render() {
     var dateNumber;
     var dateMonth;
+    var dateYear;
+
     var months = new Array();
-    months[0] = "Jan";
-    months[1] = "Feb";
-    months[2] = "Mar";
-    months[3] = "Apr";
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
     months[4] = "May";
-    months[5] = "Jun";
-    months[6] = "Jul";
-    months[7] = "Aug";
-    months[8] = "Sep";
-    months[9] = "Oct";
-    months[10] = "Nov";
-    months[11] = "Dec";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
 
     dateMonth = months[this.props.currentSelection.Date.getMonth()];
     dateNumber = this.props.currentSelection.Date.getDate();
+    dateYear = this.props.currentSelection.Date.getUTCFullYear();
+
+    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
     return(
         <View style={styles.container}>
           <Image style={styles.image} source={{uri:this.props.currentSelection.Image}}>
             <View style={{flex:1,backgroundColor:'#00000099'}}>
-              <View style={{flex:.6}}>
-                <View style={{flex:.7}}>
+              <View style={{flex:.9}}>
+                <View style={{flex:.3}}>
                   <View style={styles.dateView}>
-                    <Text style={styles.dateNumberText}> {dateNumber} </Text>
-                    <Text style={styles.dateMonthText}> {dateMonth} </Text>
+                    <Text style={styles.dateNumberText}> {dateString} </Text>
                   </View>
                 </View>
-                <View style={{flex:.3,flexDirection:'row'}}>
-                  <View style={{flex:.6}}/>
-                  <Button style={{flex:.4,borderWidth:1,borderRadius:25,borderColor:'white',margin:5}} textStyle={{color:'white',textAlign:'center'}}>Notifications</Button>
-                </View>
+                <Text style={{flex:.7,padding:5,color:'white',fontFamily:'Futura-Medium',fontSize:14}}>{this.props.currentSelection.Long_Description}</Text>
               </View>
               <View style={{flex:.1}}>
               </View>
-              <Text style={{flex:.3,padding:5,color:'white',fontFamily:'Futura-Medium',fontSize:14}}>{this.props.currentSelection.Long_Description}</Text>
             </View>
           </Image>
           <View key={'Middle View'} style={styles.middleView}>
@@ -87,27 +87,6 @@ export default class EventCard extends Component {
             </View>
           </View>
           <View key={'Bottom View'} style={styles.bottomView}>
-            <View style={{flex:.5}}>
-              <View style={{flex:.5,flexDirection:'row'}}>
-                <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-                  <View style={{flex:1,backgroundColor:'#00000030'}}>
-                  </View>
-                </View>
-                <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-                  <View style={{flex:1,backgroundColor:'#00000010'}}>
-                  </View>
-                </View>
-              </View>
-              <View style={{flex:.5,flexDirection:'row'}}>
-                <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-                  <View style={{flex:1,backgroundColor:'#00000050'}}>
-                  </View>
-                </View>
-                <View style={{flex:.5,backgroundColor:'#45C3AB',justifyContent:'center',alignItems:'center'}}>
-                  <Text style={{textAlign:'center',color:'white',fontFamily:'Futura-Medium',fontSize:15}}>+12{'\n'}People</Text>
-                </View>
-              </View>
-            </View>
             <MapView
                initialRegion={{
                  latitude: this.props.currentSelection.latitude,
@@ -115,7 +94,7 @@ export default class EventCard extends Component {
                  latitudeDelta: 0.0922,
                  longitudeDelta: 0.0421,
                }}
-               style={{flex:.5}}
+               style={{flex:1}}
                scrollEnabled={false}
                zoomEnabled={false}
                pitchEnabled={false}
@@ -156,37 +135,22 @@ const styles = StyleSheet.create({
     flex:.35,
   },
   middleView: {
-    flex:.2,
+    flex:.25,
     backgroundColor:'#3023AE',
   },
   bottomView: {
-    flex:.25,
+    flex:.2,
     flexDirection:'row',
   },
   dateView: {
-    borderWidth: 1,
-    borderColor: 'white',
-    borderRadius: 4,
+    flex:1,
     margin: 10,
-    width: 70,
-    height: 60,
-    marginRight: 105,
   },
   dateNumberText: {
     color: 'white',
     fontFamily: 'Nexa Bold',
-    fontSize: 30,
+    fontSize: 18,
     margin: 5,
-    textAlign: 'center',
-  },
-  dateMonthText: {
-    color: 'white',
-    fontFamily: 'Nexa Light',
-    fontSize: 15,
-    marginTop: 0,
-    marginLeft: 4,
-    marginRight: 4,
-    marginBottom: 2,
     textAlign: 'center',
   },
   itemText: {
@@ -237,41 +201,25 @@ const styles = StyleSheet.create({
   },
 })
 
-// <View style={[styles.modalContainer, modalBackgroundStyle]}>
-//   <View style={[styles.innerContainer, innerContainerTransparentStyle]}>
-//     <View style={{flexDirection:'row'}}>
-      // <View style={styles.dateView}>
-      //   <Text style={styles.dateNumberText}> {dateNumber} </Text>
-      //   <Text style={styles.dateMonthText}> {dateMonth} </Text>
-      // </View>
-      // <MapView
-      //    initialRegion={{
-      //      latitude: this.props.currentSelection.latitude,
-      //      longitude: this.props.currentSelection.longitude,
-      //      latitudeDelta: 0.0922,
-      //      longitudeDelta: 0.0421,
-      //    }}
-//          style={{backgroundColor:'red',width:180,height:200,right:0,top:0}}
-//          scrollEnabled={false}
-//          zoomEnabled={false}
-//          pitchEnabled={false}
-//          rotateEnabled={false}
-//        >
-//          <MapView.Marker
-//            title="This is a title"
-//            description="This is a description"
-//            coordinate={{latitude: this.props.currentSelection.latitude,longitude: this.props.currentSelection.longitude,latitudeDelta: 0.0922,longitudeDelta: 0.0421}}
-//          />
-//      </MapView>
-//      </View>
-//     <Text style={{flex:1,textAlign:'left',margin:2,marginTop:5,height:25,fontSize:24,fontFamily: 'Nexa Bold',color:'#261851'}}>{this.props.currentSelection.Event_Name}</Text>
-//     <Text style={{flex:1,textAlign:'left',margin:2,marginBottom:5,height:25,fontSize:15,fontFamily: 'Nexa Bold',color:'#B765D3'}}>Local Event</Text>
-//     <Button
-//       onPress={() => this.props.closeSelection()}
-//       style={styles.modalButton}
-//       textStyle={styles.buttonText}
-//     >
-//       Close
-//     </Button>
+//This code goes in the bottomView where the map is with the purpose of being split
+// <View style={{flex:.5}}>
+//   <View style={{flex:.5,flexDirection:'row'}}>
+//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
+//       <View style={{flex:1,backgroundColor:'#00000030'}}>
+//       </View>
+//     </View>
+//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
+//       <View style={{flex:1,backgroundColor:'#00000010'}}>
+//       </View>
+//     </View>
+//   </View>
+//   <View style={{flex:.5,flexDirection:'row'}}>
+//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
+//       <View style={{flex:1,backgroundColor:'#00000050'}}>
+//       </View>
+//     </View>
+//     <View style={{flex:.5,backgroundColor:'#45C3AB',justifyContent:'center',alignItems:'center'}}>
+//       <Text style={{textAlign:'center',color:'white',fontFamily:'Futura-Medium',fontSize:15}}>+12{'\n'}People</Text>
+//     </View>
 //   </View>
 // </View>

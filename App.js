@@ -3,13 +3,16 @@ import { AppRegistry, StyleSheet, View, Image,Text } from 'react-native'
 import { Provider } from 'react-redux'
 import Home from './app/containers/Home'
 import Plan from './app/containers/Plan'
+import Favorites from './app/containers/Favorites'
 import Discover from './app/containers/Discover'
 import Profile from './app/containers/Profile'
 import EventView from './app/containers/EventCard'
+import EventView2 from './app/containers/Profile'
 import configureStore from './app/store/configureStore'
 import { Router, Scene } from 'react-native-router-flux'
 import icon1 from './app/images/time-icon.png'
-import icon2 from './app/images/calendar-icon.png'
+// import icon2 from './app/images/calendar-icon.png'
+import icon2 from './app/images/favorite-heart-button.png'
 import icon3 from './app/images/search-icon.png'
 import icon4 from './app/images/profile-icon.png'
 const store = configureStore()
@@ -39,8 +42,9 @@ class App extends Component {
                 <Scene key="tab1_1" component={Home} title="Now" />
                 <Scene key="Event" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
               </Scene>
-              <Scene key="tab2" title="Plan" image={icon2} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
-                <Scene key="tab2_1" component={Plan} title="Plan" />
+              <Scene key="tab2" title="Favorites" image={icon2} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
+                <Scene key="tab2_1" component={Favorites} title="Favorites" />
+                <Scene key="tab2_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
               </Scene>
               <Scene key="tab3" component={Discover} title="Discover" image={icon3} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
               <Scene key="tab4" component={Profile} title="Profile" image={icon4} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>

@@ -109,7 +109,7 @@ export default class Favorites extends Component {
 
   pressRow(rowData) {
     console.log('RowData: ',rowData);
-    Actions.Event({title:rowData.Event_Name,currentSelection:rowData});
+    Actions.tab2_2({title:rowData.Event_Name,currentSelection:rowData});
   }
   _closeSelection(){
     this.setState({currentSelection:{}});
