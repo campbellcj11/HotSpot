@@ -12,6 +12,8 @@ import {
   TouchableHighlight,
   Alert,
   StatusBar,
+  WebView,
+  Linking,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -27,12 +29,34 @@ export default class EventCard extends Component {
     this.state = {
       transparent: true,
     }
+    this.determineLatAndLong();
   }
 
+  determineLatAndLong()
+  {
+    console.log('LAT AND LONG: ',this.props.currentSelection.latitude,this.props.currentSelection.longitude);
+    if(this.props.currentSelection.latitude == '' && this.props.currentSelection.longitude == '')
+    {
+      this.determineLatAndLongFromAddress();
+    }
+  }
+  determineLatAndLongFromAddress()
+  {
+    console.log('LAT AND LONG from Address');
+  }
   componentWillMount() {
 
   }
-
+  openURL(sentURL)
+  {
+    var uriString = 'http://' + sentURL;
+    Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
+  }
+  openMap()
+  {
+    var uriString = 'http://maps.apple.com/?address=' + this.props.currentSelection.Address;
+    Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
+  }
   render() {
     var dateNumber;
     var dateMonth;
@@ -79,11 +103,11 @@ export default class EventCard extends Component {
                 <Text style={{color:'#7358D1'}}>{this.props.currentSelection.Location}</Text>
               </View>
               <View style={{flex:.5,justifyContent:'center',alignItems:'center'}}>
-                <Text style={{color:'#7358D1'}}>{this.props.currentSelection.Website}</Text>
+                <Button style={{flex:1}} textStyle={{color:'#7358D1',textAlign:'center'}} onPress={() => this.openURL(this.props.currentSelection.Website)}>{this.props.currentSelection.Website}</Button>
               </View>
             </View>
-            <View style={{flex:.5,justifyContent:'center',alignItems:'center'}}>
-              <Text style={{color:'#7358D1'}}>{this.props.currentSelection.Address}</Text>
+            <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#7358D1'}}>
+              <Button style={{flex:1}} textStyle={{color:'#7358D1',textAlign:'center'}} onPress={() => this.openMap()}>{this.props.currentSelection.Address}</Button>
             </View>
           </View>
           <View key={'Bottom View'} style={styles.bottomView}>
@@ -112,9 +136,11 @@ export default class EventCard extends Component {
                  </View>
                </View>
                <View style={{flex:.5,flexDirection:'row'}}>
-                 <View style={{flex:.5,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-                   <Text style={{textAlign:'center',color:'#45C3AB',fontFamily:'Futura-Medium',fontSize:15}}>+4{'\n'}Checkins</Text>
-                 </View>
+                 {/*
+                   <View style={{flex:.5,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                    <Text style={{textAlign:'center',color:'#45C3AB',fontFamily:'Futura-Medium',fontSize:15}}>+4{'\n'}Checkins</Text>
+                   </View>
+                 */}
                  <View style={{flex:.5}}>
                  </View>
                </View>
@@ -136,7 +162,7 @@ const styles = StyleSheet.create({
   },
   middleView: {
     flex:.25,
-    backgroundColor:'#3023AE',
+    backgroundColor:'white',
   },
   bottomView: {
     flex:.2,

@@ -80,14 +80,9 @@ export default class EventCell extends Component {
       eventActions.unFavorite(userUID, eventUID);
     }
   }
-  render() {
-    console.log('Event Info: ', this.props.eventInfo);
-    console.log('Event Name: ', this.props.eventInfo.Event_Name);
-    console.log('Event Image: ', this.props.eventInfo.Image);
-    this.date = this.props.eventInfo.Date ? this.props.eventInfo.Date.toLocaleDateString(): '';
-    console.log('Event Date: ', this.date);
-    console.log('Props for visable: ' + this.props.partOfFavorites);
-    return(
+  viewToRender()
+  {
+    return (
       <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)}>
         <View style={styles.container}>
             <Image source={{uri: this.props.eventInfo.Image || ''}} style={styles.image}>
@@ -105,7 +100,7 @@ export default class EventCell extends Component {
                   {
                     !this.props.partOfFavorites ?
                       <View style={{flex: .1}}>
-                        <ImageButton style={{padding:10,width:this.props.large ? 30:15,height:this.props.large ? 30:15}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:this.props.large ? 30:15,height:this.props.large ? 30:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>
+                        {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{padding:10,width:this.props.large ? 30:15,height:this.props.large ? 30:15}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:this.props.large ? 30:15,height:this.props.large ? 30:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
                       </View>
                     : null
                   }
@@ -120,6 +115,17 @@ export default class EventCell extends Component {
             </View>
         </View>
       </TouchableHighlight>
+    )
+  }
+  render() {
+    console.log('Event Info: ', this.props.eventInfo);
+    console.log('Event Name: ', this.props.eventInfo.Event_Name);
+    console.log('Event Image: ', this.props.eventInfo.Image);
+    this.date = this.props.eventInfo.Date ? this.props.eventInfo.Date.toLocaleDateString(): '';
+    console.log('Event Date: ', this.date);
+    console.log('Props for visable: ' + this.props.partOfFavorites);
+    return(
+      Object.keys(this.props.eventInfo).length > 0 ? this.viewToRender() : <View/>
     )
   }
 }

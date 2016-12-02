@@ -138,27 +138,8 @@ export default class Favorites extends Component {
     })
     return (Arr)
   }
-  render() {
-    console.log('PROPS!')
-    console.log(this.props)
-    let user, readonlyMessage
-    if(this.props.loggedIn && this.props.user != {})
-    {
-      user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
-    }
-    else
-    {
-      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
-    }
-
-    var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
-    };
-    var innerContainerTransparentStyle = this.state.transparent
-      ? {backgroundColor: '#fff'}
-      : null;
-
+  viewWithFavorites()
+  {
     return (
       <View style={{flex:1}}>
         <StatusBar
@@ -180,6 +161,38 @@ export default class Favorites extends Component {
           </Swiper>
         </View>
       </View>
+    );
+  }
+  viewWithoutFavorites()
+  {
+    return (
+      <View style={styles.container}>
+        <Text style={{textAlign:'center',fontFamily:'Futura-Medium',fontSize:15,flex:1}}> Login to an account to save/view favorites </Text>
+      </View>
+    );
+  }
+  render() {
+    console.log('PROPS!')
+    console.log(this.props)
+    let user, readonlyMessage
+    if(this.props.loggedIn && this.props.user != {})
+    {
+      user = this.props.user
+      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
+    }
+    else
+    {
+      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
+    }
+
+    var modalBackgroundStyle = {
+      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+    };
+    var innerContainerTransparentStyle = this.state.transparent
+      ? {backgroundColor: '#fff'}
+      : null;
+    return (
+      (firebase.auth().currentUser.email != 'test@test.com') ? this.viewWithFavorites() : this.viewWithoutFavorites()
     )
   }
 }
