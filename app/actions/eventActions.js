@@ -23,7 +23,6 @@ export function getSavedEvents()
       snapshot.forEach(function(childSnapshot) {
         var key = childSnapshot.key;
         var value = childSnapshot.val();
-        console.log("NewKey: " + key + " Index: " + value);
         savedEventKeys[index] = value;
         index++;
     });
