@@ -48,7 +48,7 @@ export default class Favorites extends Component {
       dataSource:ds,
       items: [],
     }
-    this.itemsRef = this.getRef().child('favorites/DLGi8TWRIrbkWJWVcs959qaImSK2');
+    this.itemsRef = this.getRef().child('favorites/' + firebase.auth().currentUser.uid);
     this.currentIndex = 0;
   }
 
@@ -65,20 +65,15 @@ export default class Favorites extends Component {
       var items = [];
       var eventUIDs = [];
       snap.forEach((child) => {
-        console.log("EventUIDS: " + child.val());
         eventUIDs.push({
           Key : child.val()
         });
       });
 
-      //loop through event UIDs
-      console.log('Printing: ');
       for (events in eventUIDs)
       {
-        console.log("Key: " + eventUIDs[events].Key);
         var ref = this.getRef().child('events/' + eventUIDs[events].Key);
         ref.on('value', (snap) => {
-          console.log("events!: " + snap.val().Event_Name);
           items.push({
             Key : snap.key,
             Event_Name: snap.val().Event_Name,
@@ -92,9 +87,7 @@ export default class Favorites extends Component {
             Long_Description: snap.val().Long_Description,
             Address: snap.val().Address,
             Website: snap.val().Website,
-          });
-          snap.forEach((child) => {
-
+            MainTag: snap.val().Tags ? snap.val().Tags[0]:[],
           });
         });
       }
@@ -141,7 +134,7 @@ export default class Favorites extends Component {
 
       this.currentIndex = this.currentIndex + eventsPerPage;
 
-      return <EventPage key={i} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
+      return <EventPage key={i} partOfFavorites={true} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
     })
     return (Arr)
   }

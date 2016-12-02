@@ -90,7 +90,7 @@ export function loginUser(user){
         });
         ref.once('value')
           .then(function(snapshot) {
-            console.log(snapshot.val())
+            console.log('User logging in: ' + snapshot.val());
             var userFromTable = snapshot.val();
             dispatch(stateLogIn(userFromTable));
         })

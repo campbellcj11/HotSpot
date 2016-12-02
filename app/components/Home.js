@@ -182,7 +182,7 @@ export default class Home extends Component {
 
       this.currentIndex = this.currentIndex + eventsPerPage;
 
-      return <EventPage key={i} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
+      return <EventPage key={i} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
     })
     return (Arr)
   }
