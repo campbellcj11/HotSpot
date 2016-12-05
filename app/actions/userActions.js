@@ -154,8 +154,6 @@ export function signUpUser(user) {
   };
 }
 
-//TODO: Test function - this function will have issues with the current
-// implementation.
 export function resetPassword(email) {
   console.log('Resetting Password');
   return (dispatch) => {
@@ -163,19 +161,20 @@ export function resetPassword(email) {
     firebase.auth().sendPasswordResetEmail(email)
       .then(currentUser => {
         dispatch(stateResetPassword())
+        Alert.alert("Password reset email sent.");
       })
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Signup for ' + user.email, error.message);
+        if (email == "")
+        {
+          Alert.alert("Please enter an email address to reset the password for.");
+        }
+        else
+        {
+          Alert.alert('Invalid Signup for ' + email, error.message);
+        }
       });
   };
-  firebase.auth().sendPasswordResetEmail(email).catch(function(error) {
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    console.log('ERROR: ' + error.code + ' - ' + error.message);
-    Alert.alert('Cannot Reset Password ' + user.email, error.message);
-  });
-  return {}
 }
