@@ -213,6 +213,7 @@ export default class Home extends Component {
         </Modal>
 
 
+
         <View style={styles.container}>
           <Swiper ref='swiper' height={height*.9} loop={false} horizontal={false} showsButtons={false} showsPagination={false}>
               {this.renderSlides()}
@@ -299,11 +300,11 @@ export default class Home extends Component {
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
             <Text style={{color:'#FFF907',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
           </View>
-          <Button
+            <Button
             style={{flex:.2}}
             //onPress={() => props.logoutUser()}
             textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
-            Logout
+            {/*Logout*/}
           </Button>
         </View>
       </View>
