@@ -39,19 +39,57 @@ export default class Discover extends Component {
   componentWillMount() {
 
   }
+  pressRow(rowData) {
+    console.log('RowData2: ',rowData);
+    // this.setState({currentSelection:rowData});
+    // this.setState({hasCurrentSelection:true});
 
+    Actions.tab3_2({title:rowData.Event_Name,currentSelection:rowData});
+  }
   renderRow(rowData){
+    var dateNumber;
+    var dateMonth;
+    var dateYear;
+
+    var months = new Array();
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
+    months[4] = "May";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
+
+    dateMonth = rowData.Date ? months[rowData.Date.getMonth()]: '';
+    dateNumber = rowData.Date ? rowData.Date.getDate(): '';
+    dateYear = rowData.Date ? rowData.Date.getUTCFullYear(): '';
+
+    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
     return (
       <TouchableHighlight
         underlayColor = '#dddddd'
         style = {styles.item}
+        onPress = {() => this.pressRow(rowData)}
       >
       <View style={styles.item}>
-      <Image style={styles.item} source={{uri: rowData.Image}}>
-        <View style={styles.fader}>
-          <Text style={styles.itemText}>{rowData.Event_Name}</Text>
-        </View>
+      <View style={{flex:.85}}>
+          <View style={{flex:.75}}>
+            <Text style={styles.itemTitle}>{rowData.Event_Name}</Text>
+            <Text style={styles.itemText}>{rowData.Short_Description}</Text>
+          </View>
+          <View style={{marginLeft:5,flex:.25,justifyContent:'center'}}>
+            <Text numberOfLines={1} style={{color:'#261851',fontSize: 14,fontFamily: 'Futura-Medium'}}>{dateString}</Text>
+          </View>
+      </View>
+      <View style={{flex:.15}}>
+        <Image style={{flex:1,resizeMode:'cover'}} source={{uri: rowData.Image}}>
         </Image>
+      </View>
       </View>
       </TouchableHighlight>
     )
@@ -112,7 +150,7 @@ export default class Discover extends Component {
     return(
       <View style={styles.container}>
         <View style={styles.searchView}>
-          <Image source={icon3} style={{tintColor: '#a6a6a6',resizeMode: 'cover',margin: 5,width: 20, height: 20,}}/>
+          <Image source={icon3} style={{tintColor: '#a6a6a6',resizeMode: 'contain',margin: 2,width: 20, height: 20,}}/>
           <TextInput style={[styles.searchText, {textAlignVertical: 'center'}]}
                    placeholder='Search'
                    placeholderTextColor='#a6a6a6'
@@ -128,7 +166,7 @@ export default class Discover extends Component {
             Go
           </Button>
         </View>
-        <View style={{flex:1}}>
+        <View>
           <ListView style={styles.scroll}
           contentContainerStyle={styles.list}
             dataSource={this.state.dataSource}
@@ -148,8 +186,7 @@ const styles = StyleSheet.create({
   searchView: {
     flexDirection: 'row',
     backgroundColor: '#e6e6e6',
-    margin: 5,
-    borderRadius: 5,
+    margin: 3,
     height:25,
   },
   searchText: {
@@ -181,24 +218,33 @@ const styles = StyleSheet.create({
     flexWrap:'wrap',
   },
   item: {
-    backgroundColor: '#CCC',
-    width: width/3,
+    backgroundColor: '#FFFFFF',
+    width: width,
     height: 100,
-    borderColor: '#D200FF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#261851',
+    flexDirection: 'row',
   },
   fader: {
     backgroundColor: 'rgba(0,0,0,.6)',
     flex:1,
   },
-  itemText: {
+  itemTitle: {
     backgroundColor: 'transparent',
-    textAlign: 'center',
-    color: '#48BBEC',
-    fontSize: 15,
+    color: 'black',
+    fontSize: 20,
     fontFamily: 'Nexa Bold',
     padding: 2,
   },
-    scroll: {
-       flex: 1,
-     },
+  itemText: {
+    backgroundColor: 'transparent',
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Nexa Light',
+    padding: 2,
+  },
+  scroll: {
+    top:0,
+    height:height*.79,
+  },
 })

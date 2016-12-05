@@ -118,12 +118,31 @@ export default class EventCell extends Component {
     )
   }
   render() {
-    console.log('Event Info: ', this.props.eventInfo);
-    console.log('Event Name: ', this.props.eventInfo.Event_Name);
-    console.log('Event Image: ', this.props.eventInfo.Image);
-    this.date = this.props.eventInfo.Date ? this.props.eventInfo.Date.toLocaleDateString(): '';
-    console.log('Event Date: ', this.date);
-    console.log('Props for visable: ' + this.props.partOfFavorites);
+    var dateNumber;
+    var dateMonth;
+    var dateYear;
+
+    var months = new Array();
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
+    months[4] = "May";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
+
+    dateMonth = this.props.eventInfo.Date ? months[this.props.eventInfo.Date.getMonth()]: '';
+    dateNumber = this.props.eventInfo.Date ? this.props.eventInfo.Date.getDate(): '';
+    dateYear = this.props.eventInfo.Date ? this.props.eventInfo.Date.getUTCFullYear(): '';
+
+    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
+
+    this.date = this.props.eventInfo.Date ? dateString : '';
     return(
       Object.keys(this.props.eventInfo).length > 0 ? this.viewToRender() : <View/>
     )

@@ -46,7 +46,10 @@ class App extends Component {
                 <Scene key="tab2_1" component={Favorites} title="Favorites" />
                 <Scene key="tab2_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
               </Scene>
-              <Scene key="tab3" component={Discover} title="Discover" image={icon3} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
+              <Scene key="tab3" title="Discover" image={icon3} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
+                <Scene key="tab3_1" component={Discover} title="Discover" />
+                <Scene key="tab3_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
+              </Scene>
               <Scene key="tab4" component={Profile} title="Profile" image={icon4} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
           </Scene>
         </Scene>

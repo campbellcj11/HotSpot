@@ -106,7 +106,14 @@ export default class Home extends Component {
   _loginWithoutAccount() {
     user = {'email': 'test@test.com',
             'password' : 'password'};
-    this.props.loginUser(user);
+    if(this.state.isSignUp)
+    {
+
+    }
+    else
+    {
+      this.props.loginUser(user);
+    }
   }
 
   _logout(){
@@ -220,6 +227,8 @@ export default class Home extends Component {
   renderModal(){
     var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
     var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
+    var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
+    var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
     return (
       <Modal
           animationType={'none'}
@@ -254,6 +263,11 @@ export default class Home extends Component {
                 </TextInput>
               </View>
               <Button
+                style={styles.forgotPasswordBlankButton}
+                textStyle={styles.forgotPasswordText}>
+                {forgotPasswordButtonText}
+              </Button>
+              <Button
                 onPress={() => this._login()}
                 style={styles.loginButton}
                 textStyle={styles.buttonText}>
@@ -263,7 +277,7 @@ export default class Home extends Component {
                 onPress={() => this._loginWithoutAccount()}
                 style={styles.loginBlankButton}
                 textStyle={styles.buttonBlankText}>
-                Login without an Account
+                {loginWithoutAccountButtonText}
               </Button>
               <Button
                 onPress={() => this._openSignupPage()}
@@ -274,6 +288,22 @@ export default class Home extends Component {
             </LinearGradient>
         </View>
       </Modal>
+    )
+  }
+  static renderNavigationBar(props)
+  {
+    console.log('AHH PROPS!')
+    console.log(props)
+    return(
+      <View style={{flex:1,backgroundColor:'#261851',position:'absolute',top:0,left:0,right:0,height:64}}>
+        <View style={{top:20,flexDirection:'row'}}>
+          <View style={{flex:.2}}/>
+          <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
+            <Text style={{color:'#FFF907',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
+          </View>
+          <Button style={{flex:.2}} textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>Logout</Button>
+        </View>
+      </View>
     )
   }
   render() {
@@ -379,7 +409,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   loginButton: {
-    top: 100,
+    top: 85,
     backgroundColor: '#C123E2',
     height: 50,
     marginLeft:20,
@@ -389,7 +419,7 @@ const styles = StyleSheet.create({
     borderColor: '#D200FF',
   },
   loginBlankButton: {
-    top: 100,
+    top: 85,
     backgroundColor: 'transparent',
     height: 50,
     marginLeft: width*.2,
@@ -402,6 +432,21 @@ const styles = StyleSheet.create({
     height: height*.05,
     left: width*.2,
     right: width*.2,
+  },
+  forgotPasswordBlankButton: {
+    top: 85,
+    backgroundColor: 'transparent',
+    height: 30,
+    marginLeft: width*.2,
+    marginRight: width*.2,
+  },
+  forgotPasswordText: {
+    color: 'white',
+    fontSize: 10,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    height: 30,
+    lineHeight: 30,
   },
   buttonBlankText: {
     color: 'white',
