@@ -46,7 +46,7 @@ export function loggingOut() {
   return { type: LOGGING_OUT }
 }
 
-export function sigingUp() {
+export function signingUp() {
   console.log("Signing up");
   return { type: SIGNING_UP }
 }
@@ -64,8 +64,8 @@ export function stateLogOut() {
   return { type: LOG_OUT };
 }
 
-export function stateSignUp() {
-  return { type: SIGN_UP };
+export function stateSignUp(user) {
+  return { type: SIGN_UP, currentUser: user };
 }
 
 export function stateResetPassword() {
@@ -127,30 +127,23 @@ export function logoutUser(){
   };
 }
 
-//TODO: Test function
 export function signUpUser(user) {
   console.log('Signing up user');
+  console.log("USER!: " + user);
   return (dispatch) => {
     dispatch(signingUp());
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
-        dispatch(stateSignUp());
-        firebase.auth().onAuthStateChanged((user) => {
-          if (user) {
-            console.log('UID: ' + user.uid);
-          }
-        });
-        //TODO: Once signup page is implemented, match these according fields
-        // to values passed into this function.
         database.ref('users/' + firebase.auth().currentUser.uid).set({
           email: user.email,
-          firstName: 'Conor',
-          lastName: 'Campbell',
+          //TODO: need to implement first Name and last name fields on sign up.
+          //firstName: 'Conor',
+          //lastName: 'Campbell',
           registeredUser: true,
-          adminUser: true,
-          events: null,
+          adminUser: false,
           lastLogin : firebase.database.ServerValue.TIMESTAMP
         });
+        dispatch(stateSignUp(user));
       })
       .catch(error => {
         var errorCode = error.code;

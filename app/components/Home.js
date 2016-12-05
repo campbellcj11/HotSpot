@@ -47,6 +47,7 @@ export default class Home extends Component {
       transparent: true,
       dataSource:ds,
       items: [],
+      isSignUp: false,
     }
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
@@ -92,13 +93,27 @@ export default class Home extends Component {
   _login(){
     var user = {'email': this.state.email,
                 'password' : this.state.password};
-    this.props.loginUser(user);
+    if(this.state.isSignUp)
+    {
+      this.props.signUpUser(user);
+    }
+    else
+    {
+      this.props.loginUser(user);
+    }
   }
 
   _loginWithoutAccount() {
     user = {'email': 'test@test.com',
             'password' : 'password'};
-    this.props.loginUser(user);
+    if(this.state.isSignUp)
+    {
+
+    }
+    else
+    {
+      this.props.loginUser(user);
+    }
   }
 
   _logout(){
@@ -110,6 +125,9 @@ export default class Home extends Component {
     var user = {'email': this.state.email,
                 'password' : this.state.password};
     this.props.resetPassword(user.email);
+  }
+  _openSignupPage(){
+    this.setState({isSignUp:!this.state.isSignUp});
   }
   _browse(){
     Alert.alert(
@@ -186,81 +204,9 @@ export default class Home extends Component {
     })
     return (Arr)
   }
-  render() {
-    console.log('PROPS!')
-    console.log(this.props)
-    let user, readonlyMessage
-    if(this.props.loggedIn && this.props.user != {})
-    {
-      user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
-    }
-    else
-    {
-      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
-    }
-
-    var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
-    };
-    var innerContainerTransparentStyle = this.state.transparent
-      ? {backgroundColor: '#fff'}
-      : null;
-
+  renderView(){
     return (
-      <View style={{flex:1}}>
-        <StatusBar
-          barStyle="light-content"
-        />
-
-        <Modal
-            animationType={'none'}
-            transparent={false}
-            visible={!this.props.loggedIn}
-        >
-          <View style={{flexDirection:'row'}}>
-              <LinearGradient colors={['#3023AE', '#C86DD7']} style={styles.linearGradient}>
-                <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
-                <Text style={styles.title}>
-                  Project
-                  <Text style={[styles.title,{color:'#FFF907'}]}>
-                    Now
-                  </Text>
-                </Text>
-                <View style={styles.userNameView}>
-                  <TextInput style={styles.userNameTextInput}
-                    ref='email'
-                    onChangeText={(email) => this.setState({email})}
-                    placeholder='Email'
-                    placeholderTextColor='#D3C6E2'>
-                  </TextInput>
-                </View>
-
-                <View style={styles.userNameView}>
-                  <TextInput style={styles.userNameTextInput}
-                    secureTextEntry={true}
-                    ref='password'
-                    onChangeText={(password) => this.setState({password})}
-                    placeholder='Password'
-                    placeholderTextColor='#D3C6E2'>
-                  </TextInput>
-                </View>
-                <Button
-                  onPress={() => this._login()}
-                  style={styles.loginButton}
-                  textStyle={styles.buttonText}>
-                  Login
-                </Button>
-                <Button
-                  onPress={() => this._loginWithoutAccount()}
-                  style={styles.loginBlankButton}
-                  textStyle={styles.buttonBlankText}>
-                  Login without an Account
-                </Button>
-              </LinearGradient>
-          </View>
-        </Modal>
-
+      <View>
         <Modal
           animationType='fade'
           transparent={false}
@@ -275,6 +221,120 @@ export default class Home extends Component {
               {this.renderSlides()}
           </Swiper>
         </View>
+      </View>
+    )
+  }
+  renderModal(){
+    var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
+    var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
+    var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
+    var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
+    return (
+      <Modal
+          animationType={'none'}
+          transparent={false}
+          visible={!this.props.loggedIn}
+      >
+        <View style={{flexDirection:'row'}}>
+            <LinearGradient colors={['#3023AE', '#C86DD7']} style={styles.linearGradient}>
+              <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
+              <Text style={styles.title}>
+                Project
+                <Text style={[styles.title,{color:'#FFF907'}]}>
+                  Now
+                </Text>
+              </Text>
+              <View style={styles.userNameView}>
+                <TextInput style={styles.userNameTextInput}
+                  ref='email'
+                  onChangeText={(email) => this.setState({email})}
+                  placeholder='Email'
+                  placeholderTextColor='#D3C6E2'>
+                </TextInput>
+              </View>
+
+              <View style={styles.userNameView}>
+                <TextInput style={styles.userNameTextInput}
+                  secureTextEntry={!this.state.isSignUp}
+                  ref='password'
+                  onChangeText={(password) => this.setState({password})}
+                  placeholder='Password'
+                  placeholderTextColor='#D3C6E2'>
+                </TextInput>
+              </View>
+              <Button
+                style={styles.forgotPasswordBlankButton}
+                textStyle={styles.forgotPasswordText}>
+                {forgotPasswordButtonText}
+              </Button>
+              <Button
+                onPress={() => this._login()}
+                style={styles.loginButton}
+                textStyle={styles.buttonText}>
+                {loginButtonText}
+              </Button>
+              <Button
+                onPress={() => this._loginWithoutAccount()}
+                style={styles.loginBlankButton}
+                textStyle={styles.buttonBlankText}>
+                {loginWithoutAccountButtonText}
+              </Button>
+              <Button
+                onPress={() => this._openSignupPage()}
+                style={styles.signinBlankButton}
+                textStyle={styles.buttonBlankText}>
+                {signUpButtonText}
+              </Button>
+            </LinearGradient>
+        </View>
+      </Modal>
+    )
+  }
+  static renderNavigationBar(props)
+  {
+    console.log('AHH PROPS!')
+    console.log(props)
+    return(
+      <View style={{flex:1,backgroundColor:'#261851',position:'absolute',top:0,left:0,right:0,height:64}}>
+        <View style={{top:20,flexDirection:'row'}}>
+          <View style={{flex:.2}}/>
+          <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
+            <Text style={{color:'#FFF907',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
+          </View>
+          <Button style={{flex:.2}} textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>Logout</Button>
+        </View>
+      </View>
+    )
+  }
+  render() {
+    console.log('PROPS!')
+    console.log(this.props)
+    let user, readonlyMessage, viewToShow
+    if(this.props.loggedIn && this.props.user != {})
+    {
+      user = this.props.user
+      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
+      viewToShow = this.renderView();
+    }
+    else
+    {
+      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
+      viewToShow = this.renderModal();
+    }
+
+    var modalBackgroundStyle = {
+      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
+    };
+    var innerContainerTransparentStyle = this.state.transparent
+      ? {backgroundColor: '#fff'}
+      : null;
+
+    return (
+      <View style={{flex:1}}>
+        <StatusBar
+          barStyle="light-content"
+        />
+        {viewToShow}
       </View>
     )
   }
@@ -349,7 +409,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   loginButton: {
-    top: 100,
+    top: 85,
     backgroundColor: '#C123E2',
     height: 50,
     marginLeft:20,
@@ -359,11 +419,34 @@ const styles = StyleSheet.create({
     borderColor: '#D200FF',
   },
   loginBlankButton: {
-    top: 100,
+    top: 85,
     backgroundColor: 'transparent',
     height: 50,
     marginLeft: width*.2,
     marginRight: width*.2,
+  },
+  signinBlankButton: {
+    position: 'absolute',
+    top: height*.95,
+    backgroundColor: 'transparent',
+    height: height*.05,
+    left: width*.2,
+    right: width*.2,
+  },
+  forgotPasswordBlankButton: {
+    top: 85,
+    backgroundColor: 'transparent',
+    height: 30,
+    marginLeft: width*.2,
+    marginRight: width*.2,
+  },
+  forgotPasswordText: {
+    color: 'white',
+    fontSize: 10,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    height: 30,
+    lineHeight: 30,
   },
   buttonBlankText: {
     color: 'white',
