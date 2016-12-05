@@ -121,10 +121,7 @@ export default class Home extends Component {
   }
 
   _resetPassword() {
-    //hardcoded for prototype - need to get email from user
-    var user = {'email': this.state.email,
-                'password' : this.state.password};
-    this.props.resetPassword(user.email);
+    this.props.resetPassword(this.state.email);
   }
   _openSignupPage(){
     this.setState({isSignUp:!this.state.isSignUp});
@@ -263,6 +260,7 @@ export default class Home extends Component {
                 </TextInput>
               </View>
               <Button
+                onPress={() => this._resetPassword()}
                 style={styles.forgotPasswordBlankButton}
                 textStyle={styles.forgotPasswordText}>
                 {forgotPasswordButtonText}
@@ -301,7 +299,12 @@ export default class Home extends Component {
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
             <Text style={{color:'#FFF907',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
           </View>
-          <Button style={{flex:.2}} textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>Logout</Button>
+          <Button
+            style={{flex:.2}}
+            //onPress={() => props.logoutUser()}
+            textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
+            Logout
+          </Button>
         </View>
       </View>
     )
