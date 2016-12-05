@@ -46,7 +46,7 @@ export function loggingOut() {
   return { type: LOGGING_OUT }
 }
 
-export function sigingUp() {
+export function signingUp() {
   console.log("Signing up");
   return { type: SIGNING_UP }
 }

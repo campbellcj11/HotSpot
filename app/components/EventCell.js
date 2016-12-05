@@ -83,7 +83,7 @@ export default class EventCell extends Component {
   viewToRender()
   {
     return (
-      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)}>
+      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
         <View style={styles.container}>
             <Image source={{uri: this.props.eventInfo.Image || ''}} style={styles.image}>
               <View style={{flex:1,backgroundColor:'#00000080'}}>
