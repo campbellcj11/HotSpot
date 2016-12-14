@@ -65,20 +65,28 @@ export default class Home extends Component {
     itemsRef.on('value', (snap) => {
       var items = [];
       snap.forEach((child) => {
-        items.push({
-          Key : child.key,
-          Event_Name: child.val().Event_Name,
-          Date: new Date(child.val().Date),
-          Location: child.val().Location,
-          Image: child.val().Image,
-          latitude: child.val().Latitude,
-          longitude: child.val().Longitude,
-          Tags: child.val().Tags,
-          Short_Description: child.val().Short_Description,
-          Long_Description: child.val().Long_Description,
-          Address: child.val().Address,
-          Website: child.val().Website,
-          MainTag: child.val().Tags ? child.val().Tags[0]:[],
+        //get tags here
+        var tagsRef = this.getRef().child('tags/' + child.key);
+        var Tags = [];
+        tagsRef.on("value", (snapshot) => {
+          snapshot.forEach((childUnder) => {
+            Tags.push(childUnder.key);
+          });
+          items.push({
+            Key : child.key,
+            Event_Name: child.val().Event_Name,
+            Date: new Date(child.val().Date),
+            Location: child.val().Location,
+            Image: child.val().Image,
+            latitude: child.val().Latitude,
+            longitude: child.val().Longitude,
+            Tags: child.val().Tags,
+            Short_Description: child.val().Short_Description,
+            Long_Description: child.val().Long_Description,
+            Address: child.val().Address,
+            Website: child.val().Website,
+            MainTag: Tags ? Tags[0]:[],
+          });
         });
       });
 

@@ -57,10 +57,14 @@ export function resettingPassword() {
 }
 
 export function stateLogIn(user) {
+  offline.save('user', user);
+  offline.save('isLoggedIn', true);
   return { type: LOG_IN, currentUser: user };
 }
 
 export function stateLogOut() {
+  offline.save('user', {});
+  offline.save('isLoggedIn', false);
   return { type: LOG_OUT };
 }
 

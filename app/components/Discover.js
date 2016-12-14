@@ -103,8 +103,6 @@ export default class Discover extends Component {
       //console.log(element);
       eventQuery = database.ref("events/"+element);
       eventQuery.once('value',(snapshot) => {
-        console.log("itExists"+element);
-        console.log(snapshot.child("Image").exists());
         items.push({
           Key: element,
           Event_Name: snapshot.child("Event_Name").val(),
@@ -138,7 +136,6 @@ export default class Discover extends Component {
      tagQuery.once("value", (snapshot) => {
          snapshot.forEach((childSnapshot) => {
            var key = childSnapshot.val();
-           console.log("KEY: " + key + " Index: " + index);
            tagEvents[index] = key;
            index++;
          })
@@ -146,51 +143,19 @@ export default class Discover extends Component {
      });
   }
 
-  renderEvent(tagEvents)
-  {
-    var items = [];
-    var eventQuery = database.ref("events/");
-    tagEvents.forEach((element) => {
-      //console.log(element);
-      eventQuery = database.ref("events/"+element);
-      eventQuery.once('value',(snapshot) => {
-        console.log("itExists"+element);
-        console.log(snapshot.child("Image").exists());
-        items.push({
-          Key: element,
-          Event_Name: snapshot.child("Event_Name").val(),
-          Date: new Date(snapshot.child("Date").val()),
-          Location: snapshot.child("Location").val(),
-          Image: snapshot.child("Image").val(),
-          Latitude: snapshot.child("Latitude").val(),
-          Longitude:snapshot.child("Longitude").val(),
-          Tags: snapshot.child("Tags").val(),
-          Short_Description: snapshot.child("Short_Description").val(),
-          Long_Description: snapshot.child("Long_Description").val(),
-          Address: snapshot.child("Address").val(),
-          Website: snapshot.child("Website").val(),
-        });
-     });
-   });
-   //console.log(items);
-   this.setState({
-     dataSource: this.state.dataSource.cloneWithRows(items),
-     items: items,
-   });
-  }
-
   renderTag()
   {
      var index = 0;
      var tagEvents = [];
      var tag = this.state.tag;
-     var tagQuery = database.ref("tags/"+tag).orderByKey();
-
+     var tagQuery = database.ref("tags/").orderByKey();
      tagQuery.once("value", (snapshot) => {
          snapshot.forEach((childSnapshot) => {
-           var key = childSnapshot.val();
-           console.log("KEY: " + key + " Index: " + index);
-           tagEvents[index] = key;
+           var object = childSnapshot.val();
+           if (object[tag] != null)
+           {
+             tagEvents[index] = childSnapshot.key;
+           }
            index++;
          })
         this.renderEvent(tagEvents);

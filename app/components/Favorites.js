@@ -73,21 +73,28 @@ export default class Favorites extends Component {
       for (events in eventUIDs)
       {
         var ref = this.getRef().child('events/' + eventUIDs[events].Key);
-        ref.on('value', (snap) => {
-          items.push({
-            Key : snap.key,
-            Event_Name: snap.val().Event_Name,
-            Date: new Date(snap.val().Date),
-            Location: snap.val().Location,
-            Image: snap.val().Image,
-            latitude: snap.val().Latitude,
-            longitude: snap.val().Longitude,
-            Tags: snap.val().Tags,
-            Short_Description: snap.val().Short_Description,
-            Long_Description: snap.val().Long_Description,
-            Address: snap.val().Address,
-            Website: snap.val().Website,
-            MainTag: snap.val().Tags ? snap.val().Tags[0]:[],
+        var tagsRef = this.getRef().child('tags/' + eventUIDs[events].Key);
+        var Tags = [];
+        tagsRef.on("value", (snapshot) => {
+          snapshot.forEach((childUnder) => {
+            Tags.push(childUnder.key);
+          });
+          ref.on('value', (snap) => {
+            items.push({
+              Key : snap.key,
+              Event_Name: snap.val().Event_Name,
+              Date: new Date(snap.val().Date),
+              Location: snap.val().Location,
+              Image: snap.val().Image,
+              latitude: snap.val().Latitude,
+              longitude: snap.val().Longitude,
+              Tags: snap.val().Tags,
+              Short_Description: snap.val().Short_Description,
+              Long_Description: snap.val().Long_Description,
+              Address: snap.val().Address,
+              Website: snap.val().Website,
+              MainTag: Tags ? Tags[0]:[],
+            });
           });
         });
       }
