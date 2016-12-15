@@ -62,10 +62,12 @@ export default class Home extends Component {
   }
 
   listenForItems(itemsRef) {
-    itemsRef.on('value', (snap) => {
+    var today = new Date();
+    var timeUTC = today.getTime();
+    console.log("TIME UTC: " + timeUTC);
+    itemsRef.orderByChild("Sort_Date").startAt(timeUTC).on('value', (snap) => {
       var items = [];
       snap.forEach((child) => {
-        //get tags here
         var tagsRef = this.getRef().child('tags/' + child.key);
         var Tags = [];
         tagsRef.on("value", (snapshot) => {
@@ -86,6 +88,7 @@ export default class Home extends Component {
             Address: child.val().Address,
             Website: child.val().Website,
             MainTag: Tags ? Tags[0]:[],
+            Sort_Date: child.val().Sort_Date,
           });
         });
       });

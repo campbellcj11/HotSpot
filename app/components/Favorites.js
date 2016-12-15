@@ -80,24 +80,36 @@ export default class Favorites extends Component {
             Tags.push(childUnder.key);
           });
           ref.on('value', (snap) => {
-            items.push({
-              Key : snap.key,
-              Event_Name: snap.val().Event_Name,
-              Date: new Date(snap.val().Date),
-              Location: snap.val().Location,
-              Image: snap.val().Image,
-              latitude: snap.val().Latitude,
-              longitude: snap.val().Longitude,
-              Tags: snap.val().Tags,
-              Short_Description: snap.val().Short_Description,
-              Long_Description: snap.val().Long_Description,
-              Address: snap.val().Address,
-              Website: snap.val().Website,
-              MainTag: Tags ? Tags[0]:[],
-            });
+            var today = new Date();
+            var timeUTC = today.getTime();
+            if (snap.val().Sort_Date >= timeUTC) {
+              items.push({
+                Key : snap.key,
+                Event_Name: snap.val().Event_Name,
+                Date: new Date(snap.val().Date),
+                Location: snap.val().Location,
+                Image: snap.val().Image,
+                latitude: snap.val().Latitude,
+                longitude: snap.val().Longitude,
+                Tags: snap.val().Tags,
+                Short_Description: snap.val().Short_Description,
+                Long_Description: snap.val().Long_Description,
+                Address: snap.val().Address,
+                Website: snap.val().Website,
+                MainTag: Tags ? Tags[0]:[],
+                Sort_Date: snap.val().Sort_Date,
+              });
+            }
           });
         });
       }
+
+      //sort by date
+      var today = new Date();
+      var timeUTC = today.getTime();
+      items.sort(function(a, b){
+        return a.Sort_Date-b.Sort_Date
+      })
 
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(items),

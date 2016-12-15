@@ -103,22 +103,35 @@ export default class Discover extends Component {
       //console.log(element);
       eventQuery = database.ref("events/"+element);
       eventQuery.once('value',(snapshot) => {
-        items.push({
-          Key: element,
-          Event_Name: snapshot.child("Event_Name").val(),
-          Date: new Date(snapshot.child("Date").val()),
-          Location: snapshot.child("Location").val(),
-          Image: snapshot.child("Image").val(),
-          Latitude: snapshot.child("Latitude").val(),
-          Longitude:snapshot.child("Longitude").val(),
-          Tags: snapshot.child("Tags").val(),
-          Short_Description: snapshot.child("Short_Description").val(),
-          Long_Description: snapshot.child("Long_Description").val(),
-          Address: snapshot.child("Address").val(),
-          Website: snapshot.child("Website").val(),
-        });
+        var today = new Date();
+        var timeUTC = today.getTime();
+        if (snapshot.child("Sort_Date").val() >= timeUTC) {
+          items.push({
+            Key: element,
+            Event_Name: snapshot.child("Event_Name").val(),
+            Date: new Date(snapshot.child("Date").val()),
+            Location: snapshot.child("Location").val(),
+            Image: snapshot.child("Image").val(),
+            Latitude: snapshot.child("Latitude").val(),
+            Longitude:snapshot.child("Longitude").val(),
+            Tags: snapshot.child("Tags").val(),
+            Short_Description: snapshot.child("Short_Description").val(),
+            Long_Description: snapshot.child("Long_Description").val(),
+            Address: snapshot.child("Address").val(),
+            Website: snapshot.child("Website").val(),
+            Sort_Date: snapshot.child("Sort_Date").val(),
+          });
+        }
      });
    });
+
+   //sort by date
+   var today = new Date();
+   var timeUTC = today.getTime();
+   items.sort(function(a, b){
+     return a.Sort_Date-b.Sort_Date
+   })
+   
    //console.log(items);
    this.setState({
      dataSource: this.state.dataSource.cloneWithRows(items),

@@ -5,6 +5,9 @@ key to the tags table under the correct tag. It does not make duplicate copies.
 
 As of now this code needs to be run in google scripts with the firebase app library loaded
 into the script. The url for the firebase API is MYeP8ZEEt1ylVDxS7uyg9plDOcoke7-2l.
+
+DO NOT RUN THIS SCRIPT. IT IS NOW NOT REQUIRED FOR THE GIVEN DATABASE SCHEMA.
+
 */
 function tagPopulator() {
   var firebaseUrl = "https://projectnow-964ba.firebaseio.com/";
