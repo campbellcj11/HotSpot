@@ -86,31 +86,31 @@ export default class EventCell extends Component {
       <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
         <View style={styles.container}>
             <Image source={{uri: this.props.eventInfo.Image || ''}} style={styles.image}>
-              <View style={{flex:1,backgroundColor:'#00000080'}}>
+              <View style={{flex:1,backgroundColor:'#00000030'}}>
                 <View style={{flex: this.props.large ? .85:.7,padding:5}}>
-                  <Text style={{flex: this.props.large ? .05:.20,fontFamily:'Nexa Bold',fontSize: this.props.large ? 10:8,color:'white'}}>{this.props.eventInfo.Location}</Text>
-                  <Text style={{flex: .80,fontFamily:'Nexa Bold',fontSize: this.props.large ? 18:14,color:'white'}}>{this.props.eventInfo.Event_Name}</Text>
+                  <Text style={{flex: this.props.large ? .08:.20,fontFamily:'HelveticaNeue-Bold',fontSize: this.props.large ? 10:8,color:'white'}}>{this.props.eventInfo.Location}</Text>
+                  <Text style={{flex: .80,fontFamily:'HelveticaNeue-Bold',fontSize: this.props.large ? 24:14,color:'white'}}>{this.props.eventInfo.Event_Name}</Text>
                 </View>
                 <View style={{flex: this.props.large ? .15:.3,flexDirection:'row'}}>
-                  <View style={{flex: .5,paddingLeft:3,alignItems:'flex-start',justifyContent:'center'}}>
-                    <Text style={{backgroundColor:'#C123E2',fontFamily:'Nexa Bold',padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag}</Text>
+                  <View style={{flex: .6,paddingLeft:3,alignItems:'flex-start',justifyContent:'center'}}>
+                    <Text style={{backgroundColor:'#095BA9',fontFamily:'HelveticaNeue-Bold',padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag.toUpperCase()}</Text>
                   </View>
-                  <View style={{flex: .4}}>
+                  <View style={{flex: .3}}>
                   </View>
                   {
                     !this.props.partOfFavorites ?
-                      <View style={{flex: .1}}>
-                        {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{padding:10,width:this.props.large ? 30:15,height:this.props.large ? 30:15}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:this.props.large ? 30:15,height:this.props.large ? 30:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
+                      <View style={{flex: .1,alignItems:'center',justifyContent:'center'}}>
+                        {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{width:this.props.large ? 30:15,height:this.props.large ? 30:15}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:this.props.large ? 15:15,height:this.props.large ? 15:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
                       </View>
                     : null
                   }
                 </View>
               </View>
             </Image>
-            <View style={{flex:.35}}>
+            <View style={{flex:.5}}>
               <View style={{flex:.3}}>
-                <Text style={{paddingLeft:5,flex: this.props.large ? .15:.40,fontFamily:'Nexa Bold',fontSize:16}}>{this.date}</Text>
-                <Text style={{flex: this.props.large ? .85:.60,fontFamily:'Nexa Light',fontSize:14,paddingLeft:5,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
+                <Text style={{paddingLeft:5,flex: this.props.large ? .15:.40,fontFamily:'HelveticaNeue-Bold',fontSize:16}}>{this.date}</Text>
+                <Text ellipsizeMode={'tail'} numberOfLines={0} style={{flex: this.props.large ? .85:.60,fontFamily:'HelveticaNeue-Light',fontSize:14,lineHeight:18,paddingLeft:5,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
               </View>
             </View>
         </View>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
   },
   image: {
     backgroundColor:'transparent',
-    flex:.65,
+    flex:.5,
     resizeMode: 'cover',
     marginBottom: 10,
   },

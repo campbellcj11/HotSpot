@@ -14,6 +14,7 @@ import {
   StatusBar,
   WebView,
   Linking,
+  ScrollView,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -28,6 +29,8 @@ export default class EventCard extends Component {
 
     this.state = {
       transparent: true,
+      latitude: this.props.currentSelection.latitude,
+      longitude: this.props.currentSelection.longitude,
     }
     this.determineLatAndLong();
   }
@@ -43,6 +46,26 @@ export default class EventCard extends Component {
   determineLatAndLongFromAddress()
   {
     console.log('LAT AND LONG from Address');
+    var obj = {}
+    var string = 'https://maps.googleapis.com/maps/api/geocode/json?&address="'+this.props.currentSelection.Address+'"';//baseURL + 'api/v1/workflows/'+workflow_ID+'/tasks/'+task_ID;
+    console.log("Fetch url: ",string);
+    fetch(string,obj)
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseJson) => {
+      console.log('RAH: ',responseJson);
+      console.log('Lat: ',responseJson.results[0].geometry.location.lat);
+      console.log('Long: ',responseJson.results[0].geometry.location.lng);
+
+      var lat = responseJson.results[0].geometry.location.lat;
+      var lng = responseJson.results[0].geometry.location.lng;
+      this.setState({latitude:lat,longitude:lng});
+      return responseJson;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
   componentWillMount() {
 
@@ -81,10 +104,11 @@ export default class EventCard extends Component {
     dateYear = this.props.currentSelection.Date.getUTCFullYear();
 
     var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
-    return(
+
+  return(
         <View style={styles.container}>
-          <Image style={styles.image} source={{uri:this.props.currentSelection.Image}}>
-            <View style={{flex:1,backgroundColor:'#00000099'}}>
+          <Image resizeMode={'cover'} style={styles.image} source={{uri:this.props.currentSelection.Image}}>
+            {/*<View style={{flex:1,backgroundColor:'#00000099'}}>
               <View style={{flex:.9}}>
                 <View style={{flex:.3}}>
                   <View style={styles.dateView}>
@@ -95,26 +119,29 @@ export default class EventCard extends Component {
               </View>
               <View style={{flex:.1}}>
               </View>
-            </View>
+            </View>*/}
           </Image>
           <View key={'Middle View'} style={styles.middleView}>
-            <View style={{flex:.5,flexDirection:'row',borderBottomWidth:1,borderBottomColor:'#7358D1'}}>
-              <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:'#7358D1'}}>
-                <Text style={{color:'#7358D1'}}>{this.props.currentSelection.Location}</Text>
+            <View style={{flex:.15,flexDirection:'row',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+              <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:'#095BA9'}}>
+                <Text style={styles.dateNumberText}> {dateString} </Text>
               </View>
               <View style={{flex:.5,justifyContent:'center',alignItems:'center'}}>
-                <Button style={{flex:1}} textStyle={{color:'#7358D1',textAlign:'center'}} onPress={() => this.openURL(this.props.currentSelection.Website)}>{this.props.currentSelection.Website}</Button>
+                <Text style={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,}}>{this.props.currentSelection.Location}</Text>
               </View>
             </View>
-            <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#7358D1'}}>
-              <Button style={{flex:1}} textStyle={{color:'#7358D1',textAlign:'center'}} onPress={() => this.openMap()}>{this.props.currentSelection.Address}</Button>
+            <View style={{flex:.15,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+              <Button style={{flex:1}} textStyle={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,textAlign:'center'}} onPress={() => this.openURL(this.props.currentSelection.Website)}>{this.props.currentSelection.Website}</Button>
             </View>
+            <ScrollView style={{flex:.7,borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+              <Text style={{flex:.7,padding:5,color:'black',fontFamily:'HelveticaNeue-Light',fontSize:14,lineHeight:18}}>{this.props.currentSelection.Long_Description}</Text>
+            </ScrollView>
           </View>
           <View key={'Bottom View'} style={styles.bottomView}>
             <MapView
                initialRegion={{
-                 latitude: this.props.currentSelection.latitude,
-                 longitude: this.props.currentSelection.longitude,
+                 latitude: this.state.latitude,
+                 longitude: this.state.longitude,
                  latitudeDelta: 0.0922,
                  longitudeDelta: 0.0421,
                }}
@@ -127,15 +154,12 @@ export default class EventCard extends Component {
                <MapView.Marker
                  title="This is a title"
                  description="This is a description"
-                 coordinate={{latitude: this.props.currentSelection.latitude,longitude: this.props.currentSelection.longitude,latitudeDelta: 0.0922,longitudeDelta: 0.0421}}
+                 coordinate={{latitude: this.state.latitude,longitude: this.state.longitude,latitudeDelta: 0.0922,longitudeDelta: 0.0421}}
                />
-               <View style={{flex:.5,flexDirection:'row'}}>
-                 <View style={{flex:.5,backgroundColor:'transparent'}}>
-                 </View>
-                 <View style={{flex:.5,backgroundColor:'transparent'}}>
-                 </View>
+               <View style={{flex:.3,flexDirection:'row',backgroundColor:'#00000099'}}>
+                  <Button style={{flex:1}} textStyle={{color:'white',textAlign:'center'}} onPress={() => this.openMap()}>{this.props.currentSelection.Address}</Button>
                </View>
-               <View style={{flex:.5,flexDirection:'row'}}>
+               <View style={{flex:.7,flexDirection:'row'}}>
                  {/*
                    <View style={{flex:.5,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
                     <Text style={{textAlign:'center',color:'#45C3AB',fontFamily:'Futura-Medium',fontSize:15}}>+4{'\n'}Checkins</Text>
@@ -158,14 +182,14 @@ const styles = StyleSheet.create({
     bottom: 45,
   },
   image: {
-    flex:.35,
+    flex:.25,
   },
   middleView: {
-    flex:.25,
+    flex:.5,
     backgroundColor:'white',
   },
   bottomView: {
-    flex:.2,
+    flex:.25,
     flexDirection:'row',
   },
   dateView: {
@@ -173,9 +197,9 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   dateNumberText: {
-    color: 'white',
-    fontFamily: 'Nexa Bold',
-    fontSize: 18,
+    color: '#095BA9',
+    fontFamily: 'HelveticaNeue-Light',
+    fontSize: 16,
     margin: 5,
     textAlign: 'center',
   },

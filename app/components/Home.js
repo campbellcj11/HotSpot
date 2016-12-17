@@ -54,6 +54,7 @@ export default class Home extends Component {
   }
 
   componentWillMount() {
+    this.props.loadUserData();
     this.listenForItems(this.itemsRef);
   }
 
@@ -325,6 +326,7 @@ export default class Home extends Component {
     console.log('PROPS!')
     console.log(this.props)
     let user, readonlyMessage, viewToShow
+    //if(firebase.auth().currentUser)
     if(this.props.loggedIn && this.props.user != {})
     {
       user = this.props.user

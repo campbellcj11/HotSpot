@@ -6,6 +6,7 @@ import {
   LOGGING_IN,
   LOGGING_OUT,
   SIGNING_UP,
+  LOAD_USER_DATA,
 } from '../actions/userActions'
 
 import offline from 'react-native-simple-store'
@@ -53,6 +54,11 @@ export default function reducer(state = initialState, action) {
       ...state,
       loggedIn: true,
       user: action.currentUser,
+    }
+  case LOAD_USER_DATA:
+    return {
+      ...state,
+      user: action.user,
     }
   default:
     return state

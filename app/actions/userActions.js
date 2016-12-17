@@ -18,6 +18,7 @@ export const SIGN_UP = 'SIGN_UP';
 export const SIGNING_UP = 'SIGNING_UP'
 export const LOGGING_IN = 'LOGGING_IN';
 export const LOGGING_OUT = 'LOGGING_OUT';
+export const LOAD_USER_DATA = 'LOAD_USER_DATA';
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -76,6 +77,18 @@ export function stateResetPassword() {
   return { type: RESET_PASSWORD };
 }
 
+export function loadUserData(){
+  return dispatch => { offline.get('user').then((user) => {
+    dispatch(userDataLoaded(user || {}))
+  })}
+}
+
+function userDataLoaded(user) {
+  return {
+    type: LOAD_USER_DATA,
+    user: user
+  }
+}
 /*
 This function logs a user in to firebase and when successful, it will
 update the last login field in the database under the specified user. This
