@@ -17,7 +17,7 @@ import {
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
-import backgroundImage from '../images/City-Dark.png'
+import backgroundImage from '../images/City-Light.png'
 import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
@@ -245,11 +245,11 @@ export default class Home extends Component {
           visible={!this.props.loggedIn}
       >
         <View style={{flexDirection:'row'}}>
-            <LinearGradient colors={['#3023AE', '#C86DD7']} style={styles.linearGradient}>
+            <LinearGradient colors={['#095AA8', '#04FFC0']} style={styles.linearGradient}>
               <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
               <Text style={styles.title}>
                 Project
-                <Text style={[styles.title,{color:'#FFF907'}]}>
+                <Text style={[styles.title,{color:'#04FFC0'}]}>
                   Now
                 </Text>
               </Text>
@@ -305,16 +305,16 @@ export default class Home extends Component {
     console.log('AHH PROPS!')
     console.log(props)
     return(
-      <View style={{flex:1,backgroundColor:'#261851',position:'absolute',top:0,left:0,right:0,height:64}}>
+      <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:64}}>
         <View style={{top:20,flexDirection:'row'}}>
           <View style={{flex:.2}}/>
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'#FFF907',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
+            <Text style={{color:'#04FFC0',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
           </View>
             <Button
             style={{flex:.2}}
             //onPress={() => props.logoutUser()}
-            textStyle={{color:'#FFF907',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
+            textStyle={{color:'#04FFC0',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
             {/*Logout*/}
           </Button>
         </View>
@@ -425,13 +425,13 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     top: 85,
-    backgroundColor: '#C123E2',
+    backgroundColor: '#50E3C2',
     height: 50,
     marginLeft:20,
     marginRight: 20,
     borderWidth: 2,
     borderRadius: 25,
-    borderColor: '#D200FF',
+    borderColor: '#22FFCC',
   },
   loginBlankButton: {
     top: 85,

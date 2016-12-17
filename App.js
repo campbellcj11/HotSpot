@@ -21,7 +21,7 @@ class TabIcon extends Component {
     render(){
       console.log('Tab Icon Props: ', this.props);
       var iconName = this.props.iconName || 'rocket';
-      var color = this.props.selected ? '#FFF907' : 'white';
+      var color = this.props.selected ? '#04FFC0' : 'white';
         return (
             <View style={{alignItems:'center'}}>
               <Image source={this.props.image} style={{tintColor: color,resizeMode: 'cover',marginBottom:5,width: 25, height: 25,}}/>
@@ -37,7 +37,7 @@ class App extends Component {
       <Provider store={store}>
         <Router>
         <Scene key="root">
-          <Scene key="tabbar" tabs={true} initial={true} tabBarStyle={{backgroundColor:'#261851'}}>
+          <Scene key="tabbar" tabs={true} initial={true} tabBarStyle={{backgroundColor:'#0E476A'}}>
               <Scene key="tab1" title="Now" image={icon1} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
                 <Scene key="tab1_1" component={Home} title="Now" />
                 <Scene key="Event" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
@@ -63,11 +63,11 @@ AppRegistry.registerComponent('ProjectNow', () => App)
 
 var styles = StyleSheet.create({
   navigationBarStyle: {
-    backgroundColor:'#261851',
+    backgroundColor:'#0E476A',
     borderBottomWidth: 0,
   },
   navigationBarTextStyle: {
-    color:'#FFF907',
+    color:'#04FFC0',
     fontSize:20,
   },
   baseBoldFontStyle:

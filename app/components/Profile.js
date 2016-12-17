@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
-import backgroundImage from '../images/City-Dark.png'
+import backgroundImage from '../images/City-Light.png'
 import * as firebase from 'firebase';
 import UserLocation from './UserLocation';
 import {
@@ -42,7 +42,7 @@ export default class Profile extends Component {
   render() {
     return(
        <View style={styles.container}>
-         <LinearGradient colors={['#3023AE', '#C86DD7']} style={styles.linearGradient}>
+         <LinearGradient colors={['#095AA8', '#04FFC0']} style={styles.linearGradient}>
          <Image source={backgroundImage} style={styles.backgroundImage}/>
           <View style={styles.profileContainer}>
             <View style={{flex:1, borderBottomWidth:2, borderBottomColor:'black'}}>
