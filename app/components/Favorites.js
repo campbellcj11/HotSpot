@@ -82,7 +82,7 @@ export default class Favorites extends Component {
           ref.on('value', (snap) => {
             var today = new Date();
             var timeUTC = today.getTime();
-            if (snap.val().Sort_Date >= timeUTC) {
+            if (snap.val().Date >= timeUTC) {
               items.push({
                 Key : snap.key,
                 Event_Name: snap.val().Event_Name,
@@ -97,7 +97,6 @@ export default class Favorites extends Component {
                 Address: snap.val().Address,
                 Website: snap.val().Website,
                 MainTag: Tags ? Tags[0]:[],
-                Sort_Date: snap.val().Sort_Date,
               });
             }
           });
@@ -108,7 +107,7 @@ export default class Favorites extends Component {
       var today = new Date();
       var timeUTC = today.getTime();
       items.sort(function(a, b){
-        return a.Sort_Date-b.Sort_Date
+        return a.Date-b.Date
       })
 
       this.setState({
