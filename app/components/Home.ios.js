@@ -13,6 +13,7 @@ import {
   Alert,
   StatusBar,
   ScrollView,
+  Platform,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -29,7 +30,7 @@ import EventCard from './EventCard'
 import EventPage from './EventPage'
 import Swiper from 'react-native-swiper';
 
-const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
 const CARD_WIDTH = width;
 const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
@@ -258,17 +259,19 @@ export default class Home extends Component {
                   ref='email'
                   onChangeText={(email) => this.setState({email})}
                   placeholder='Email'
-                  placeholderTextColor='#D3C6E2'>
+                  placeholderTextColor='#D3C6E2'
+                  underlineColorAndroid='transparent'>
                 </TextInput>
               </View>
 
-              <View style={styles.userNameView}>
+              <View style={styles.passwordView}>
                 <TextInput style={styles.userNameTextInput}
                   secureTextEntry={!this.state.isSignUp}
                   ref='password'
                   onChangeText={(password) => this.setState({password})}
                   placeholder='Password'
-                  placeholderTextColor='#D3C6E2'>
+                  placeholderTextColor='#D3C6E2'
+                  underlineColorAndroid='transparent'>
                 </TextInput>
               </View>
               <Button
@@ -291,7 +294,7 @@ export default class Home extends Component {
               </Button>
               <Button
                 onPress={() => this._openSignupPage()}
-                style={styles.signinBlankButton}
+                style={styles.signupBlankButton}
                 textStyle={styles.buttonBlankText}>
                 {signUpButtonText}
               </Button>
@@ -305,8 +308,8 @@ export default class Home extends Component {
     console.log('AHH PROPS!')
     console.log(props)
     return(
-      <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:64}}>
-        <View style={{top:20,flexDirection:'row'}}>
+      <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
+        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
           <View style={{flex:.2}}/>
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
             <Text style={{color:'#04FFC0',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
@@ -422,10 +425,10 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     width: width,
-    height: height,
+    height: Platform.OS == 'ios' ? height : height-20,
   },
   loginButton: {
-    top: 85,
+    marginTop: 5,
     backgroundColor: '#50E3C2',
     height: 50,
     marginLeft:20,
@@ -433,44 +436,45 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 25,
     borderColor: '#22FFCC',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   loginBlankButton: {
-    top: 85,
+    marginTop: 5,
     backgroundColor: 'transparent',
     height: 50,
     marginLeft: width*.2,
     marginRight: width*.2,
   },
-  signinBlankButton: {
+  signupBlankButton: {
     position: 'absolute',
-    top: height*.95,
+    bottom: 0,
     backgroundColor: 'transparent',
-    height: height*.05,
+    height: 44,
     left: width*.2,
     right: width*.2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   forgotPasswordBlankButton: {
-    top: 85,
     backgroundColor: 'transparent',
     height: 30,
     marginLeft: width*.2,
     marginRight: width*.2,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   forgotPasswordText: {
     color: 'white',
     fontSize: 10,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
-    height: 30,
-    lineHeight: 30,
   },
   buttonBlankText: {
     color: 'white',
     fontSize: 15,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
-    height: 50,
-    lineHeight: 50,
   },
   bottomBar: {
     position: 'absolute',
@@ -494,27 +498,33 @@ const styles = StyleSheet.create({
     fontSize: 20,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
-    height: 50,
-    lineHeight: 50,
     backgroundColor: 'transparent',
   },
   title: {
     color: 'white',
     backgroundColor: 'transparent',
-    top: 55,
+    marginTop: Platform.OS == 'ios' ? 55 : 45,
     height: 55,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
     fontSize: 36,
+    marginBottom: Platform.OS == 'ios' ? 40 : 30,
   },
   userNameView: {
     backgroundColor:'#7148BC22',
     height: 50,
-    top: 100,
     marginLeft:20,
     marginRight: 20,
     flexDirection: 'row',
     marginBottom: 15,
+  },
+  passwordView: {
+    backgroundColor:'#7148BC22',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    flexDirection: 'row',
+    marginBottom: 5,
   },
   userNameTextInput: {
     flex: .85,

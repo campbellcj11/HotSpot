@@ -13,12 +13,15 @@ import {
   TouchableHighlight,
   Alert,
   StatusBar,
+  Platform,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 var {height, width} = Dimensions.get('window');
 import heartImage from '../images/favorite-heart-button.png'
+import styleVariables from '../Utils/styleVariables'
+
 var eventActions = require("../actions/eventActions.js");
 
 
@@ -85,15 +88,15 @@ export default class EventCell extends Component {
     return (
       <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
         <View style={styles.container}>
-            <Image source={{uri: this.props.eventInfo.Image || ''}} style={styles.image}>
+            <Image source={{uri: this.props.eventInfo.Image || ''}} style={[styles.image,{marginBottom:this.props.large ? 10:5}]}>
               <View style={{flex:1,backgroundColor:'#00000030'}}>
                 <View style={{flex: this.props.large ? .85:.7,padding:5}}>
-                  <Text style={{flex: this.props.large ? .08:.20,fontFamily:'HelveticaNeue-Bold',fontSize: this.props.large ? 10:8,color:'white'}}>{this.props.eventInfo.Location}</Text>
-                  <Text style={{flex: .80,fontFamily:'HelveticaNeue-Bold',fontSize: this.props.large ? 24:14,color:'white'}}>{this.props.eventInfo.Event_Name}</Text>
+                  <Text style={{flex: this.props.large ? .08:.20,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 10:8,color:'white'}}>{this.props.eventInfo.Location}</Text>
+                  <Text style={{flex: .80,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 24:14,color:'white'}}>{this.props.eventInfo.Event_Name}</Text>
                 </View>
                 <View style={{flex: this.props.large ? .15:.3,flexDirection:'row'}}>
                   <View style={{flex: .6,paddingLeft:3,alignItems:'flex-start',justifyContent:'center'}}>
-                    <Text style={{backgroundColor:'#095BA9',fontFamily:'HelveticaNeue-Bold',padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag.toUpperCase()}</Text>
+                    <Text style={{backgroundColor:'#095BA9',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag.toUpperCase()}</Text>
                   </View>
                   <View style={{flex: .3}}>
                   </View>
@@ -109,8 +112,8 @@ export default class EventCell extends Component {
             </Image>
             <View style={{flex:.5}}>
               <View style={{flex:.3}}>
-                <Text style={{paddingLeft:5,flex: this.props.large ? .15:.40,fontFamily:'HelveticaNeue-Bold',fontSize:16}}>{this.date}</Text>
-                <Text ellipsizeMode={'tail'} numberOfLines={0} style={{flex: this.props.large ? .85:.60,fontFamily:'HelveticaNeue-Light',fontSize:14,lineHeight:18,paddingLeft:5,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
+                <Text style={{paddingLeft:5,flex: this.props.large ? .15:.25,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize:16,color:'black'}}>{this.date}</Text>
+                <Text ellipsizeMode={'tail'} numberOfLines={0} style={{flex: this.props.large ? .85:.75,fontFamily:styleVariables.systemLightFont,fontSize:14,lineHeight:18,paddingLeft:5,paddingRight:5,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
               </View>
             </View>
         </View>
@@ -157,7 +160,7 @@ const styles = StyleSheet.create({
     backgroundColor:'transparent',
     flex:.5,
     resizeMode: 'cover',
-    marginBottom: 10,
+
   },
 
 })

@@ -15,6 +15,7 @@ import {
   WebView,
   Linking,
   ScrollView,
+  Platform,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -177,8 +178,8 @@ export default class EventCard extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    top: 64,
-    height: height - 64 - 45,
+    top: Platform.OS == 'ios' ? 64:44,
+    height: height - (Platform.OS == 'ios' ? 64:44) - 45,
     bottom: 45,
   },
   image: {
