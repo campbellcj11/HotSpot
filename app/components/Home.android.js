@@ -177,7 +177,7 @@ export default class Home extends Component {
     // this.setState({currentSelection:rowData});
     // this.setState({hasCurrentSelection:true});
 
-    Actions.Event({title:rowData.Event_Name,currentSelection:rowData});
+    Actions.Event({title:'',currentSelection:rowData});
   }
   _closeSelection(){
     this.setState({currentSelection:{}});
@@ -249,9 +249,9 @@ export default class Home extends Component {
             <LinearGradient colors={['#095AA8', '#04FFC0']} style={styles.linearGradient}>
               <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
               <Text style={styles.title}>
-                Project
+                Hot
                 <Text style={[styles.title,{color:'#04FFC0'}]}>
-                  Now
+                  Spot
                 </Text>
               </Text>
               <View style={styles.userNameView}>

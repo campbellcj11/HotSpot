@@ -16,11 +16,23 @@ import {
   Linking,
   ScrollView,
   Platform,
+  Animated,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
+import BlankButton from './BlankButton'
 import { Actions } from 'react-native-router-flux';
 import MapView from 'react-native-maps';
+import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import styleVariables from '../Utils/styleVariables'
+import phoneImage from '../images/phone-receiver.png'
+import webImage from '../images/web.png'
+import emailImage from '../images/close-envelope.png'
+import clockImage from '../images/time.png'
+import pinImage from '../images/placeholder.png'
+import dollarImage from '../images/coin-icon.png'
+import infoImage from '../images/interface.png'
+
 var {height, width} = Dimensions.get('window');
 
 
@@ -30,10 +42,11 @@ export default class EventCard extends Component {
 
     this.state = {
       transparent: true,
-      latitude: this.props.currentSelection.latitude,
-      longitude: this.props.currentSelection.longitude,
+      // latitude: this.props.currentSelection.latitude,
+      // longitude: this.props.currentSelection.longitude,
+      scrollY: 0,
     }
-    this.determineLatAndLong();
+    // this.determineLatAndLong();
   }
 
   determineLatAndLong()
@@ -71,9 +84,9 @@ export default class EventCard extends Component {
   componentWillMount() {
 
   }
-  openURL(sentURL)
+  openURL()
   {
-    var uriString = 'http://' + sentURL;
+    var uriString = 'http://' + this.props.currentSelection.Website;
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
   openMap()
@@ -85,6 +98,9 @@ export default class EventCard extends Component {
     var dateNumber;
     var dateMonth;
     var dateYear;
+    var dayOfWeek;
+    var dateTimeString;
+    var addressString;
 
     var months = new Array();
     months[0] = "January";
@@ -100,78 +116,87 @@ export default class EventCard extends Component {
     months[10] = "November";
     months[11] = "December";
 
+    var days = new Array();
+    days[0] = "Sunday";
+    days[1] = "Monday";
+    days[2] = "Tuesday";
+    days[3] = "Wednesday";
+    days[4] = "Thursday";
+    days[5] = "Friday";
+    days[6] = "Saturday";
+
     dateMonth = months[this.props.currentSelection.Date.getMonth()];
     dateNumber = this.props.currentSelection.Date.getDate();
     dateYear = this.props.currentSelection.Date.getUTCFullYear();
 
     var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
 
+    dayOfWeek = days[this.props.currentSelection.Date.getDay()];
+
+    dateTimeString = dayOfWeek + ' at 6:30p';
+
+    addressString = this.props.currentSelection.Address;
+
   return(
-        <View style={styles.container}>
-          <Image resizeMode={'cover'} style={styles.image} source={{uri:this.props.currentSelection.Image}}>
-            {/*<View style={{flex:1,backgroundColor:'#00000099'}}>
-              <View style={{flex:.9}}>
-                <View style={{flex:.3}}>
-                  <View style={styles.dateView}>
-                    <Text style={styles.dateNumberText}> {dateString} </Text>
-                  </View>
-                </View>
-                <Text style={{flex:.7,padding:5,color:'white',fontFamily:'Futura-Medium',fontSize:14}}>{this.props.currentSelection.Long_Description}</Text>
-              </View>
-              <View style={{flex:.1}}>
-              </View>
-            </View>*/}
+    <View style={styles.container}>
+      <ParallaxScrollView
+        renderBackground={() => (
+          <Image resizeMode={'cover'} style={{width:width,height:height*.15}} source={{uri:this.props.currentSelection.Image}}>
+            <View style={{flex:1,backgroundColor:'#00000030'}}>
+              <Text style={{backgroundColor:'transparent',color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.Event_Name}</Text>
+              <Text style={{backgroundColor:'#095BA9',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
+            </View>
           </Image>
-          <View key={'Middle View'} style={styles.middleView}>
-            <View style={{flex:.15,flexDirection:'row',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
-              <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:'#095BA9'}}>
-                <Text style={styles.dateNumberText}> {dateString} </Text>
-              </View>
-              <View style={{flex:.5,justifyContent:'center',alignItems:'center'}}>
-                <Text style={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,}}>{this.props.currentSelection.Location}</Text>
-              </View>
-            </View>
-            <View style={{flex:.15,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
-              <Button style={{flex:1}} textStyle={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,textAlign:'center'}} onPress={() => this.openURL(this.props.currentSelection.Website)}>{this.props.currentSelection.Website}</Button>
-            </View>
-            <ScrollView style={{flex:.7,borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
-              <Text style={{flex:.7,padding:5,color:'black',fontFamily:'HelveticaNeue-Light',fontSize:14,lineHeight:18}}>{this.props.currentSelection.Long_Description}</Text>
-            </ScrollView>
+        )}
+        parallaxHeaderHeight={height*.15}
+      >
+        <View>
+          <View style={{height:55,flexDirection:'row',marginLeft:30,marginRight:30}}>
+            <ImageButton style={{flex:.33}} image={phoneImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
+            <ImageButton style={{flex:.33}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} onPress={() => this.openURL()}/>
+            <ImageButton style={{flex:.33}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
           </View>
-          <View key={'Bottom View'} style={styles.bottomView}>
-            <MapView
-               initialRegion={{
-                 latitude: this.state.latitude,
-                 longitude: this.state.longitude,
-                 latitudeDelta: 0.0922,
-                 longitudeDelta: 0.0421,
-               }}
-               style={{flex:1}}
-               scrollEnabled={false}
-               zoomEnabled={false}
-               pitchEnabled={false}
-               rotateEnabled={false}
-             >
-               <MapView.Marker
-                 title="This is a title"
-                 description="This is a description"
-                 coordinate={{latitude: this.state.latitude,longitude: this.state.longitude,latitudeDelta: 0.0922,longitudeDelta: 0.0421}}
-               />
-               <View style={{flex:.3,flexDirection:'row',backgroundColor:'#00000099'}}>
-                  <Button style={{flex:1}} textStyle={{color:'white',textAlign:'center'}} onPress={() => this.openMap()}>{this.props.currentSelection.Address}</Button>
-               </View>
-               <View style={{flex:.7,flexDirection:'row'}}>
-                 {/*
-                   <View style={{flex:.5,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-                    <Text style={{textAlign:'center',color:'#45C3AB',fontFamily:'Futura-Medium',fontSize:15}}>+4{'\n'}Checkins</Text>
-                   </View>
-                 */}
-                 <View style={{flex:.5}}>
-                 </View>
-               </View>
-           </MapView>
+          <View style={{marginTop:5}}>
+
+            <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
+              <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={clockImage}/>
+              <View style={{marginRight:42}}>
+                <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
+                <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{dateString}</Text>
+              </View>
+            </View>
+
+            <BlankButton style={{marginBottom:20}} onPress={() => this.openMap()}>
+              <View style={{flexDirection:'row',alignItems:'center',}}>
+                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={pinImage}/>
+                <View style={{marginRight:42}}>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{this.props.currentSelection.Location}</Text>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{addressString}</Text>
+                </View>
+              </View>
+            </BlankButton>
+
+            <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
+              <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={dollarImage}/>
+              <View style={{marginRight:42}}>
+                <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>$-$$</Text>
+              </View>
+            </View>
+
+            <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
+              <View stlye={{flex:1}}>
+                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={infoImage}/>
+                <View style={{flex:2}}/>
+              </View>
+              <View style={{marginRight:42,flex:1}}>
+                <Text numberOfLines={0} style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:12,lineHeight:16,color:'#C6C6C6'}}>{this.props.currentSelection.Long_Description}</Text>
+              </View>
+            </View>
+
           </View>
         </View>
+      </ParallaxScrollView>
+    </View>
     )
   }
 }
@@ -252,25 +277,53 @@ const styles = StyleSheet.create({
   },
 })
 
-//This code goes in the bottomView where the map is with the purpose of being split
-// <View style={{flex:.5}}>
-//   <View style={{flex:.5,flexDirection:'row'}}>
-//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-//       <View style={{flex:1,backgroundColor:'#00000030'}}>
-//       </View>
+//This code goes here
+// <View key={'Middle View'} style={styles.middleView}>
+//   <View style={{flex:.15,flexDirection:'row',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+//     <View style={{flex:.5,justifyContent:'center',alignItems:'center',borderRightWidth:1,borderRightColor:'#095BA9'}}>
+//       <Text style={styles.dateNumberText}> {dateString} </Text>
 //     </View>
-//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-//       <View style={{flex:1,backgroundColor:'#00000010'}}>
-//       </View>
+//     <View style={{flex:.5,justifyContent:'center',alignItems:'center'}}>
+//       <Text style={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,}}>{this.props.currentSelection.Location}</Text>
 //     </View>
 //   </View>
-//   <View style={{flex:.5,flexDirection:'row'}}>
-//     <View style={{flex:.5,backgroundColor:'#45C3AB'}}>
-//       <View style={{flex:1,backgroundColor:'#00000050'}}>
-//       </View>
-//     </View>
-//     <View style={{flex:.5,backgroundColor:'#45C3AB',justifyContent:'center',alignItems:'center'}}>
-//       <Text style={{textAlign:'center',color:'white',fontFamily:'Futura-Medium',fontSize:15}}>+12{'\n'}People</Text>
-//     </View>
+//   <View style={{flex:.15,justifyContent:'center',alignItems:'center',borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+//     <Button style={{flex:1}} textStyle={{color: '#095BA9',fontFamily: 'HelveticaNeue-Light',fontSize: 16,textAlign:'center'}} onPress={() => this.openURL(this.props.currentSelection.Website)}>{this.props.currentSelection.Website}</Button>
 //   </View>
+//   <ScrollView style={{flex:.7,borderBottomWidth:1,borderBottomColor:'#095BA9'}}>
+//     <Text style={{flex:.7,padding:5,color:'black',fontFamily:'HelveticaNeue-Light',fontSize:14,lineHeight:18}}>{this.props.currentSelection.Long_Description}</Text>
+//   </ScrollView>
+// </View>
+// <View key={'Bottom View'} style={styles.bottomView}>
+//   <MapView
+//      initialRegion={{
+//        latitude: this.state.latitude,
+//        longitude: this.state.longitude,
+//        latitudeDelta: 0.0922,
+//        longitudeDelta: 0.0421,
+//      }}
+//      style={{flex:1}}
+//      scrollEnabled={false}
+//      zoomEnabled={false}
+//      pitchEnabled={false}
+//      rotateEnabled={false}
+//    >
+//      <MapView.Marker
+//        title="This is a title"
+//        description="This is a description"
+//        coordinate={{latitude: this.state.latitude,longitude: this.state.longitude,latitudeDelta: 0.0922,longitudeDelta: 0.0421}}
+//      />
+//      <View style={{flex:.3,flexDirection:'row',backgroundColor:'#00000099'}}>
+//         <Button style={{flex:1}} textStyle={{color:'white',textAlign:'center'}} onPress={() => this.openMap()}>{this.props.currentSelection.Address}</Button>
+//      </View>
+//      <View style={{flex:.7,flexDirection:'row'}}>
+//        {/*
+//          <View style={{flex:.5,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+//           <Text style={{textAlign:'center',color:'#45C3AB',fontFamily:'Futura-Medium',fontSize:15}}>+4{'\n'}Checkins</Text>
+//          </View>
+//        */}
+//        <View style={{flex:.5}}>
+//        </View>
+//      </View>
+//  </MapView>
 // </View>

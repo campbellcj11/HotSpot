@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import {
   StyleSheet,
   Text,
+  TextInput,
   View,
   TouchableHighlight,
-  Image,
 } from 'react-native'
 
-export default class ImageButton extends Component {
+export default class Button extends Component {
   state = {
     active: false,
   };
@@ -21,6 +21,9 @@ export default class ImageButton extends Component {
   };
 
   render() {
+    var colorStyle = {
+      color: this.state.active ? '#fff' : '#000',
+    };
     return (
       <TouchableHighlight
         onHideUnderlay={this._onUnhighlight}
@@ -28,7 +31,7 @@ export default class ImageButton extends Component {
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
         underlayColor="#00000010">
-          <Image style={[styles.buttonImage,this.props.imageStyle]} source={this.props.image}/>
+          {this.props.children}
       </TouchableHighlight>
     );
   }
@@ -36,9 +39,14 @@ export default class ImageButton extends Component {
 
 var styles = StyleSheet.create({
   button: {
+    height: 44,
+    alignSelf: 'stretch',
     justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
   },
-  buttonImage: {
+  buttonText: {
+    fontSize: 18,
+    margin: 5,
+    textAlign: 'center',
   },
 });
