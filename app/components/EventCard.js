@@ -24,6 +24,7 @@ import BlankButton from './BlankButton'
 import { Actions } from 'react-native-router-flux';
 import MapView from 'react-native-maps';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
+import HTMLView from 'react-native-htmlview'
 import styleVariables from '../Utils/styleVariables'
 import phoneImage from '../images/phone-receiver.png'
 import webImage from '../images/web.png'
