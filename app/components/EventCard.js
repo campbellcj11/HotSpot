@@ -86,7 +86,7 @@ export default class EventCard extends Component {
   }
   openURL()
   {
-    var uriString = 'http://' + this.props.currentSelection.Website;
+    var uriString = this.props.currentSelection.Website;
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
   openMap()
