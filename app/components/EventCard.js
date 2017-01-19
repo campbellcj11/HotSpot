@@ -99,8 +99,13 @@ export default class EventCard extends Component {
     var dateMonth;
     var dateYear;
     var dayOfWeek;
+    var dateHour;
+    var dateMinute;
     var dateTimeString;
+    var timeString;
+    var minuteString;
     var addressString;
+    var remainingTimeString;
 
     var months = new Array();
     months[0] = "January";
@@ -128,15 +133,80 @@ export default class EventCard extends Component {
     dateMonth = months[this.props.currentSelection.Date.getMonth()];
     dateNumber = this.props.currentSelection.Date.getDate();
     dateYear = this.props.currentSelection.Date.getUTCFullYear();
+    dateHour = this.props.currentSelection.Date.getHours();
+    dateMinute = this.props.currentSelection.Date.getMinutes();
+
+    minuteString = dateMinute;
+    if(dateMinute < 10)
+    {
+      minuteString = '0' + dateMinute;
+    }
+
+    timeString = ' at ' + dateHour + ':' + minuteString + 'a';
+    if(dateHour > 12)
+    {
+      dateHour = dateHour % 12;
+      timeString = ' at ' + dateHour + ':' + minuteString + 'p';
+    }
 
     var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
 
     dayOfWeek = days[this.props.currentSelection.Date.getDay()];
 
-    dateTimeString = dayOfWeek + ' at 6:30p';
+    dateTimeString = dayOfWeek + timeString;
 
     addressString = this.props.currentSelection.Address;
 
+    var currentDate = new Date();
+    var diff = this.props.currentSelection.Date - currentDate;
+    var seconds = diff/1000;
+    var minutes = seconds/60;
+    var hours = minutes/60;
+    var days = hours/24;
+    var weeks = days/7;
+    // console.warn(this.props.currentSelection.Date);
+    // console.warn(currentDate);
+    // console.warn(diff);
+    // console.warn(seconds);
+    // console.warn(minutes);
+    // console.warn(hours);
+    // console.warn(days);
+    if(weeks >= 1)
+    {
+      remainingTimeString = ' - In ' + Math.round(weeks) + ' weeks'
+      if(Math.round(weeks) == 1)
+      {
+        remainingTimeString = ' - In ' + Math.round(weeks) + ' week'
+      }
+    }
+    else if(days >= 1)
+    {
+      remainingTimeString = ' - In ' + Math.round(days) + ' days'
+      if(Math.round(days) == 1)
+      {
+        remainingTimeString = ' - In ' + Math.round(days) + ' day'
+      }
+    }
+    else if(hours >= 1)
+    {
+      remainingTimeString = ' - In ' + Math.round(hours) + ' hours'
+      if(Math.round(hours) == 1)
+      {
+        remainingTimeString = ' - In ' + Math.round(hours) + ' hour'
+      }
+    }
+    else if(minutes >= 1)
+    {
+      remainingTimeString = ' - In ' + Math.round(minutes) + ' minutes'
+      if(Math.round(minutes) == 1)
+      {
+        remainingTimeString = ' - In ' + Math.round(minutes) + ' minute'
+      }
+    }
+    else
+    {
+      remainingTimeString = '';
+    }
   return(
     <View style={styles.container}>
       <ParallaxScrollView
@@ -144,6 +214,7 @@ export default class EventCard extends Component {
           <Image resizeMode={'cover'} style={{width:width,height:height*.15}} source={{uri:this.props.currentSelection.Image}}>
             <View style={{flex:1,backgroundColor:'#00000030'}}>
               <Text style={{backgroundColor:'transparent',color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.Event_Name}</Text>
+              <Text style={{backgroundColor:'#095BA9',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
               <Text style={{backgroundColor:'#095BA9',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
             </View>
           </Image>
@@ -161,7 +232,10 @@ export default class EventCard extends Component {
             <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
               <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={clockImage}/>
               <View style={{marginRight:42}}>
-                <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
+                <View style={{flexDirection:'row',flex:1,justifyContent:'center',alignItems:'center'}}>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{remainingTimeString}</Text>
+                </View>
                 <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{dateString}</Text>
               </View>
             </View>
