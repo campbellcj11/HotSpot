@@ -33,6 +33,8 @@ import clockImage from '../images/time.png'
 import pinImage from '../images/placeholder.png'
 import dollarImage from '../images/coin-icon.png'
 import infoImage from '../images/interface.png'
+import connectImage from '../images/connection.png'
+import linkImage from '../images/link.png'
 
 var {height, width} = Dimensions.get('window');
 
@@ -223,10 +225,11 @@ export default class EventCard extends Component {
         parallaxHeaderHeight={height*.15}
       >
         <View>
-          <View style={{height:55,flexDirection:'row',marginLeft:30,marginRight:30}}>
-            <ImageButton style={{flex:.33}} image={phoneImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
-            <ImageButton style={{flex:.33}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} onPress={() => this.openURL()}/>
-            <ImageButton style={{flex:.33}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
+          <View style={{height:55,flexDirection:'row',marginLeft:16,marginRight:16}}>
+            <ImageButton style={{flex:.25}} image={phoneImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
+            <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} onPress={() => this.openURL()}/>
+            <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
+            <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
           </View>
           <View style={{marginTop:5}}>
 
