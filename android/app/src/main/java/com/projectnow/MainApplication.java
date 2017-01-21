@@ -4,6 +4,9 @@ import android.app.Application;
 import android.util.Log;
 
 import com.facebook.react.ReactApplication;
+import cl.json.RNSharePackage;
+import com.airbnb.android.react.maps.MapsPackage;
+import com.BV.LinearGradient.LinearGradientPackage;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.facebook.react.ReactInstanceManager;
@@ -26,6 +29,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNSharePackage(),
+            new MapsPackage(),
+            new LinearGradientPackage(),
             new MapsPackage(),
             new LinearGradientPackage()
       );
