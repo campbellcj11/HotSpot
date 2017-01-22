@@ -56,11 +56,12 @@ export default class EventCard extends Component {
     }
     // this.determineLatAndLong();
   }
-
+  //closing the social share menu
   onCancel() {
     console.log("CANCEL")
     this.setState({visible:false});
   }
+  //opening the social share menu
   onOpen() {
     console.log("OPEN")
     this.setState({visible:true});
