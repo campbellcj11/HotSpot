@@ -207,7 +207,6 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				E9A13DAB0D6441F3B78E18EF /* libRNFetchBlob.a in Frameworks */,
-				4472D35B2EA94901AB6440D1 /* libRNShare.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
