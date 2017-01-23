@@ -46,6 +46,8 @@ export default class Favorites extends Component {
       hasCurrentSelection: false,
       transparent: true,
       dataSource:ds,
+      viewAll: false,
+      viewPast: false,
       items: [],
     }
     this.itemsRef = this.getRef().child('favorites/' + firebase.auth().currentUser.uid);
@@ -82,7 +84,7 @@ export default class Favorites extends Component {
           ref.on('value', (snap) => {
             var today = new Date();
             var timeUTC = today.getTime();
-            if (snap.val().Date >= timeUTC) {
+          if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
               items.push({
                 Key : snap.key,
                 Event_Name: snap.val().Event_Name,
@@ -98,7 +100,41 @@ export default class Favorites extends Component {
                 Website: snap.val().Website,
                 MainTag: Tags ? Tags[0]:[],
               });
-            }
+            }//If we want to look at only past events
+            else if (snap.val().Date <= timeUTC && this.state.viewPast) {
+                items.push({
+                  Key : snap.key,
+                  Event_Name: snap.val().Event_Name,
+                  Date: new Date(snap.val().Date),
+                  Location: snap.val().Location,
+                  Image: snap.val().Image,
+                  latitude: snap.val().Latitude,
+                  longitude: snap.val().Longitude,
+                  Tags: snap.val().Tags,
+                  Short_Description: snap.val().Short_Description,
+                  Long_Description: snap.val().Long_Description,
+                  Address: snap.val().Address,
+                  Website: snap.val().Website,
+                  MainTag: Tags ? Tags[0]:[],
+                });
+              }//if we want to look at all events
+              else if (this.state.viewAll) {
+                  items.push({
+                    Key : snap.key,
+                    Event_Name: snap.val().Event_Name,
+                    Date: new Date(snap.val().Date),
+                    Location: snap.val().Location,
+                    Image: snap.val().Image,
+                    latitude: snap.val().Latitude,
+                    longitude: snap.val().Longitude,
+                    Tags: snap.val().Tags,
+                    Short_Description: snap.val().Short_Description,
+                    Long_Description: snap.val().Long_Description,
+                    Address: snap.val().Address,
+                    Website: snap.val().Website,
+                    MainTag: Tags ? Tags[0]:[],
+                  });
+              }
           });
         });
       }
@@ -110,6 +146,17 @@ export default class Favorites extends Component {
         return a.Date-b.Date
       })
 
+      /**
+      //sort by alphabetical order
+      var today = new Date();
+      var timeUTC = today.getTime();
+      items.sort(function(a, b) {
+      var textA = a.Event_Name.toUpperCase();
+      var textB = b.Event_Name.toUpperCase();
+      return (textA < textB) ? -1 : (textA > textB) ? 1 : 0;
+      });
+**/
+
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(items),
         items: items,
@@ -118,68 +165,78 @@ export default class Favorites extends Component {
     });
   }
 
-  pressRow(rowData) {
-    console.log('RowData: ',rowData);
-    Actions.tab2_2({title:rowData.Event_Name,currentSelection:rowData});
-  }
   _closeSelection(){
     this.setState({currentSelection:{}});
     this.setState({hasCurrentSelection:false});
   }
-  renderSlides() {
-    this.currentIndex = 0;
-    var pageLengths = [];
-    var sumOfEvents = 0;
-    // while()
-    // {
-    //
-    // }
-    var colors = ['white'];
-    var eventsPerPage = 3;
-    var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
-    let Arr = new Array(numberOfPages).fill(0).map((a, i) => {
-      // console.log('A:',a);
-      // var data = this.props.template.entities.slides[a];
-      var eventsForPage = []
+  pressRow(rowData) {
+    console.log('RowData2: ',rowData);
+    //this.setState({currentSelection:rowData});
+    //this.setState({hasCurrentSelection:true});
+    Actions.tab3_2({title:rowData.Event_Name,currentSelection:rowData});
+  }
 
-      for(var j = this.currentIndex ; j < this.currentIndex + eventsPerPage; j++)
-      {
-        if(j < this.state.items.length)
-        {
-          eventsForPage.push(this.state.items[j]);
-        }
-      }
+  renderRow(rowData){
+    var dateNumber;
+    var dateMonth;
+    var dateYear;
 
-      this.currentIndex = this.currentIndex + eventsPerPage;
+    var months = new Array();
+    months[0] = "January";
+    months[1] = "February";
+    months[2] = "March";
+    months[3] = "April";
+    months[4] = "May";
+    months[5] = "June";
+    months[6] = "July";
+    months[7] = "August";
+    months[8] = "September";
+    months[9] = "October";
+    months[10] = "November";
+    months[11] = "December";
 
-      return <EventPage key={i} partOfFavorites={true} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
-    })
-    return (Arr)
+    dateMonth = rowData.Date ? months[rowData.Date.getMonth()]: '';
+    dateNumber = rowData.Date ? rowData.Date.getDate(): '';
+    dateYear = rowData.Date ? rowData.Date.getUTCFullYear(): '';
+
+    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
+    return (
+      <TouchableHighlight
+        underlayColor = '#dddddd'
+        style = {styles.item}
+        onPress = {() => this.pressRow(rowData)}
+      >
+      <View style={styles.item}>
+      <View style={{flex:.85}}>
+          <View style={{flex:.75}}>
+            <Text style={styles.itemTitle}>{rowData.Event_Name}</Text>
+            <Text numberOfLines={2} style={styles.itemText}>{rowData.Short_Description}</Text>
+          </View>
+          <View style={{marginLeft:5,flex:.25,justifyContent:'center'}}>
+            <Text numberOfLines={1} style={{color:'#261851',fontSize: 14,fontFamily: 'Futura-Medium'}}>{dateString}</Text>
+          </View>
+      </View>
+      <View style={{flex:.15}}>
+        <Image style={{flex:1,resizeMode:'cover'}} source={{uri: rowData.Image}}>
+        </Image>
+      </View>
+      </View>
+      </TouchableHighlight>
+    )
   }
   viewWithFavorites()
   {
-    return (
-      <View style={{flex:1}}>
-        <StatusBar
-          barStyle="light-content"
-        />
-
-        <Modal
-          animationType='fade'
-          transparent={false}
-          visible={this.state.hasCurrentSelection}
-        >
-            <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
-        </Modal>
-
-
-        <View style={styles.container}>
-          <Swiper ref='swiper' height={height*.9} loop={false} horizontal={false} showsButtons={false} showsPagination={false}>
-              {this.renderSlides()}
-          </Swiper>
+    return(
+      <View style={styles.container}>
+        <View>
+          <ListView style={styles.scroll}
+          contentContainerStyle={styles.list}
+            dataSource={this.state.dataSource}
+            renderRow= {this.renderRow.bind(this)}>
+          </ListView>
         </View>
       </View>
-    );
+    )
   }
   viewWithoutFavorites()
   {
@@ -218,7 +275,7 @@ export default class Favorites extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: HEADER_HEIGHT,
+    paddingTop: HEADER_HEIGHT - 10,
   },
   modalContainer: {
     flex: 1,
@@ -412,5 +469,63 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: 'white',
     height: CARD_HEIGHT,
+  },
+  searchView: {
+    flexDirection: 'row',
+    backgroundColor: '#e6e6e6',
+    margin: 3,
+    height:25,
+  },
+  searchText: {
+    color: 'black',
+    flex: 1,
+    fontFamily: 'Futura-Medium',
+  },
+  buttonText: {
+      color: 'white',
+      fontSize: 20,
+      textAlign: 'center',
+      fontFamily: 'Futura-Medium',
+      height: 50,
+      lineHeight: 50,
+      backgroundColor: 'transparent',
+  },
+  searchButton: {
+    backgroundColor: '#261851',
+    flex: .20,
+    borderColor: '#D200FF',
+    height:25,
+  },
+  list: {
+    paddingBottom: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
+    flexWrap:'wrap',
+  },
+  item: {
+    backgroundColor: '#FFFFFF',
+    width: width,
+    height: 100,
+    borderBottomWidth: 1,
+    borderBottomColor: '#261851',
+    flexDirection: 'row',
+  },
+  itemTitle: {
+    backgroundColor: 'transparent',
+    color: 'black',
+    fontSize: 20,
+    fontFamily: 'Nexa Bold',
+    padding: 2,
+  },
+  itemText: {
+    backgroundColor: 'transparent',
+    color: 'black',
+    fontSize: 16,
+    fontFamily: 'Nexa Light',
+    padding: 2,
+  },
+  scroll: {
+    top:0,
+    height:height*.79,
   },
 })

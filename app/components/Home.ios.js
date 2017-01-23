@@ -305,8 +305,8 @@ export default class Home extends Component {
   }
   static renderNavigationBar(props)
   {
-    console.log('AHH PROPS!')
-    console.log(props)
+    // console.log('AHH PROPS!')
+    // console.log(props)
     return(
       <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
         <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
