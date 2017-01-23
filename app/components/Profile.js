@@ -97,7 +97,7 @@ export default class Profile extends Component {
   }
 
   componentDidMount() {
-        { /*this.renderCategories();*/}
+    //this.renderCategories();
   }
 
   getRef() {
@@ -323,7 +323,7 @@ _submitChanges(userRef){
   }
   renderProfile() {
   return(
-    <View style = {styles.container}>
+    <View style = {styles.innerContainer}>
     <View style= {styles.container_profile}>
       <View style= {styles.container_upper}>
       <View style = {styles.view_iconSettings}>
@@ -331,7 +331,6 @@ _submitChanges(userRef){
        <TouchableHighlight
          onPress={()=> { this.setModalVisible(true)}}
          underlayColor = 'transparent'
-         style = {styles.profile_clickSetting}
         >
          <Image source={icon3} style={styles.profile_Icon}/>
        </TouchableHighlight>
@@ -344,46 +343,53 @@ _submitChanges(userRef){
           <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
         </View>
         <View>
-          <Text style={styles.userLocation}>location placeholder</Text>
+          <Text style={styles.userLocation}></Text>
         </View>
        </View>
       <View style={styles.container_lower}>
         <View style={styles.profile_interestHeader}>
           <Text style={styles.profile_interests}>Interests</Text>
         </View>
-
-{/*
-        View style={{flex:1}}>
+        <View style={{flex:1}}>
         <ListView style={styles.scroll}
         contentContainerStyle={styles.list}
           dataSource={this.state.dataSource}
           renderRow= {this.renderRow.bind(this)}>
         </ListView>
         </View>
-*/}
       </View>
     </View>
   </View>
 )
   }
 
-
+  renderNotLoggedIn()
+  {
+    return (
+      <View style={styles.container}>
+        <Text style={{textAlign:'center',fontFamily:'Futura-Medium',fontSize:15,flex:1}}> Login or Signup to view profile </Text>
+      </View>
+    );
+  }
+  renderLoggedIn()
+  {
+    if(this.state.modalVisible === false)
+    {
+      return this.renderProfile();
+    }
+    else
+    {
+        return this.renderModal();
+    }
+  }
   render() {
     let viewToShow
 
-    if(this.state.modalVisible === false)
-    {
-      viewToShow = this.renderProfile();
-    }
-    else {
-      {
-        viewToShow = this.renderModal();
-      }
-    }
+    viewToShow = (firebase.auth().currentUser.email != 'test@test.com') ? this.renderLoggedIn() : this.renderNotLoggedIn()
     return(
        <View style={{flex:1}}>
-       {viewToShow}
-        </View>
+        {viewToShow}
+       </View>
      )
   }
 }
@@ -406,10 +412,17 @@ const styles = StyleSheet.create({
     height:CARD_HEIGHT*.65,
   },
   container: {
-    flex: 1,
-    flexDirection: 'column',
+    top: Platform.OS == 'ios' ? 64:44,
+    height: height - (Platform.OS == 'ios' ? 64:44) - 45,
+    bottom: 45,
+    // flex: 1,
+    // flexDirection: 'column',
     // borderColor: 'black',
     // borderWidth: 2,
+  },
+  innerContainer:{
+    flex: 1,
+    flexDirection: 'column',
   },
   settings_card: {
      //borderWidth: 2,
@@ -534,7 +547,7 @@ const styles = StyleSheet.create({
   settings_image: {
     width: 100,
     height: 100,
-    resizeMode: 'cover', // or 'stretch'
+    // resizeMode: 'cover', // or 'stretch'
     //justifyContent: 'center',
     borderRadius: 50,
   },

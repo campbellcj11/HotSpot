@@ -39,6 +39,8 @@ import infoImage from '../images/interface.png'
 import connectImage from '../images/connection.png'
 import linkImage from '../images/link.png'
 import Share, {ShareSheet} from 'react-native-share';
+import Moment from 'moment'
+var Mailer = require('NativeModules').RNMail;
 
 var {height, width} = Dimensions.get('window');
 
@@ -106,10 +108,48 @@ export default class EventCard extends Component {
     var uriString = this.props.currentSelection.Website;
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
+  openCalendar()
+  {
+    if(Platform.OS === 'ios')
+    {
+      const referenceDate = Moment.utc('2001-01-01');
+      const secondsSinceRefDate = (this.props.currentSelection.Date - referenceDate)/1000;
+      Linking.openURL('calshow:' + secondsSinceRefDate);
+    }
+    else if(Platform.OS === 'android')
+    {
+      const msSinceEpoch = this.props.currentSelection.Event_Date.valueOf(); // milliseconds since epoch
+      Linking.openURL('content://com.android.calendar/time/' + msSinceEpoch);
+    }
+  }
+  callPhone()
+  {
+    Linking.openURL('tel:6097427325');
+  }
+  emailShare()
+  {
+    Mailer.mail({
+      subject: 'I would like to know more about '+ this.props.currentSelection.Event_Name,
+      recipients: [this.props.currentSelection.Event_Contact],
+      body: '',
+    }, (error, event) => {
+        if(error) {
+          AlertIOS.alert('Error', 'Could not send mail.');
+        }
+    });
+  }
   openMap()
   {
     var uriString = 'http://maps.apple.com/?address=' + this.props.currentSelection.Address;
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
+  }
+  openShare()
+  {
+    let shareOptions = {
+          message: 'Check out ' + this.props.currentSelection.Event_Name + ' on HotSpot',
+    };
+
+    Share.open(shareOptions);
   }
   render() {
     var dateNumber;
@@ -240,8 +280,7 @@ export default class EventCard extends Component {
           <Image resizeMode={'cover'} style={{width:width,height:height*.15}} source={{uri:this.props.currentSelection.Image}}>
             <View style={{flex:1,backgroundColor:'#00000030'}}>
               <Text style={{backgroundColor:'transparent',color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.Event_Name}</Text>
-              <Text style={{backgroundColor:'#095BA9',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
-              <Text style={{backgroundColor:'#095BA9',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
+              <Text style={{backgroundColor:'#0B82CC',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
             </View>
           </Image>
         )}
@@ -249,23 +288,25 @@ export default class EventCard extends Component {
       >
         <View>
           <View style={{height:55,flexDirection:'row',marginLeft:16,marginRight:16}}>
-            <ImageButton style={{flex:.25}} image={phoneImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
-            <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} onPress={() => this.openURL()}/>
-            <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} />
-            <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#095BA9'}} onPress={this.onOpen.bind(this)} />
+            <ImageButton style={{flex:.25}} image={phoneImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.callPhone()}/>
+            <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.openURL()}/>
+            <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
+            <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
           </View>
           <View style={{marginTop:5}}>
 
-            <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
-              <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={clockImage}/>
-              <View style={{marginRight:42}}>
-                <View style={{flexDirection:'row',flex:1,justifyContent:'center',alignItems:'center'}}>
-                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
-                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{remainingTimeString}</Text>
+            <BlankButton style={{marginBottom:20}} onPress={() => this.openCalendar()}>
+              <View style={{flexDirection:'row',alignItems:'center'}}>
+                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={clockImage}/>
+                <View style={{marginRight:42}}>
+                  <View style={{flexDirection:'row',flex:1,justifyContent:'center',alignItems:'center'}}>
+                    <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
+                    <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{remainingTimeString}</Text>
+                  </View>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{dateString}</Text>
                 </View>
-                <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{dateString}</Text>
               </View>
-            </View>
+            </BlankButton>
 
             <BlankButton style={{marginBottom:20}} onPress={() => this.openMap()}>
               <View style={{flexDirection:'row',alignItems:'center',}}>
@@ -334,9 +375,9 @@ export default class EventCard extends Component {
                 if(typeof shareOptions["url"] !== undefined) {
                   Clipboard.setString(shareOptions["url"]);
                   if (Platform.OS === "android") {
-                    ToastAndroid.show('', ToastAndroid.SHORT);
+                    ToastAndroid.show('Error', ToastAndroid.SHORT);
                   } else if (Platform.OS === "ios") {
-                    AlertIOS.alert('');
+                    AlertIOS.alert('Error', 'Could not copy link.');
                   }
                 }
               },300);
