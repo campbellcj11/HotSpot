@@ -3,6 +3,8 @@ package com.projectnow;
 import android.app.Application;
 import android.util.Log;
 
+import com.RNFetchBlob.RNFetchBlobPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.facebook.react.ReactApplication;
 import com.airbnb.android.react.maps.MapsPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
@@ -27,7 +29,9 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
             new MapsPackage(),
-            new LinearGradientPackage()
+            new LinearGradientPackage(),
+            new ImagePickerPackage(),
+            new RNFetchBlobPackage(),
       );
     }
   };
