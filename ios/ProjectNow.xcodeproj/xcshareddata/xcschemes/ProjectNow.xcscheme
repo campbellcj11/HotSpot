@@ -110,7 +110,6 @@
    </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
-      customArchiveName = "HotSpot"
       revealArchiveInOrganizer = "YES">
    </ArchiveAction>
 </Scheme>
