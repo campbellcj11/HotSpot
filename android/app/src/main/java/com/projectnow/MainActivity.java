@@ -1,6 +1,8 @@
 package com.projectnow;
 
 import com.facebook.react.ReactActivity;
+import cl.json.RNSharePackage;
+import com.chirag.RNMail.RNMail;
 import com.chirag.RNMail.*;
 
 public class MainActivity extends ReactActivity {

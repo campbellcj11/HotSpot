@@ -31,7 +31,7 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-          new MainReactPackage(),
+            new MainReactPackage(),
             new RNSharePackage(),
             new MapsPackage(),
             new LinearGradientPackage(),
@@ -39,13 +39,18 @@ public class MainApplication extends Application implements ReactApplication {
             new LinearGradientPackage(),
             new ImagePickerPackage(),
             new RNFetchBlobPackage(),
-            new RNMailPackage(),
+            new RNMail()
       );
     }
   };
 
-  @Override
-  public ReactNativeHost getReactNativeHost() {
-      return mReactNativeHost;
-  }
+    @Override
+    public ReactNativeHost getReactNativeHost() {
+        return mReactNativeHost;
+    }
+
+    @Override
+    public void onCreate() {
+      super.onCreate();
+    }
 }
