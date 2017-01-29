@@ -188,31 +188,48 @@ export default class Home extends Component {
     this.currentIndex = 0;
     var pageLengths = [];
     var sumOfEvents = 0;
-    // while()
-    // {
-    //
-    // }
-    var colors = ['white'];
-    var eventsPerPage = 3;
-    var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
-    let Arr = new Array(numberOfPages).fill(0).map((a, i) => {
-      // console.log('A:',a);
-      // var data = this.props.template.entities.slides[a];
-      var eventsForPage = []
 
-      for(var j = this.currentIndex ; j < this.currentIndex + eventsPerPage; j++)
+    var eventPages = [];
+    var pageNumber = 0;
+    while(this.currentIndex < this.state.items.length - 1)
+    {
+      var randomNumberOfEventsPerPage = Math.floor(Math.random() * 2) + 2;//Generates a randomNumber (2-3)
+      var eventsForPage = [];
+
+      for(var j = this.currentIndex ; j < this.currentIndex + randomNumberOfEventsPerPage; j++)
       {
         if(j < this.state.items.length)
         {
           eventsForPage.push(this.state.items[j]);
         }
       }
+      this.currentIndex = this.currentIndex + randomNumberOfEventsPerPage;
+      eventPages.push(<EventPage key={pageNumber} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={pageNumber} eventsForPage={eventsForPage} eventsPerPage={randomNumberOfEventsPerPage} style={[styles.card,{backgroundColor:'white'}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>);
+      pageNumber++;
+    }
 
-      this.currentIndex = this.currentIndex + eventsPerPage;
-
-      return <EventPage key={i} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
-    })
-    return (Arr)
+    return eventPages;
+    // var colors = ['white'];
+    // var eventsPerPage = 3;
+    // var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
+    // let Arr = new Array(numberOfPages).fill(0).map((a, i) => {
+    //   // console.log('A:',a);
+    //   // var data = this.props.template.entities.slides[a];
+    //   var eventsForPage = []
+    //
+    //   for(var j = this.currentIndex ; j < this.currentIndex + eventsPerPage; j++)
+    //   {
+    //     if(j < this.state.items.length)
+    //     {
+    //       eventsForPage.push(this.state.items[j]);
+    //     }
+    //   }
+    //
+    //   this.currentIndex = this.currentIndex + eventsPerPage;
+    //
+    //   return <EventPage key={i} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={i} eventsForPage={eventsForPage} eventsPerPage={eventsPerPage} style={[styles.card,{backgroundColor: colors[i % colors.length]}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>
+    // })
+    // return (Arr)
   }
   renderView(){
     return (
@@ -249,8 +266,6 @@ export default class Home extends Component {
         <View style={{flexDirection:'row'}}>
         <View style={styles.modalBackground}>
           <Image source={titleImage} style={styles.titleImage}/>
-          <Text style={styles.title}>
-          </Text>
           <View style={styles.userNameView}>
             <TextInput style={styles.userNameTextInput}
               ref='email'
@@ -416,6 +431,8 @@ const styles = StyleSheet.create({
     top: 0,
     height: 150,
     resizeMode: 'contain', // or 'stretch'
+    marginTop: Platform.OS == 'ios' ? 20 : 20,
+    marginBottom: Platform.OS == 'ios' ? 20 : 20,
   },
   modalBackground: {
     position: 'absolute',
