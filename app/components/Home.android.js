@@ -52,6 +52,9 @@ export default class Home extends Component {
     }
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
+
+    // this.props.loadUserData();
+    // this.props.loadLoggedInData();
   }
 
   componentWillMount() {

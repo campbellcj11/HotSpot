@@ -118,7 +118,7 @@ export default class EventCard extends Component {
     }
     else if(Platform.OS === 'android')
     {
-      const msSinceEpoch = this.props.currentSelection.Event_Date.valueOf(); // milliseconds since epoch
+      const msSinceEpoch = this.props.currentSelection.Date.valueOf(); // milliseconds since epoch
       Linking.openURL('content://com.android.calendar/time/' + msSinceEpoch);
     }
   }
@@ -134,7 +134,10 @@ export default class EventCard extends Component {
       body: '',
     }, (error, event) => {
         if(error) {
-          AlertIOS.alert('Error', 'Could not send mail.');
+          if(Platform.OS === 'ios')
+          {
+            AlertIOS.alert('Error', 'Could not send mail.');
+          }
         }
     });
   }
@@ -146,7 +149,7 @@ export default class EventCard extends Component {
   openShare()
   {
     let shareOptions = {
-          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/html/getHotspot.html',
+          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/html/getHotspot.html?id=' + this.props.currentSelection.Key,
     };
 
     Share.open(shareOptions);

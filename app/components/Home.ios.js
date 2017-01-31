@@ -52,6 +52,9 @@ export default class Home extends Component {
     }
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
+
+    // this.props.loadUserData();
+    // this.props.loadLoggedInData();
   }
 
   componentWillMount() {
@@ -328,9 +331,9 @@ export default class Home extends Component {
           </View>
             <Button
             style={{flex:.2}}
-            //onPress={() => props.logoutUser()}
+            // onPress={() => this._logout()}
             textStyle={{color:'#F97237',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
-            {/*Logout*/}
+              {/*Logout*/}
           </Button>
         </View>
       </View>
