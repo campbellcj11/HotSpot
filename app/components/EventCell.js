@@ -96,7 +96,7 @@ export default class EventCell extends Component {
                 </View>
                 <View style={{flex: this.props.large ? .15:.3,flexDirection:'row'}}>
                   <View style={{flex: .6,paddingLeft:3,alignItems:'flex-start',justifyContent:'center'}}>
-                    <Text style={{backgroundColor:'#095BA9',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag.toUpperCase()}</Text>
+                    <Text style={{backgroundColor:'#0B82CC',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag.toUpperCase()}</Text>
                   </View>
                   <View style={{flex: .3}}>
                   </View>

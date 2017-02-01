@@ -18,7 +18,7 @@ import {
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
-import backgroundImage from '../images/City-Light.png'
+import titleImage from '../images/hs-title.png'
 import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
@@ -90,6 +90,7 @@ export default class Home extends Component {
             Address: child.val().Address,
             Website: child.val().Website,
             MainTag: Tags ? Tags[0]:[],
+            Event_Contact: child.val().Email_Contact,
           });
         });
       });
@@ -246,20 +247,16 @@ export default class Home extends Component {
           visible={!this.props.loggedIn}
       >
         <View style={{flexDirection:'row'}}>
-            <LinearGradient colors={['#095AA8', '#04FFC0']} style={styles.linearGradient}>
-              <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
+            <View style={styles.modalBackground}>
+              <Image source={titleImage} style={styles.titleImage}/>
               <Text style={styles.title}>
-                Hot
-                <Text style={[styles.title,{color:'#04FFC0'}]}>
-                  Spot
-                </Text>
               </Text>
               <View style={styles.userNameView}>
                 <TextInput style={styles.userNameTextInput}
                   ref='email'
                   onChangeText={(email) => this.setState({email})}
                   placeholder='Email'
-                  placeholderTextColor='#D3C6E2'
+                  placeholderTextColor='#C6E1E2'
                   underlineColorAndroid='transparent'>
                 </TextInput>
               </View>
@@ -270,7 +267,7 @@ export default class Home extends Component {
                   ref='password'
                   onChangeText={(password) => this.setState({password})}
                   placeholder='Password'
-                  placeholderTextColor='#D3C6E2'
+                  placeholderTextColor='#C6E1E2'
                   underlineColorAndroid='transparent'>
                 </TextInput>
               </View>
@@ -298,7 +295,7 @@ export default class Home extends Component {
                 textStyle={styles.buttonBlankText}>
                 {signUpButtonText}
               </Button>
-            </LinearGradient>
+            </View>
         </View>
       </Modal>
     )
@@ -312,12 +309,12 @@ export default class Home extends Component {
         <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
           <View style={{flex:.2}}/>
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'#04FFC0',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
+            <Text style={{color:'#F97237',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
           </View>
             <Button
             style={{flex:.2}}
             //onPress={() => props.logoutUser()}
-            textStyle={{color:'#04FFC0',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
+            textStyle={{color:'#F97237',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
             {/*Logout*/}
           </Button>
         </View>
@@ -411,14 +408,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(56,198,95)',
     height: 50,
   },
-  backgroundImage: {
+  titleImage: {
     position: 'absolute',
-    width: width,
-    top: height*.6,
-    height: height*.45,
-    resizeMode: 'stretch', // or 'stretch'
+    left: width*.2,
+    right: width*.2,
+    width: width*.6,
+    top: 0,
+    height: 150,
+    resizeMode: 'contain', // or 'stretch'
   },
-  linearGradient: {
+  modalBackground: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -426,16 +425,17 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: width,
     height: Platform.OS == 'ios' ? height : height-20,
+    backgroundColor: '#0E476A',
   },
   loginButton: {
     marginTop: 5,
-    backgroundColor: '#50E3C2',
+    backgroundColor: '#F97237',
     height: 50,
     marginLeft:20,
     marginRight: 20,
     borderWidth: 2,
     borderRadius: 25,
-    borderColor: '#22FFCC',
+    borderColor: '#EE6436',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS == 'ios' ? 40 : 30,
   },
   userNameView: {
-    backgroundColor:'#7148BC22',
+    backgroundColor:'#0B82CC22',
     height: 50,
     marginLeft:20,
     marginRight: 20,
@@ -519,7 +519,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   passwordView: {
-    backgroundColor:'#7148BC22',
+    backgroundColor:'#0B82CC22',
     height: 50,
     marginLeft:20,
     marginRight: 20,
@@ -535,7 +535,8 @@ const styles = StyleSheet.create({
     padding: 2,
     paddingLeft: 10,
     borderWidth: 2,
-    borderColor: '#B166CE22',
+    borderColor: '#EE643660',
+    borderRadius: 4,
   },
   scroll: {
     flex: 1,

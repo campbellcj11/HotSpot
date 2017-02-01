@@ -90,6 +90,7 @@ export default class Home extends Component {
             Address: child.val().Address,
             Website: child.val().Website,
             MainTag: Tags ? Tags[0]:[],
+            Event_Contact: child.val().Email_Contact,
           });
         });
       });
@@ -246,59 +247,55 @@ export default class Home extends Component {
           visible={!this.props.loggedIn}
       >
         <View style={{flexDirection:'row'}}>
-            <LinearGradient colors={['#095AA8', '#04FFC0']} style={styles.linearGradient}>
-              <Image source={backgroundImage} style={styles.backgroundImage} textStyle={styles.buttonText}/>
-              <Text style={styles.title}>
-                Hot
-                <Text style={[styles.title,{color:'#04FFC0'}]}>
-                  Spot
-                </Text>
-              </Text>
-              <View style={styles.userNameView}>
-                <TextInput style={styles.userNameTextInput}
-                  ref='email'
-                  onChangeText={(email) => this.setState({email})}
-                  placeholder='Email'
-                  placeholderTextColor='#D3C6E2'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-              </View>
+        <View style={styles.modalBackground}>
+          <Image source={titleImage} style={styles.titleImage}/>
+          <Text style={styles.title}>
+          </Text>
+          <View style={styles.userNameView}>
+            <TextInput style={styles.userNameTextInput}
+              ref='email'
+              onChangeText={(email) => this.setState({email})}
+              placeholder='Email'
+              placeholderTextColor='#C6E1E2'
+              underlineColorAndroid='transparent'>
+            </TextInput>
+          </View>
 
-              <View style={styles.passwordView}>
-                <TextInput style={styles.userNameTextInput}
-                  secureTextEntry={!this.state.isSignUp}
-                  ref='password'
-                  onChangeText={(password) => this.setState({password})}
-                  placeholder='Password'
-                  placeholderTextColor='#D3C6E2'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-              </View>
-              <Button
-                onPress={() => this._resetPassword()}
-                style={styles.forgotPasswordBlankButton}
-                textStyle={styles.forgotPasswordText}>
-                {forgotPasswordButtonText}
-              </Button>
-              <Button
-                onPress={() => this._login()}
-                style={styles.loginButton}
-                textStyle={styles.buttonText}>
-                {loginButtonText}
-              </Button>
-              <Button
-                onPress={() => this._loginWithoutAccount()}
-                style={styles.loginBlankButton}
-                textStyle={styles.buttonBlankText}>
-                {loginWithoutAccountButtonText}
-              </Button>
-              <Button
-                onPress={() => this._openSignupPage()}
-                style={styles.signupBlankButton}
-                textStyle={styles.buttonBlankText}>
-                {signUpButtonText}
-              </Button>
-            </LinearGradient>
+          <View style={styles.passwordView}>
+            <TextInput style={styles.userNameTextInput}
+              secureTextEntry={!this.state.isSignUp}
+              ref='password'
+              onChangeText={(password) => this.setState({password})}
+              placeholder='Password'
+              placeholderTextColor='#C6E1E2'
+              underlineColorAndroid='transparent'>
+            </TextInput>
+          </View>
+          <Button
+            onPress={() => this._resetPassword()}
+            style={styles.forgotPasswordBlankButton}
+            textStyle={styles.forgotPasswordText}>
+            {forgotPasswordButtonText}
+          </Button>
+          <Button
+            onPress={() => this._login()}
+            style={styles.loginButton}
+            textStyle={styles.buttonText}>
+            {loginButtonText}
+          </Button>
+          <Button
+            onPress={() => this._loginWithoutAccount()}
+            style={styles.loginBlankButton}
+            textStyle={styles.buttonBlankText}>
+            {loginWithoutAccountButtonText}
+          </Button>
+          <Button
+            onPress={() => this._openSignupPage()}
+            style={styles.signupBlankButton}
+            textStyle={styles.buttonBlankText}>
+            {signUpButtonText}
+          </Button>
+        </View>
         </View>
       </Modal>
     )
@@ -312,12 +309,12 @@ export default class Home extends Component {
         <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
           <View style={{flex:.2}}/>
           <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'#04FFC0',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
+            <Text style={{color:'#F97237',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
           </View>
             <Button
             style={{flex:.2}}
             //onPress={() => props.logoutUser()}
-            textStyle={{color:'#04FFC0',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
+            textStyle={{color:'#F97237',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
             {/*Logout*/}
           </Button>
         </View>

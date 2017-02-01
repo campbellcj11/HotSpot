@@ -21,7 +21,7 @@ class TabIcon extends Component {
     render(){
       console.log('Tab Icon Props: ', this.props);
       var iconName = this.props.iconName || 'rocket';
-      var color = this.props.selected ? '#04FFC0' : 'white';
+      var color = this.props.selected ? '#F97237' : 'white';
         return (
             <View style={{alignItems:'center'}}>
               <Image source={this.props.image} style={{tintColor: color,resizeMode: 'cover',marginBottom:5,width: 25, height: 25,}}/>
@@ -67,7 +67,7 @@ var styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   navigationBarTextStyle: {
-    color:'#04FFC0',
+    color:'#F97237',
     fontSize:20,
   },
   baseBoldFontStyle:

@@ -13,6 +13,7 @@ import {
   Alert,
   StatusBar,
   ScrollView,
+  Platform,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -173,7 +174,7 @@ export default class Favorites extends Component {
     console.log('RowData2: ',rowData);
     //this.setState({currentSelection:rowData});
     //this.setState({hasCurrentSelection:true});
-    Actions.tab3_2({title:rowData.Event_Name,currentSelection:rowData});
+    Actions.tab2_2({title:rowData.Event_Name,currentSelection:rowData});
   }
 
   renderRow(rowData){
@@ -242,7 +243,7 @@ export default class Favorites extends Component {
   {
     return (
       <View style={styles.container}>
-        <Text style={{textAlign:'center',fontFamily:'Futura-Medium',fontSize:15,flex:1}}> Login to an account to save/view favorites </Text>
+        <Text style={{textAlign:'center',fontFamily:'Futura-Medium',fontSize:15,flex:1}}> Login or Signup to save/view favorites </Text>
       </View>
     );
   }
@@ -274,8 +275,9 @@ export default class Favorites extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    paddingTop: HEADER_HEIGHT - 10,
+    top: Platform.OS == 'ios' ? 64:44,
+    height: height - (Platform.OS == 'ios' ? 64:44) - 45,
+    bottom: 45,
   },
   modalContainer: {
     flex: 1,
