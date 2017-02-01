@@ -146,7 +146,7 @@ export default class EventCard extends Component {
   openShare()
   {
     let shareOptions = {
-          message: 'Check out ' + this.props.currentSelection.Event_Name + ' on HotSpot',
+          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/html/getHotspot.html',
     };
 
     Share.open(shareOptions);
@@ -206,11 +206,11 @@ export default class EventCard extends Component {
       timeString = ' at ' + dateHour + ':' + minuteString + 'p';
     }
 
-    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
+    var dateString = ' ' + dateMonth + ' ' + dateNumber + ', ' + dateYear;
 
     dayOfWeek = days[this.props.currentSelection.Date.getDay()];
 
-    dateTimeString = dayOfWeek + timeString;
+    dateTimeString = dayOfWeek + dateString + timeString;
 
     addressString = this.props.currentSelection.Address;
 
@@ -230,34 +230,34 @@ export default class EventCard extends Component {
     // console.warn(days);
     if(weeks >= 1)
     {
-      remainingTimeString = ' - In ' + Math.round(weeks) + ' weeks'
+      remainingTimeString = 'In ' + Math.round(weeks) + ' weeks'
       if(Math.round(weeks) == 1)
       {
-        remainingTimeString = ' - In ' + Math.round(weeks) + ' week'
+        remainingTimeString = 'In ' + Math.round(weeks) + ' week'
       }
     }
     else if(days >= 1)
     {
-      remainingTimeString = ' - In ' + Math.round(days) + ' days'
+      remainingTimeString = 'In ' + Math.round(days) + ' days'
       if(Math.round(days) == 1)
       {
-        remainingTimeString = ' - In ' + Math.round(days) + ' day'
+        remainingTimeString = 'In ' + Math.round(days) + ' day'
       }
     }
     else if(hours >= 1)
     {
-      remainingTimeString = ' - In ' + Math.round(hours) + ' hours'
+      remainingTimeString = 'In ' + Math.round(hours) + ' hours'
       if(Math.round(hours) == 1)
       {
-        remainingTimeString = ' - In ' + Math.round(hours) + ' hour'
+        remainingTimeString = 'In ' + Math.round(hours) + ' hour'
       }
     }
     else if(minutes >= 1)
     {
-      remainingTimeString = ' - In ' + Math.round(minutes) + ' minutes'
+      remainingTimeString = 'In ' + Math.round(minutes) + ' minutes'
       if(Math.round(minutes) == 1)
       {
-        remainingTimeString = ' - In ' + Math.round(minutes) + ' minute'
+        remainingTimeString = 'In ' + Math.round(minutes) + ' minute'
       }
     }
     else
@@ -278,7 +278,7 @@ export default class EventCard extends Component {
       <ParallaxScrollView
         renderBackground={() => (
           <Image resizeMode={'cover'} style={{width:width,height:height*.15}} source={{uri:this.props.currentSelection.Image}}>
-            <View style={{flex:1,backgroundColor:'#00000030'}}>
+            <View style={{flex:1,backgroundColor:'#00000020'}}>
               <Text style={{backgroundColor:'transparent',color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.Event_Name}</Text>
               <Text style={{backgroundColor:'#0B82CC',position:'absolute',bottom:6,left:16,color:'white',fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',padding:5}}>{this.props.currentSelection.MainTag.toUpperCase()}</Text>
             </View>
@@ -297,41 +297,40 @@ export default class EventCard extends Component {
 
             <BlankButton style={{marginBottom:20}} onPress={() => this.openCalendar()}>
               <View style={{flexDirection:'row',alignItems:'center'}}>
-                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={clockImage}/>
-                <View style={{marginRight:42}}>
+                <Image style={{marginLeft:16,marginRight:32,width:24,height:24,tintColor:styleVariables.greyColor}} source={clockImage}/>
+                <View style={{marginRight:24}}>
                   <View style={{flexDirection:'row',flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
-                    <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{remainingTimeString}</Text>
                   </View>
-                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{dateString}</Text>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:styleVariables.greyColor}}>{remainingTimeString}</Text>
                 </View>
               </View>
             </BlankButton>
 
             <BlankButton style={{marginBottom:20}} onPress={() => this.openMap()}>
               <View style={{flexDirection:'row',alignItems:'center',}}>
-                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={pinImage}/>
-                <View style={{marginRight:42}}>
+                <Image style={{marginLeft:16,marginRight:32,width:24,height:24,tintColor:styleVariables.greyColor}} source={pinImage}/>
+                <View style={{marginRight:24}}>
                   <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>{this.props.currentSelection.Location}</Text>
-                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:'#C6C6C6'}}>{addressString}</Text>
+                  <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:10.5,color:styleVariables.greyColor}}>{addressString}</Text>
                 </View>
               </View>
             </BlankButton>
 
             <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
-              <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={dollarImage}/>
-              <View style={{marginRight:42}}>
+              <Image style={{marginLeft:16,marginRight:32,width:24,height:24,tintColor:styleVariables.greyColor}} source={dollarImage}/>
+              <View style={{marginRight:24}}>
                 <Text style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:15,color:'black'}}>$-$$</Text>
               </View>
             </View>
 
             <View style={{flexDirection:'row',alignItems:'center',marginBottom:20}}>
               <View stlye={{flex:1}}>
-                <Image style={{marginLeft:32,marginRight:48,width:24,height:24,tintColor:'#C6C6C6'}} source={infoImage}/>
+                <Image style={{marginLeft:16,marginRight:32,width:24,height:24,tintColor:styleVariables.greyColor}} source={infoImage}/>
                 <View style={{flex:2}}/>
               </View>
-              <View style={{marginRight:42,flex:1}}>
-                <Text numberOfLines={0} style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:12,lineHeight:16,color:'#C6C6C6'}}>{this.props.currentSelection.Long_Description}</Text>
+              <View style={{marginRight:24,flex:1}}>
+                <Text numberOfLines={0} style={{fontFamily:styleVariables.systemRegularFont,fontWeight:'bold',fontSize:12,lineHeight:16,color:styleVariables.greyColor}}>{this.props.currentSelection.Long_Description}</Text>
               </View>
             </View>
           </View>

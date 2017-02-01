@@ -15,6 +15,7 @@ import icon1 from './app/images/time-icon.png'
 import icon2 from './app/images/favorite-heart-button.png'
 import icon3 from './app/images/search-icon.png'
 import icon4 from './app/images/profile-icon.png'
+import styleVariables from './app/Utils/styleVariables'
 const store = configureStore()
 
 class TabIcon extends Component {
@@ -24,8 +25,8 @@ class TabIcon extends Component {
       var color = this.props.selected ? '#F97237' : 'white';
         return (
             <View style={{alignItems:'center'}}>
-              <Image source={this.props.image} style={{tintColor: color,resizeMode: 'cover',marginBottom:5,width: 25, height: 25,}}/>
-              <Text style={[styles.baseNormalFontStyle,styles.smallFontSize,{color: color}]}>{this.props.title}</Text>
+              <Image source={this.props.image} style={{tintColor: color,resizeMode: 'cover',marginBottom:3,width: 25, height: 25,}}/>
+              <Text style={[styles.smallFontSize,{fontFamily:styleVariables.systemNormalFont,color: color}]}>{this.props.title}</Text>
             </View>
         );
     }
@@ -38,17 +39,17 @@ class App extends Component {
         <Router>
         <Scene key="root">
           <Scene key="tabbar" tabs={true} initial={true} tabBarStyle={{backgroundColor:'#0E476A'}}>
-              <Scene key="tab1" title="Now" image={icon1} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
-                <Scene key="tab1_1" component={Home} title="Now" />
-                <Scene key="Event" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
+              <Scene key="tab1" title="Feed" image={icon1} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
+                <Scene key="tab1_1" component={Home} title="Feed" />
+                <Scene key="Event" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]} leftButtonIconStyle={{tintColor:'#0B82CC'}}/>
               </Scene>
               <Scene key="tab2" title="Favorites" image={icon2} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
                 <Scene key="tab2_1" component={Favorites} title="Favorites" />
-                <Scene key="tab2_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
+                <Scene key="tab2_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]} leftButtonIconStyle={{tintColor:'#0B82CC'}}/>
               </Scene>
               <Scene key="tab3" title="Discover" image={icon3} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
                 <Scene key="tab3_1" component={Discover} title="Discover" />
-                <Scene key="tab3_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
+                <Scene key="tab3_2" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]} leftButtonIconStyle={{tintColor:'#0B82CC'}}/>
               </Scene>
               <Scene key="tab4" component={Profile} title="Profile" image={icon4} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
           </Scene>
