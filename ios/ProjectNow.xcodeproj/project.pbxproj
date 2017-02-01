@@ -28,9 +28,7 @@
 		90AFF5B11DDDEEC000B8A571 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90AFF5AB1DDD614200B8A571 /* libBVLinearGradient.a */; };
 		90AFF5CA1DDDF86700B8A571 /* Nexa Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90AFF5AC1DDD631A00B8A571 /* Nexa Bold.otf */; };
 		90AFF5CB1DDDF86700B8A571 /* Nexa Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90AFF5AD1DDD631A00B8A571 /* Nexa Light.otf */; };
-		4472D35B2EA94901AB6440D1 /* libRNShare.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 910E003D62FE42B3A3AE6D81 /* libRNShare.a */; };
-		9032F1F55CAE4431A11106DB /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 51E575AD37DE44E4A51A0687 /* libRNFetchBlob.a */; };
-		CFA0001B37314B5F986A5192 /* libRNImagePicker.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8691DB01C284468C94D8C85A /* libRNImagePicker.a */; };
+		E9A13DAB0D6441F3B78E18EF /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D50A963314B145AAA12ACBD8 /* libRNFetchBlob.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -191,12 +189,7 @@
 		902F80CF1E36434200C95D9A /* RNMail.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNMail.xcodeproj; path = "../node_modules/react-native-mail/RNMail.xcodeproj"; sourceTree = "<group>"; };
 		90AFF5AC1DDD631A00B8A571 /* Nexa Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nexa Bold.otf"; path = "ProjectNow/Nexa Bold.otf"; sourceTree = "<group>"; };
 		90AFF5AD1DDD631A00B8A571 /* Nexa Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nexa Light.otf"; path = "ProjectNow/Nexa Light.otf"; sourceTree = "<group>"; };
-		2668751818294409945C4DFD /* RNShare.xcodeproj */ = {isa = PBXFileReference; name = "RNShare.xcodeproj"; path = "../node_modules/react-native-share/ios/RNShare.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		910E003D62FE42B3A3AE6D81 /* libRNShare.a */ = {isa = PBXFileReference; name = "libRNShare.a"; path = "libRNShare.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		1020DB420D434E289CF2FF4B /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; name = "RNFetchBlob.xcodeproj"; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		51E575AD37DE44E4A51A0687 /* libRNFetchBlob.a */ = {isa = PBXFileReference; name = "libRNFetchBlob.a"; path = "libRNFetchBlob.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
-		FB83F31EE3314F96B7028598 /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; name = "RNImagePicker.xcodeproj"; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
-		8691DB01C284468C94D8C85A /* libRNImagePicker.a */ = {isa = PBXFileReference; name = "libRNImagePicker.a"; path = "libRNImagePicker.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		D50A963314B145AAA12ACBD8 /* libRNFetchBlob.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFetchBlob.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,9 +219,7 @@
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
-				4472D35B2EA94901AB6440D1 /* libRNShare.a in Frameworks */,
-				9032F1F55CAE4431A11106DB /* libRNFetchBlob.a in Frameworks */,
-				CFA0001B37314B5F986A5192 /* libRNImagePicker.a in Frameworks */,
+				E9A13DAB0D6441F3B78E18EF /* libRNFetchBlob.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,8 +357,6 @@
 				0A07EF2AD9C94D8ABAD3815F /* AirMaps.xcodeproj */,
 				27899B4123124E87ABC0627F /* RNFetchBlob.xcodeproj */,
 				2668751818294409945C4DFD /* RNShare.xcodeproj */,
-				1020DB420D434E289CF2FF4B /* RNFetchBlob.xcodeproj */,
-				FB83F31EE3314F96B7028598 /* RNImagePicker.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -487,7 +476,7 @@
 		83CBB9F71A601CBA00E9B192 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 610;
+				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = Facebook;
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
@@ -788,9 +777,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ProjectNow.app/ProjectNow";
 			};
@@ -809,9 +797,8 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
-					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ProjectNow.app/ProjectNow";
 			};
@@ -831,9 +818,8 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
-					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
+					"$(SRCROOT)..\node_modules\neact-native-shareios",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -861,9 +847,8 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
-					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
+					"$(SRCROOT)..\node_modules\neact-native-shareios",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -891,15 +876,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -918,9 +907,8 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
-					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
+					"$(SRCROOT)..\node_modules\neact-native-shareios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -942,8 +930,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -951,6 +941,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -963,9 +954,8 @@
 					"$(SRCROOT)/../node_modules/react-native/React/**",
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
-					"$(SRCROOT)\..\node_modules\react-native-share\ios",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)/../node_modules/react-native-image-picker/ios",
+					"$(SRCROOT)..\node_modules\neact-native-shareios",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
