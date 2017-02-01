@@ -18,7 +18,7 @@ import {
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
-import backgroundImage from '../images/City-Light.png'
+import titleImage from '../images/hs-title.png'
 import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
@@ -408,14 +408,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgb(56,198,95)',
     height: 50,
   },
-  backgroundImage: {
+  titleImage: {
     position: 'absolute',
-    width: width,
-    top: height*.6,
-    height: height*.45,
-    resizeMode: 'stretch', // or 'stretch'
+    left: width*.2,
+    right: width*.2,
+    width: width*.6,
+    top: 0,
+    height: 150,
+    resizeMode: 'contain', // or 'stretch'
   },
-  linearGradient: {
+  modalBackground: {
     position: 'absolute',
     top: 0,
     left: 0,
@@ -423,16 +425,17 @@ const styles = StyleSheet.create({
     bottom: 0,
     width: width,
     height: Platform.OS == 'ios' ? height : height-20,
+    backgroundColor: '#0E476A',
   },
   loginButton: {
     marginTop: 5,
-    backgroundColor: '#50E3C2',
+    backgroundColor: '#F97237',
     height: 50,
     marginLeft:20,
     marginRight: 20,
     borderWidth: 2,
     borderRadius: 25,
-    borderColor: '#22FFCC',
+    borderColor: '#EE6436',
     alignItems: 'center',
     justifyContent: 'center',
   },
