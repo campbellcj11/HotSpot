@@ -19,6 +19,7 @@ export const SIGNING_UP = 'SIGNING_UP'
 export const LOGGING_IN = 'LOGGING_IN';
 export const LOGGING_OUT = 'LOGGING_OUT';
 export const LOAD_USER_DATA = 'LOAD_USER_DATA';
+export const LOAD_ISLOGGEDIN_DATA = 'LOAD_ISLOGGEDIN_DATA';
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -87,6 +88,19 @@ function userDataLoaded(user) {
   return {
     type: LOAD_USER_DATA,
     user: user
+  }
+}
+
+export function loadLoggedInData(){
+  return dispatch => { offline.get('isLoggedIn').then((isLoggedIn) => {
+    dispatch(loggedInLoaded(isLoggedIn || false))
+  })}
+}
+
+function loggedInLoaded(isLoggedIn) {
+  return {
+    type: LOAD_ISLOGGEDIN_DATA,
+    isLoggedIn: isLoggedIn
   }
 }
 /*
