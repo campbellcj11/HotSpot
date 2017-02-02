@@ -427,11 +427,9 @@ const styles = StyleSheet.create({
     height: 50,
   },
   titleImage: {
-    position: 'absolute',
     left: width*.2,
     right: width*.2,
     width: width*.6,
-    top: 0,
     height: 150,
     resizeMode: 'contain', // or 'stretch'
     marginTop: Platform.OS == 'ios' ? 20 : 20,
