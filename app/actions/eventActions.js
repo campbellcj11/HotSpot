@@ -16,6 +16,15 @@ export function getSavedEvents()
 {
   let db = firebase.database();
   var query = db.ref("favorites/" + firebase.auth().currentUser.uid);
+
+  var metricQuery = db.ref("metrics/");
+  metricQuery.push({
+      "UserID" : firebase.auth().currentUser.uid,
+      "Action" : "Get Saved Events",
+      "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+      "Additional_Information" : ""
+  });
+
   var index = 0;
   var savedEventKeys = [];
   query.once("value")
@@ -37,6 +46,14 @@ export function favorite(userUID, eventUID)
   var index = 0;
   var savedEventKeys = [];
 
+  var metricQuery = db.ref("metrics/");
+  metricQuery.push({
+      "UserID" : firebase.auth().currentUser.uid,
+      "Action" : "Favorited event",
+      "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+      "Additional_Information" : eventUID
+  });
+
   query.once('value')
     .then(function(snap) {
       savedEventKeys = snap.val();
@@ -57,6 +74,15 @@ export function favorite(userUID, eventUID)
 export function unFavorite(userUID, eventUID)
 {
   let db = firebase.database();
+
+  var metricQuery = db.ref("metrics/");
+  metricQuery.push({
+      "UserID" : firebase.auth().currentUser.uid,
+      "Action" : "Unfavorited event",
+      "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+      "Additional_Information" : eventUID
+  });
+
   var query = db.ref("favorites/" + userUID);
   var index = 0;
   var savedEventKeys = [];

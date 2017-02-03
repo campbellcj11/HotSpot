@@ -119,6 +119,15 @@ export function loginUser(user){
         ref.update({
           Last_Login : firebase.database.ServerValue.TIMESTAMP
         });
+
+        var metricQuery = database.ref("metrics/");
+        metricQuery.push({
+            "UserID" : firebase.auth().currentUser.uid,
+            "Action" : "Login",
+            "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+            "Additional_Information" : ""
+        });
+
         ref.once('value')
           .then(function(snapshot) {
             console.log('User logging in: ' + snapshot.val());
@@ -143,6 +152,15 @@ export function loginUser(user){
 
 export function logoutUser(){
   console.log('Logging out user');
+
+  var metricQuery = database.ref("metrics/");
+  metricQuery.push({
+      "UserID" : firebase.auth().currentUser.uid,
+      "Action" : "Logout",
+      "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+      "Additional_Information" : ""
+  });
+
   return (dispatch) => {
     dispatch(loggingOut());
     firebase.auth().signOut()
@@ -174,6 +192,15 @@ export function signUpUser(user) {
           adminUser: false,
           lastLogin : firebase.database.ServerValue.TIMESTAMP
         });
+
+        var metricQuery = database.ref("metrics/");
+        metricQuery.push({
+            "UserID" : firebase.auth().currentUser.uid,
+            "Action" : "Sign up user",
+            "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+            "Additional_Information" : "user.email"
+        });
+
         dispatch(stateSignUp(user));
       })
       .catch(error => {
@@ -192,6 +219,14 @@ export function resetPassword(email) {
     firebase.auth().sendPasswordResetEmail(email)
       .then(currentUser => {
         dispatch(stateResetPassword())
+
+        var metricQuery = firebase.database().ref("metrics/");
+        metricQuery.push({
+            "Action" : "Reset Password",
+            "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+            "Additional_Information" : email
+        });
+
         Alert.alert("Password reset email sent.");
       })
       .catch(error => {
