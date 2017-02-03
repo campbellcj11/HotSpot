@@ -27,8 +27,8 @@ export default class ImageButton extends Component {
         onPress={this.props.onPress}
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
-        underlayColor="#00000010">
-          <Image style={[styles.buttonImage,this.props.imageStyle]} source={this.props.image}/>
+        underlayColor="#FFFFFF00">
+          <Image style={[styles.buttonImage,this.props.imageStyle]} source={this.props.image} resizeMode={'contain'}/>
       </TouchableHighlight>
     );
   }

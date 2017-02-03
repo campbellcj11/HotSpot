@@ -40,7 +40,7 @@ class App extends Component {
         <Scene key="root">
           <Scene key="tabbar" tabs={true} initial={true} tabBarStyle={{backgroundColor:'#0E476A'}}>
               <Scene key="tab1" title="Feed" image={icon1} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>
-                <Scene key="tab1_1" component={Home} title="Feed" />
+                <Scene key="tab1_1" component={Home} title="Feed" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}/>
                 <Scene key="Event" component={EventView} title="Event" navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]} leftButtonIconStyle={{tintColor:'#0B82CC'}}/>
               </Scene>
               <Scene key="tab2" title="Favorites" image={icon2} icon={TabIcon} navigationBarStyle={styles.navigationBarStyle} titleStyle={[styles.baseBoldFontStyle,styles.navigationBarTextStyle]}>

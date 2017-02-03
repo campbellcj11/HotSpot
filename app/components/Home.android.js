@@ -23,6 +23,8 @@ import userImage from '../images/avatar.png'
 import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
+import plusImage from '../images/plus.png'
+import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
@@ -58,10 +60,32 @@ export default class Home extends Component {
   }
 
   componentWillMount() {
+    Actions.refresh({
+             renderRightButton: () => this.renderRightButton(),
+             renderLeftButton: () => this.renderLeftButton(),
+        })
+
     this.props.loadUserData();
     this.listenForItems(this.itemsRef);
   }
+  renderRightButton(){
+    return (
+      <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      </ImageButton>
+    );
+  }
+  renderLeftButton(){
+    return(
+      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      </ImageButton>
+    )
+  }
+  onRightPress(){
 
+  }
+  onLeftPress(){
+
+  }
   getRef() {
     return firebase.database().ref();
   }
@@ -316,27 +340,6 @@ export default class Home extends Component {
         </View>
         </View>
       </Modal>
-    )
-  }
-  static renderNavigationBar(props)
-  {
-    console.log('AHH PROPS!')
-    console.log(props)
-    return(
-      <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-          <View style={{flex:.2}}/>
-          <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
-            <Text style={{color:'#F97237',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
-          </View>
-            <Button
-            style={{flex:.2}}
-            //onPress={() => props.logoutUser()}
-            textStyle={{color:'#F97237',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}>
-            {/*Logout*/}
-          </Button>
-        </View>
-      </View>
     )
   }
   render() {
