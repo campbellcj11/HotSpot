@@ -46,10 +46,10 @@ export default class EventPage extends Component {
   {
     return(
       <View style={this.props.style}>
-        <EventCell key={0} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.props.cellPressed(cellInfo)} large={false} eventInfo={this.props.eventsForPage.length >= 1 ? this.props.eventsForPage[0]: {}} style={{width:this.props.width,height:this.props.height*.5,borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+        <EventCell key={0} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.props.cellPressed(cellInfo)} large={true} eventInfo={this.props.eventsForPage.length >= 1 ? this.props.eventsForPage[0]: {}} style={{width:this.props.width,height:this.props.height*.5,borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
 
         <View style={{flexDirection:'row',width:this.props.width,height:this.props.height*.5}}>
-          <EventCell key={1} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.props.cellPressed(cellInfo)} large={false} eventInfo={this.props.eventsForPage.length >= 2 ? this.props.eventsForPage[1]: {}} style={{width:this.props.width,borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+          <EventCell key={1} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.props.cellPressed(cellInfo)} large={true} eventInfo={this.props.eventsForPage.length >= 2 ? this.props.eventsForPage[1]: {}} style={{width:this.props.width,borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
         </View>
       </View>
     )

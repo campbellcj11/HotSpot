@@ -91,7 +91,7 @@ export default class EventCell extends Component {
             <Image source={{uri: this.props.eventInfo.Image || ''}} style={[styles.image,{marginBottom:this.props.large ? 10:5}]}>
               <View style={{flex:1,backgroundColor:'#00000050'}}>
                 <View style={{flex: this.props.large ? .85:.7,padding:5}}>
-                  <Text style={{flex: this.props.large ? .08:.20,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 12:10,color:'white'}}>{this.props.eventInfo.Location}</Text>
+                  <Text style={{flex: this.props.large ? .13:.20,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 12:10,color:'white'}}>{this.props.eventInfo.Location}</Text>
                   <Text style={{flex: .80,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 24:14,color:'white'}}>{this.props.eventInfo.Event_Name}</Text>
                 </View>
                 <View style={{flex: this.props.large ? .15:.3,flexDirection:'row'}}>

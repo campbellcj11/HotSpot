@@ -20,6 +20,8 @@ export const LOGGING_IN = 'LOGGING_IN';
 export const LOGGING_OUT = 'LOGGING_OUT';
 export const LOAD_USER_DATA = 'LOAD_USER_DATA';
 export const LOAD_ISLOGGEDIN_DATA = 'LOAD_ISLOGGEDIN_DATA';
+export const SAVE_INTERESTS = 'SAVE_INTERESTS';
+export const SAVE_CITY = 'SAVE_CITY';
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -101,6 +103,30 @@ function loggedInLoaded(isLoggedIn) {
   return {
     type: LOAD_ISLOGGEDIN_DATA,
     isLoggedIn: isLoggedIn
+  }
+}
+export function loadInterestsData(){
+  return dispatch => { offline.get('interests').then((interests) => {
+    dispatch(saveInterests(interests || false))
+  })}
+}
+export function saveInterests(interests){
+  offline.save('interests', interests);
+  return {
+    type: SAVE_INTERESTS,
+    interests: interests
+  }
+}
+export function loadLocationData(){
+  return dispatch => { offline.get('city').then((city) => {
+    dispatch(saveLocation(city || false))
+  })}
+}
+export function saveLocation(city){
+  offline.save('city', city);
+  return {
+    type: SAVE_CITY,
+    city: city
   }
 }
 /*

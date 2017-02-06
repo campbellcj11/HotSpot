@@ -8,13 +8,17 @@ import {
   SIGNING_UP,
   LOAD_USER_DATA,
   LOAD_ISLOGGEDIN_DATA,
+  SAVE_CITY,
+  SAVE_INTERESTS,
 } from '../actions/userActions'
 
 import offline from 'react-native-simple-store'
 
 const initialState = {
   loggedIn: false,
-  user: {}
+  user: {},
+  city: '',
+  interests: [],
 }
 
 export default function reducer(state = initialState, action) {
@@ -65,6 +69,16 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       loggedIn: action.isLoggedIn,
+    }
+  case SAVE_CITY:
+    return {
+      ...state,
+      city: action.city,
+    }
+  case SAVE_INTERESTS:
+    return {
+      ...state,
+      interests: action.interests,
     }
   default:
     return state

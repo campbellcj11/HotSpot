@@ -29,7 +29,7 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
-import exitImage from '../images/letter-x.png'
+import exitImage from '../images/delete.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
@@ -184,7 +184,7 @@ export default class CreateEvent extends Component {
        <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
          <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
            <View>
-           <ImageButton image={exitImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={() => this.setEventVisible(false)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+           <ImageButton image={exitImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={() => this.props.close()}>
            </ImageButton>
            </View>
          </View>

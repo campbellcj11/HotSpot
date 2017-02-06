@@ -30,6 +30,8 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
+import CreateEvent from './CreateEvent'
+import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
@@ -51,12 +53,20 @@ export default class Home extends Component {
       dataSource:ds,
       items: [],
       isSignUp: false,
+      filterOpen: false,
+      interests: this.props.interests,
+      city: this.props.city,
     }
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
 
     // this.props.loadUserData();
     // this.props.loadLoggedInData();
+    this.props.loadUserData();
+    this.props.loadLoggedInData();
+    this.props.loadInterestsData();
+    this.props.loadLocationData();
+    this.listenForItems(this.itemsRef);
   }
 
   componentWillMount() {
@@ -65,23 +75,50 @@ export default class Home extends Component {
              renderLeftButton: () => this.renderLeftButton(),
         })
 
-    this.props.loadUserData();
-    this.listenForItems(this.itemsRef);
+    // this.props.loadUserData();
+    // this.listenForItems(this.itemsRef);
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.user != this.props.user)
+    {
+      this.listenForItems(this.itemsRef);
+    }
+    if(nextProps.city != this.props.city)
+    {
+      this.setState({
+        city: nextProps.city,
+      })
+      this.listenForItems(this.itemsRef);
+    }
+    if(nextProps.interests != this.props.interests)
+    {
+      this.setState({
+        interests: nextProps.interests,
+      })
+      this.listenForItems(this.itemsRef);
+    }
   }
   renderRightButton(){
     return (
-      <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
       </ImageButton>
     );
   }
   renderLeftButton(){
     return(
-      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)}>
       </ImageButton>
     )
   }
   onRightPress(){
-
+    this.setState({
+      filterOpen: true,
+    });
+  }
+  closeFilters(){
+    this.setState({
+      filterOpen: false,
+    });
   }
   onLeftPress(){
     this.setEventVisible(true);
@@ -90,15 +127,43 @@ export default class Home extends Component {
   onExitPress(){
     this.setEventVisible(false);
   }
-  
+
   getRef() {
     return firebase.database().ref();
   }
+  handleInterest(sentInterest){
+    // console.log(sentInterest);
+    // console.log(this.state.interests);
+    // console.log(this.state.interests.indexOf(sentInterest));
 
+    // if(this.state.interests.indexOf(sentInterest) == -1)
+    // {
+    //   console.log('Adding Interests');
+    //   var interests = this.state.interests;
+    //   interests.push(sentInterest);
+    //   this.setState({interests:interests});
+    // }
+    // else
+    // {
+    //   console.log('Removing Interests');
+    //   var interests = this.state.interests;
+    //   var index = interests.indexOf(sentInterest);
+    //   interests.splice(index,1);
+    //   this.setState({interests:interests});
+    // }
+  }
+  setLocation(sentLocationString){
+    this.setState({city:sentLocationString});
+  }
+  updateInfo(){
+    this.props.saveInterests(this.state.interests);
+    this.props.saveLocation(this.state.city);
+    this.listenForItems(this.itemsRef);
+  }
   listenForItems(itemsRef) {
     var today = new Date();
     var timeUTC = today.getTime();
-    console.log("TIME UTC: " + timeUTC);
+    // console.log("TIME UTC: " + timeUTC);
     itemsRef.orderByChild("Date").startAt(timeUTC).on('value', (snap) => {
       var items = [];
       snap.forEach((child) => {
@@ -108,25 +173,30 @@ export default class Home extends Component {
           snapshot.forEach((childUnder) => {
             Tags.push(childUnder.key);
           });
-          items.push({
-            Key : child.key,
-            Event_Name: child.val().Event_Name,
-            Date: new Date(child.val().Date),
-            Location: child.val().Location,
-            Image: child.val().Image,
-            latitude: child.val().Latitude,
-            longitude: child.val().Longitude,
-            Tags: child.val().Tags,
-            Short_Description: child.val().Short_Description,
-            Long_Description: child.val().Long_Description,
-            Address: child.val().Address,
-            Website: child.val().Website,
-            MainTag: Tags ? Tags[0]:[],
-            Event_Contact: child.val().Email_Contact,
-          });
+          if(this.state.city == '' || child.val().City == this.state.city)
+          {
+            if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+            {
+              items.push({
+                Key : child.key,
+                Event_Name: child.val().Event_Name,
+                Date: new Date(child.val().Date),
+                Location: child.val().Location,
+                Image: child.val().Image,
+                latitude: child.val().Latitude,
+                longitude: child.val().Longitude,
+                Tags: child.val().Tags,
+                Short_Description: child.val().Short_Description,
+                Long_Description: child.val().Long_Description,
+                Address: child.val().Address,
+                Website: child.val().Website,
+                MainTag: Tags ? Tags[0]:[],
+                Event_Contact: child.val().Email_Contact,
+              });
+            }
+          }
         });
       });
-
       this.setState({
         dataSource: this.state.dataSource.cloneWithRows(items),
         items: items,
@@ -274,14 +344,6 @@ export default class Home extends Component {
             <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
         </Modal>
 
-        <Modal
-          animationType='fade'
-          transparent={false}
-          visible={this.state.eventModal}
-        >
-            <CreateEvent/>
-        </Modal>
-
         <View style={styles.container}>
           <ScrollView ref='swiper' height={height*.9}>
               {this.renderSlides()}
@@ -383,6 +445,14 @@ export default class Home extends Component {
           barStyle="light-content"
         />
         {viewToShow}
+        <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)}/>
+        <Modal
+          animationType='slide'
+          transparent={false}
+          visible={this.state.eventModal}
+        >
+            <CreateEvent close={ () => this.onExitPress()} />
+        </Modal>
       </View>
     )
   }

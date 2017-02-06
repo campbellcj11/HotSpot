@@ -70,6 +70,7 @@ var styles = StyleSheet.create({
   navigationBarTextStyle: {
     color:'#F97237',
     fontSize:20,
+    fontFamily: styleVariables.systemBoldFont,
   },
   baseBoldFontStyle:
   {
