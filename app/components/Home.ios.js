@@ -24,11 +24,13 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
+import exitImage from '../images/letter-x.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
+import CreateEvent from './CreateEvent'
 import EventPage from './EventPage'
 import Swiper from 'react-native-swiper';
 
@@ -51,6 +53,7 @@ export default class Home extends Component {
       dataSource:ds,
       items: [],
       isSignUp: false,
+      eventModal: false,
     }
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
@@ -76,16 +79,30 @@ export default class Home extends Component {
   }
   renderLeftButton(){
     return(
-      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
       </ImageButton>
     )
   }
+
+  setEventVisible(visible){
+    this.setState({
+      eventModal: visible,
+    })
+  }
+
+
   onRightPress(){
 
   }
   onLeftPress(){
-
+    this.setEventVisible(true);
   }
+
+  onExitPress(){
+    this.setEventVisible(false);
+  }
+
+
   getRef() {
     return firebase.database().ref();
   }
@@ -271,6 +288,13 @@ export default class Home extends Component {
             <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
         </Modal>
 
+        <Modal
+          animationType='fade'
+          transparent={false}
+          visible={this.state.eventModal}
+        >
+            <CreateEvent/>
+        </Modal>
 
 
         <View style={styles.container}>

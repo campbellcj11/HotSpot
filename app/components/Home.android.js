@@ -76,7 +76,7 @@ export default class Home extends Component {
   }
   renderLeftButton(){
     return(
-      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
+      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)} onLayout={(event) => console.warn(event.nativeEvent.layout.y)}>
       </ImageButton>
     )
   }
@@ -84,8 +84,13 @@ export default class Home extends Component {
 
   }
   onLeftPress(){
-
+    this.setEventVisible(true);
   }
+
+  onExitPress(){
+    this.setEventVisible(false);
+  }
+  
   getRef() {
     return firebase.database().ref();
   }
@@ -269,7 +274,13 @@ export default class Home extends Component {
             <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
         </Modal>
 
-
+        <Modal
+          animationType='fade'
+          transparent={false}
+          visible={this.state.eventModal}
+        >
+            <CreateEvent/>
+        </Modal>
 
         <View style={styles.container}>
           <ScrollView ref='swiper' height={height*.9}>

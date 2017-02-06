@@ -18,7 +18,10 @@ import {
   Alert,
   StatusBar,
   Platform,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import ImagePicker from 'react-native-image-picker';
@@ -171,6 +174,8 @@ _submitChanges(userRef){
             </Text>
           </View>
 
+          <KeyboardAwareScrollView scrollEnabled={false}>
+          <ScrollView style={{flex:1}} scrollEnabled={false}>
           <View style={styles.settings_card}>
             <View style={{flexDirection: 'row',justifyContent: 'space-between'}}>
             <View style={styles.settings_closeModal}>
@@ -309,6 +314,8 @@ _submitChanges(userRef){
               </View>
             </View>
           </View>
+          </ScrollView>
+          </KeyboardAwareScrollView>
          </View>
      </Modal>
     )
