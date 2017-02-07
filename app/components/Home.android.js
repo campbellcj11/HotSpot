@@ -53,6 +53,7 @@ export default class Home extends Component {
       dataSource:ds,
       items: [],
       isSignUp: false,
+      eventModal: false,
       filterOpen: false,
       interests: this.props.interests,
       city: this.props.city,
@@ -97,6 +98,11 @@ export default class Home extends Component {
       })
       this.listenForItems(this.itemsRef);
     }
+  }
+  setEventVisible(visible){
+    this.setState({
+      eventModal: visible,
+    })
   }
   renderRightButton(){
     return (
