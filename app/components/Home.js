@@ -59,7 +59,6 @@ export default class Home extends Component {
       interests: this.props.interests,
       city: this.props.city,
     }
-    this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
 
     // this.props.loadUserData();
@@ -68,7 +67,7 @@ export default class Home extends Component {
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
     this.props.loadLocationData();
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
   }
 
   componentWillMount() {
@@ -78,26 +77,25 @@ export default class Home extends Component {
         })
 
     // this.props.loadUserData();
-    // this.listenForItems(this.itemsRef);
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
     {
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.city != this.props.city)
     {
       this.setState({
         city: nextProps.city,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.interests != this.props.interests)
     {
       this.setState({
         interests: nextProps.interests,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
   }
   setEventVisible(visible){
@@ -168,13 +166,14 @@ export default class Home extends Component {
   updateInfo(){
     this.props.saveInterests(this.state.interests);
     this.props.saveLocation(this.state.city);
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
   }
-  listenForItems(itemsRef) {
+  listenForItems() {
     var today = new Date();
     var timeUTC = today.getTime();
     // console.log("TIME UTC: " + timeUTC);
-    itemsRef.orderByChild("Date").startAt(timeUTC).on('value', (snap) => {
+    var ref = this.getRef().child('events/' + this.state.city);
+    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
       var items = [];
       snap.forEach((child) => {
         var tagsRef = this.getRef().child('tags/' + child.key);
