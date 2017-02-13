@@ -154,7 +154,7 @@ export default class FilterModal extends Component {
           <View>
             <View>
               <Text style={styles.filterTypeTitle}>Location</Text>
-              <View style={{flex:1,flexDirection:'row',marginLeft:16,marginRight:16}}>
+              <View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
                 <TextInput
                   style={styles.locationInput}
                   placeholder={'City'}
