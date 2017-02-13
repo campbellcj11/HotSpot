@@ -105,7 +105,15 @@ export default class EventCard extends Component {
   }
   openURL()
   {
-    var uriString = this.props.currentSelection.Website;
+    var uriString = '';
+    if(this.props.currentSelection.Website.indexOf('https://') == -1)
+    {
+      uriString = 'https://' + this.props.currentSelection.Website;
+    }
+    else
+    {
+      uriString = 'https://' + this.props.currentSelection.Website;
+    }
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
   openCalendar()
