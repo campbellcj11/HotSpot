@@ -70,17 +70,19 @@ export default class EventCell extends Component {
   favoriteButtonPressed(){
     if(this.state.favoriteColor == 'white')
     {
-      this.setState({favoriteColor: 'red'});
-      var userUID = firebase.auth().currentUser.uid;
-      var eventUID = this.props.eventInfo.Key;
-      eventActions.favorite(userUID, eventUID);
+      this.setState({favoriteColor: 'red'},function() {
+        var userUID = firebase.auth().currentUser.uid;
+        var eventUID = this.props.eventInfo.Key;
+        eventActions.favorite(userUID, eventUID);
+      });
     }
     else
     {
-      this.setState({favoriteColor: 'white'});
-      var userUID = firebase.auth().currentUser.uid;
-      var eventUID = this.props.eventInfo.Key;
-      eventActions.unFavorite(userUID, eventUID);
+      this.setState({favoriteColor: 'white'},function() {
+        var userUID = firebase.auth().currentUser.uid;
+        var eventUID = this.props.eventInfo.Key;
+        eventActions.unFavorite(userUID, eventUID);
+      });
     }
   }
   viewToRender()
@@ -88,7 +90,31 @@ export default class EventCell extends Component {
     return (
       <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
         <View style={styles.container}>
-            <Image source={{uri: this.props.eventInfo.Image || ''}} style={[styles.image,{marginBottom:this.props.large ? 10:5}]}>
+          <View style={{marginBottom:8,marginLeft:8,marginTop:8}}>
+            <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize: 18,marginBottom:4,}}>{this.props.eventInfo.Event_Name}</Text>
+            <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize: 7.5}}>{this.props.eventInfo.Location}</Text>
+          </View>
+          <Image source={{uri: this.props.eventInfo.Image ?  this.props.eventInfo.Image : ''}} style={styles.image}>
+            <View style={{position:'absolute',left:8,right:8,bottom:8,flexDirection:'row'}}>
+              <View style={{flex: .6,alignItems:'flex-start',justifyContent:'center'}}>
+                <Text style={{backgroundColor:'#0B82CC',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag ? this.props.eventInfo.MainTag.toUpperCase() : ''}</Text>
+              </View>
+              <View style={{flex: .3}}>
+              </View>
+              {
+                !this.props.partOfFavorites ?
+                  <View style={{flex: .1,alignItems:'center',justifyContent:'center'}}>
+                    {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{width:30,height:30}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:15,height:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
+                  </View>
+                : null
+              }
+            </View>
+          </Image>
+          <View style={{marginLeft:8,marginRight:8,marginBottom:8}}>
+            <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:16,color:'black',marginBottom:4}}>{this.date}</Text>
+            <Text ellipsizeMode={'tail'} numberOfLines={0} style={{fontFamily:styleVariables.systemLightFont,fontSize:14,lineHeight:18,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
+          </View>
+            {/*<Image source={{uri: this.props.eventInfo.Image || ''}} style={[styles.image,{marginBottom:this.props.large ? 10:5}]}>
               <View style={{flex:1,backgroundColor:'#00000050'}}>
                 <View style={{flex: this.props.large ? .85:.7,padding:5}}>
                   <Text style={{flex: this.props.large ? .13:.20,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize: this.props.large ? 12:10,color:'white'}}>{this.props.eventInfo.Location}</Text>
@@ -115,7 +141,7 @@ export default class EventCell extends Component {
                 <Text style={{paddingLeft:5,flex: this.props.large ? .15:.25,fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,fontSize:16,color:'black'}}>{this.date}</Text>
                 <Text ellipsizeMode={'tail'} numberOfLines={0} style={{flex: this.props.large ? .85:.75,fontFamily:styleVariables.systemLightFont,fontSize:14,lineHeight:18,paddingLeft:5,paddingRight:5,color:'black'}}>{this.props.eventInfo.Short_Description}</Text>
               </View>
-            </View>
+            </View>*/}
         </View>
       </TouchableHighlight>
     )
@@ -158,9 +184,11 @@ const styles = StyleSheet.create({
   },
   image: {
     backgroundColor:'transparent',
-    flex:.5,
     resizeMode: 'cover',
-
+    marginLeft: 8,
+    marginRight: 8,
+    marginBottom:8,
+    height: 150,
   },
 
 })

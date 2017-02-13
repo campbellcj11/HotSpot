@@ -87,6 +87,8 @@ export default class FilterModal extends Component {
     });
   }
   closeModal(){
+    this.props.setLocation(this.state.city);
+    this.props.interestPressed(this.state.interests);
     this.props.close();
   }
   buttonPressed(sentInterest) {
@@ -106,11 +108,10 @@ export default class FilterModal extends Component {
       interests.splice(index,1);
       this.setState({interests:interests});
     }
-    this.props.interestPressed(sentInterest);
+
   }
   setCity(sentText){
     this.setState({city:sentText});
-    this.props.setLocation(sentText);
   }
   renderInterests(){
     var interests = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
@@ -134,6 +135,7 @@ export default class FilterModal extends Component {
         animationType={'slide'}
         transparent={false}
         visible={this.props.showing}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
       >
           <View style={styles.topNav}>
             <View style={{height:20}}></View>
@@ -152,7 +154,7 @@ export default class FilterModal extends Component {
           <View>
             <View>
               <Text style={styles.filterTypeTitle}>Location</Text>
-              <View style={{flex:1,flexDirection:'row',marginLeft:16,marginRight:16}}>
+              <View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
                 <TextInput
                   style={styles.locationInput}
                   placeholder={'City'}

@@ -24,14 +24,14 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
-import exitImage from '../images/letter-x.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
-import CreateEvent from './CreateEvent'
 import EventPage from './EventPage'
+import EventCell from './EventCell'
+import CreateEvent from './CreateEvent'
 import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
 
@@ -62,6 +62,8 @@ export default class Home extends Component {
     this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
 
+    // this.props.loadUserData();
+    // this.props.loadLoggedInData();
     this.props.loadUserData();
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
@@ -76,6 +78,7 @@ export default class Home extends Component {
         })
 
     // this.props.loadUserData();
+    // this.listenForItems(this.itemsRef);
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
@@ -97,6 +100,11 @@ export default class Home extends Component {
       this.listenForItems(this.itemsRef);
     }
   }
+  setEventVisible(visible){
+    this.setState({
+      eventModal: visible,
+    })
+  }
   renderRightButton(){
     return (
       <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
@@ -109,14 +117,6 @@ export default class Home extends Component {
       </ImageButton>
     )
   }
-
-  setEventVisible(visible){
-    this.setState({
-      eventModal: visible,
-    })
-  }
-
-
   onRightPress(){
     this.setState({
       filterOpen: true,
@@ -125,8 +125,9 @@ export default class Home extends Component {
   closeFilters(){
     this.setState({
       filterOpen: false,
+    },function() {
+      this.updateInfo();
     });
-    this.updateInfo();
   }
   onLeftPress(){
     this.setEventVisible(true);
@@ -136,11 +137,10 @@ export default class Home extends Component {
     this.setEventVisible(false);
   }
 
-
   getRef() {
     return firebase.database().ref();
   }
-  handleInterest(sentInterest){
+  handleInterest(sentInterests){
     // console.log(sentInterest);
     // console.log(this.state.interests);
     // console.log(this.state.interests.indexOf(sentInterest));
@@ -160,6 +160,7 @@ export default class Home extends Component {
     //   interests.splice(index,1);
     //   this.setState({interests:interests});
     // }
+    this.setState({interests:sentInterests});
   }
   setLocation(sentLocationString){
     this.setState({city:sentLocationString});
@@ -243,6 +244,7 @@ export default class Home extends Component {
   _logout(){
     this.props.logoutUser();
   }
+
   _resetPassword() {
     this.props.resetPassword(this.state.email);
   }
@@ -269,9 +271,6 @@ export default class Home extends Component {
       ]
     )
   }
-  testMethod(){
-
-  }
   renderRow(rowData){
     return (
       <TouchableHighlight
@@ -287,7 +286,7 @@ export default class Home extends Component {
     )
   }
   pressRow(rowData) {
-    // console.log('RowData: ',rowData);
+    console.log('RowData: ',rowData);
     // this.setState({currentSelection:rowData});
     // this.setState({hasCurrentSelection:true});
 
@@ -298,30 +297,42 @@ export default class Home extends Component {
     this.setState({hasCurrentSelection:false});
   }
   renderSlides() {
-    this.currentIndex = 0;
-    var pageLengths = [];
-    var sumOfEvents = 0;
 
-    var eventPages = [];
-    var pageNumber = 0;
-    while(this.currentIndex < this.state.items.length - 1)
+    var eventCells = [];
+
+    for(var i=0;i < this.state.items.length; i++)
     {
-      var randomNumberOfEventsPerPage = Math.floor(Math.random() * 2) + 2;//Generates a randomNumber (2-3)
-      var eventsForPage = [];
-
-      for(var j = this.currentIndex ; j < this.currentIndex + randomNumberOfEventsPerPage; j++)
-      {
-        if(j < this.state.items.length)
-        {
-          eventsForPage.push(this.state.items[j]);
-        }
-      }
-      this.currentIndex = this.currentIndex + randomNumberOfEventsPerPage;
-      eventPages.push(<EventPage key={pageNumber} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={pageNumber} eventsForPage={eventsForPage} eventsPerPage={randomNumberOfEventsPerPage} style={[styles.card,{backgroundColor:'white'}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>);
-      pageNumber++;
+      var cellInfo = this.state.items[i];
+      // console.log('Cell Info ',i,': ',cellInfo);
+      eventCells.push(
+        <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+      );
     }
-
-    return eventPages;
+    return eventCells;
+    // this.currentIndex = 0;
+    // var pageLengths = [];
+    // var sumOfEvents = 0;
+    //
+    // var eventPages = [];
+    // var pageNumber = 0;
+    // while(this.currentIndex < this.state.items.length - 1)
+    // {
+    //   var randomNumberOfEventsPerPage = Math.floor(Math.random() * 2) + 2;//Generates a randomNumber (2-3)
+    //   var eventsForPage = [];
+    //
+    //   for(var j = this.currentIndex ; j < this.currentIndex + randomNumberOfEventsPerPage; j++)
+    //   {
+    //     if(j < this.state.items.length)
+    //     {
+    //       eventsForPage.push(this.state.items[j]);
+    //     }
+    //   }
+    //   this.currentIndex = this.currentIndex + randomNumberOfEventsPerPage;
+    //   eventPages.push(<EventPage key={pageNumber} partOfFavorites={false} cellPressed={(cellData) => this.pressRow(cellData)} pageNumber={pageNumber} eventsForPage={eventsForPage} eventsPerPage={randomNumberOfEventsPerPage} style={[styles.card,{backgroundColor:'white'}]} width={CARD_WIDTH} height={CARD_HEIGHT}/>);
+    //   pageNumber++;
+    // }
+    //
+    // return eventPages;
     // var colors = ['white'];
     // var eventsPerPage = 3;
     // var numberOfPages = Math.ceil(this.state.items.length / eventsPerPage);
@@ -351,14 +362,15 @@ export default class Home extends Component {
           animationType='fade'
           transparent={false}
           visible={this.state.hasCurrentSelection}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
         >
             <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
         </Modal>
 
         <View style={styles.container}>
-          <Swiper ref='swiper' height={height*.9} loop={false} horizontal={false} showsButtons={false} showsPagination={false}>
+          <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
               {this.renderSlides()}
-          </Swiper>
+          </ScrollView>
         </View>
       </View>
     )
@@ -373,84 +385,63 @@ export default class Home extends Component {
           animationType={'none'}
           transparent={false}
           visible={!this.props.loggedIn}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
       >
         <View style={{flexDirection:'row'}}>
-            <View style={styles.modalBackground}>
-              <Image source={titleImage} style={styles.titleImage}/>
-              <View style={styles.userNameView}>
-                <TextInput style={styles.userNameTextInput}
-                  ref='email'
-                  onChangeText={(email) => this.setState({email})}
-                  placeholder='Email'
-                  placeholderTextColor='#C6E1E2'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-              </View>
+        <View style={styles.modalBackground}>
+          <Image source={titleImage} style={styles.titleImage}/>
+          <View style={styles.userNameView}>
+            <TextInput style={styles.userNameTextInput}
+              ref='email'
+              onChangeText={(email) => this.setState({email})}
+              placeholder='Email'
+              placeholderTextColor='#C6E1E2'
+              underlineColorAndroid='transparent'>
+            </TextInput>
+          </View>
 
-              <View style={styles.passwordView}>
-                <TextInput style={styles.userNameTextInput}
-                  secureTextEntry={!this.state.isSignUp}
-                  ref='password'
-                  onChangeText={(password) => this.setState({password})}
-                  placeholder='Password'
-                  placeholderTextColor='#C6E1E2'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-              </View>
-              <Button
-                onPress={() => this._resetPassword()}
-                style={styles.forgotPasswordBlankButton}
-                textStyle={styles.forgotPasswordText}>
-                {forgotPasswordButtonText}
-              </Button>
-              <Button
-                onPress={() => this._login()}
-                style={styles.loginButton}
-                textStyle={styles.buttonText}>
-                {loginButtonText}
-              </Button>
-              <Button
-                onPress={() => this._loginWithoutAccount()}
-                style={styles.loginBlankButton}
-                textStyle={styles.buttonBlankText}>
-                {loginWithoutAccountButtonText}
-              </Button>
-              <Button
-                onPress={() => this._openSignupPage()}
-                style={styles.signupBlankButton}
-                textStyle={styles.buttonBlankText}>
-                {signUpButtonText}
-              </Button>
-            </View>
+          <View style={styles.passwordView}>
+            <TextInput style={styles.userNameTextInput}
+              secureTextEntry={!this.state.isSignUp}
+              ref='password'
+              onChangeText={(password) => this.setState({password})}
+              placeholder='Password'
+              placeholderTextColor='#C6E1E2'
+              underlineColorAndroid='transparent'>
+            </TextInput>
+          </View>
+          <Button
+            onPress={() => this._resetPassword()}
+            style={styles.forgotPasswordBlankButton}
+            textStyle={styles.forgotPasswordText}>
+            {forgotPasswordButtonText}
+          </Button>
+          <Button
+            onPress={() => this._login()}
+            style={styles.loginButton}
+            textStyle={styles.buttonText}>
+            {loginButtonText}
+          </Button>
+          <Button
+            onPress={() => this._loginWithoutAccount()}
+            style={styles.loginBlankButton}
+            textStyle={styles.buttonBlankText}>
+            {loginWithoutAccountButtonText}
+          </Button>
+          <Button
+            onPress={() => this._openSignupPage()}
+            style={styles.signupBlankButton}
+            textStyle={styles.buttonBlankText}>
+            {signUpButtonText}
+          </Button>
+        </View>
         </View>
       </Modal>
     )
   }
-  // static renderNavigationBar(props)
-  // {
-  //   // console.log('AHH PROPS!')
-  //   // console.log(props)
-  //   return(
-  //     <View style={{flex:1,backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-  //       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-  //         <View style={{flex:.2}}/>
-  //         <View style={{flex:.6,alignItems:'center',justifyContent:'center'}}>
-  //           <Text style={{color:'#F97237',fontSize:20,fontFamily:'Futura-Medium',textAlign:'center'}}>{props.title}</Text>
-  //         </View>
-  //           {/*<Button
-  //           style={{flex:.2}}
-  //           onPress={() => this.testMethod()}
-  //           textStyle={{color:'#F97237',fontSize:12,fontFamily:'Futura-Medium',textAlign:'center'}}
-  //           >
-  //             Logout
-  //           </Button>*/}
-  //       </View>
-  //     </View>
-  //   )
-  // }
   render() {
-    // console.log('PROPS!')
-    // console.log(this.state.items);
+    console.log('PROPS!')
+    console.log(this.props)
     let user, readonlyMessage, viewToShow
     //if(firebase.auth().currentUser)
     if(this.props.loggedIn && this.props.user != {})
@@ -483,6 +474,7 @@ export default class Home extends Component {
           animationType='slide'
           transparent={false}
           visible={this.state.eventModal}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
         >
             <CreateEvent close={ () => this.onExitPress()} />
         </Modal>
@@ -493,7 +485,7 @@ export default class Home extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingTop: HEADER_HEIGHT,
   },
   modalContainer: {
@@ -646,7 +638,7 @@ const styles = StyleSheet.create({
     marginBottom: Platform.OS == 'ios' ? 40 : 30,
   },
   userNameView: {
-    backgroundColor:'#0B82CC22',
+    backgroundColor:'#7148BC22',
     height: 50,
     marginLeft:20,
     marginRight: 20,
@@ -654,7 +646,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   passwordView: {
-    backgroundColor:'#0B82CC22',
+    backgroundColor:'#7148BC22',
     height: 50,
     marginLeft:20,
     marginRight: 20,
@@ -670,8 +662,7 @@ const styles = StyleSheet.create({
     padding: 2,
     paddingLeft: 10,
     borderWidth: 2,
-    borderColor: '#EE643660',
-    borderRadius: 4,
+    borderColor: '#B166CE22',
   },
   scroll: {
     flex: 1,
