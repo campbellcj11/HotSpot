@@ -201,6 +201,7 @@ export default class Home extends Component {
                 Website: child.val().Website,
                 MainTag: Tags ? Tags[0]:[],
                 Event_Contact: child.val().Email_Contact,
+                City: child.val().City,
               });
             }
           }
@@ -302,7 +303,7 @@ export default class Home extends Component {
     for(var i=0;i < this.state.items.length; i++)
     {
       var cellInfo = this.state.items[i];
-      // console.log('Cell Info ',i,': ',cellInfo);
+    //   console.log('Cell Info ',i,': ',cellInfo);
       eventCells.push(
         <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
       );

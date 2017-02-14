@@ -39,7 +39,7 @@ export function getSavedEvents()
   });
 }
 
-export function favorite(userUID, eventUID)
+export function favorite(userUID, eventUID, city)
 {
   let db = firebase.database();
   var query = db.ref("favorites/" + userUID);
@@ -51,7 +51,7 @@ export function favorite(userUID, eventUID)
       "UserID" : firebase.auth().currentUser.uid,
       "Action" : "Favorited event",
       "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
-      "Additional_Information" : eventUID
+      "Additional_Information" : city + "/" + eventUID
   });
 
   query.once('value')
@@ -60,18 +60,18 @@ export function favorite(userUID, eventUID)
       if (savedEventKeys === null)
       {
         var newArray = [];
-        newArray[0] = eventUID
+        newArray[0] = city + "/" + eventUID
         query.set(newArray);
       }
       else if (savedEventKeys.includes(eventUID) === false)
       {
-        savedEventKeys.push(eventUID);
+        savedEventKeys.push(city + "/" + eventUID);
         query.set(savedEventKeys);
       }
     });
 }
 
-export function unFavorite(userUID, eventUID)
+export function unFavorite(userUID, eventUID, city)
 {
   let db = firebase.database();
 
@@ -80,7 +80,7 @@ export function unFavorite(userUID, eventUID)
       "UserID" : firebase.auth().currentUser.uid,
       "Action" : "Unfavorited event",
       "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
-      "Additional_Information" : eventUID
+      "Additional_Information" : city + "/" + eventUID
   });
 
   var query = db.ref("favorites/" + userUID);
@@ -89,9 +89,9 @@ export function unFavorite(userUID, eventUID)
   query.on('value', function(snap) { savedEventKeys = snap.val(); });
   if (savedEventKeys !==  null)
   {
-    if (savedEventKeys.includes(eventUID) === true)
+    if (savedEventKeys.includes(city + "/" + eventUID) === true)
     {
-      var index = savedEventKeys.indexOf(eventUID);
+      var index = savedEventKeys.indexOf(city + "/" + eventUID);
       var removedEvents = savedEventKeys.splice(index, 1);
       query.set(savedEventKeys);
     }

@@ -68,14 +68,20 @@ export default class Favorites extends Component {
       var items = [];
       var eventUIDs = [];
       snap.forEach((child) => {
+        var wholeString = child.val()
+        var thisCity = wholeString.substring(0,(wholeString.indexOf('/')));
+        var thisKey = wholeString.substring((wholeString.indexOf('/') + 1));
+        console.log("Current City: " + thisCity + "::thisKey:: " + thisKey);
         eventUIDs.push({
-          Key : child.val()
+          Key : thisKey,
+          City : thisCity,
         });
       });
 
       for (events in eventUIDs)
       {
-        var ref = this.getRef().child('events/' + eventUIDs[events].Key);
+        console.log("event UID: " + eventUIDs[events].Key);
+        var ref = this.getRef().child('events/' + eventUIDs[events].Key + '/');
         var tagsRef = this.getRef().child('tags/' + eventUIDs[events].Key);
         var Tags = [];
         tagsRef.on("value", (snapshot) => {

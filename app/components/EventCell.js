@@ -40,7 +40,7 @@ export default class EventCell extends Component {
 
   listenForItems(favoritesRef) {
     favoritesRef.on('value', (snap) => {
-      //console.log("Current favorites of user: " + snap.val());
+      console.log("Current favorites of user: " + snap.val());
       var items = snap.val();
       var color = 'white';
       //console.log("Event Name: " + this.props.eventInfo.Event_Name);
@@ -50,14 +50,18 @@ export default class EventCell extends Component {
       }
       else
       {
-        if (items.includes(this.props.eventInfo.Key) === true)
+        for (var object in items)
         {
-          //console.log("Favorite exists: " + this.props.eventInfo.Key);
+            console.log(items[object]);
+        }
+        if (items.includes(this.props.eventInfo.City + '/' + this.props.eventInfo.Key) === true)
+        {
+        //   console.log("FLAG! Favorite exists: " + this.props.eventInfo.Key);
           color = 'red'
         }
         else
         {
-          //console.log("Favorites DOES NOT: " + this.props.eventInfo.Key);
+        //   console.log("FLAG! Favorites DOES NOT: " + this.props.eventInfo.Key);
           color = 'white'
         }
       }
@@ -73,7 +77,8 @@ export default class EventCell extends Component {
       this.setState({favoriteColor: 'red'},function() {
         var userUID = firebase.auth().currentUser.uid;
         var eventUID = this.props.eventInfo.Key;
-        eventActions.favorite(userUID, eventUID);
+        var city = this.props.eventInfo.City;
+        eventActions.favorite(userUID, eventUID, city);
       });
     }
     else
@@ -81,7 +86,8 @@ export default class EventCell extends Component {
       this.setState({favoriteColor: 'white'},function() {
         var userUID = firebase.auth().currentUser.uid;
         var eventUID = this.props.eventInfo.Key;
-        eventActions.unFavorite(userUID, eventUID);
+        var city = this.props.eventInfo.City;
+        eventActions.unFavorite(userUID, eventUID, city);
       });
     }
   }
