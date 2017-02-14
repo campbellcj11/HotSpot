@@ -68,6 +68,7 @@ export default class Home extends Component {
     this.props.loadInterestsData();
     this.props.loadLocationData();
     this.listenForItems();
+    this.getLocation();
   }
 
   componentWillMount() {
@@ -97,6 +98,57 @@ export default class Home extends Component {
       })
       this.listenForItems();
     }
+  }
+  getLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        var initialPosition = JSON.stringify(position);
+        // console.log('position: ',position);
+        // console.log('initialPosition: ',initialPosition);
+        this.determineAddress(position);
+        // this.setState({initialPosition});
+      },
+      (error) => alert(JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+  determineAddress(initialPosition)
+  {
+    console.log('Address from location');
+    var obj = {}
+    var string = 'https://maps.googleapis.com/maps/api/geocode/json?&latlng='+initialPosition.coords.latitude+','+initialPosition.coords.longitude;//baseURL + 'api/v1/workflows/'+workflow_ID+'/tasks/'+task_ID;
+    // console.log("Fetch url: ",string);
+    fetch(string,obj)
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseJson) => {
+      var cityName = '';
+      for(var i=0;i<responseJson.results[0].address_components.length;i++)
+      {
+        var address_components = responseJson.results[0].address_components[i];
+        var types = address_components.types;
+        if(types.indexOf('locality') != -1)
+        {
+          cityName = address_components.long_name
+        }
+      }
+      // console.log('RAH: ',responseJson.results[0].address_components);
+      // console.log('RAH: ',responseJson.results[0].address_components[3].long_name);
+      // console.log('CityName: ',cityName);
+      
+      // console.log('Lat: ',responseJson.results[0].geometry.location.lat);
+      // console.log('Long: ',responseJson.results[0].geometry.location.lng);
+      // var cityName = responseJson.results[0].address_components[3].long_name;
+      // var lat = responseJson.results[0].geometry.location.lat;
+      // var lng = responseJson.results[0].geometry.location.lng;
+      this.setState({city:cityName});
+      this.updateInfo();
+      return responseJson;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
   setEventVisible(visible){
     this.setState({
