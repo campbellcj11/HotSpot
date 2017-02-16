@@ -31,7 +31,7 @@
   },
   "jest": {
     "preset": "react-native",
-    "setupFiles": ["/Users/conorcampbell/Documents/SeniorYear/projectnow/jest/setup.js"]
+    "setupFiles": ["./jest/setup.js"]
   },
   "devDependencies": {
     "babel-jest": "^18.0.0",
