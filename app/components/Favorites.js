@@ -82,7 +82,7 @@ export default class Favorites extends Component {
       for (events in eventUIDs)
       {
         console.log("event UID: " + eventUIDs[events].Key);
-        var ref = this.getRef().child('events/' + eventUIDs[events].Key + '/');
+        var ref = this.getRef().child('events/' + eventUIDs[events].City + '/' + eventUIDs[events].Key + '/');
         var tagsRef = this.getRef().child('tags/' + eventUIDs[events].Key);
         var Tags = [];
         tagsRef.on("value", (snapshot) => {
@@ -92,12 +92,15 @@ export default class Favorites extends Component {
           ref.on('value', (snap) => {
             var today = new Date();
             var timeUTC = today.getTime();
+            console.log("Error date: " + snap.val().Date);
+            console.log("Key error: " + snap.key);
           if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
               items.push({
                 Key : snap.key,
                 Event_Name: snap.val().Event_Name,
                 Date: new Date(snap.val().Date),
                 Location: snap.val().Location,
+                City: snap.val().City,
                 Image: snap.val().Image,
                 latitude: snap.val().Latitude,
                 longitude: snap.val().Longitude,
@@ -115,6 +118,7 @@ export default class Favorites extends Component {
                   Event_Name: snap.val().Event_Name,
                   Date: new Date(snap.val().Date),
                   Location: snap.val().Location,
+                  City: snap.val().City,
                   Image: snap.val().Image,
                   latitude: snap.val().Latitude,
                   longitude: snap.val().Longitude,
@@ -132,6 +136,7 @@ export default class Favorites extends Component {
                     Event_Name: snap.val().Event_Name,
                     Date: new Date(snap.val().Date),
                     Location: snap.val().Location,
+                    City: snap.val().City,
                     Image: snap.val().Image,
                     latitude: snap.val().Latitude,
                     longitude: snap.val().Longitude,
