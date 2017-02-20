@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
   },
   settings_card: {
-    top: HEADER_HEIGHT,
+    top: 0,
     //  borderWidth: 2,
     //  borderColor: 'red,
     width:CARD_WIDTH,
