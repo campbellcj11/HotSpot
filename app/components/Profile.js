@@ -134,7 +134,7 @@ export default class Profile extends Component {
     this.setState({modalVisible: false});
   }
 
-  renderRightButton(){
+  renderSaveButton(){
     return (
       <ImageButton image={checkImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.closeModal.bind(this)}>
       </ImageButton>
