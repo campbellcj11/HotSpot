@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
   settings_card: {
     top: HEADER_HEIGHT,
     //  borderWidth: 2,
-    //  borderColor: 'red',
+    //  borderColor: 'red,
     width:CARD_WIDTH,
     height:CARD_HEIGHT+TAB_HEIGHT,
   },
@@ -567,8 +567,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   profile_interestHeader: {
-    // borderColor: 'orange',
-    // borderWidth: 2,
     borderBottomWidth: .5,
     borderBottomColor: '#4F4F4F',
     height: CARD_HEIGHT*.075,
@@ -576,7 +574,6 @@ const styles = StyleSheet.create({
 
   },
   navigationBarStyle: {
-    flexGrow:1,
     height: HEADER_HEIGHT,
     width: width,
     backgroundColor:'#0E476A',
