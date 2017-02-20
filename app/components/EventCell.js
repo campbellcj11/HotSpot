@@ -14,6 +14,8 @@ import {
   Alert,
   StatusBar,
   Platform,
+  UIManager,
+  LayoutAnimation,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -72,6 +74,8 @@ export default class EventCell extends Component {
   }
 
   favoriteButtonPressed(){
+    // UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+    // LayoutAnimation.easeInEaseOut();
     if(this.state.favoriteColor == 'white')
     {
       this.setState({favoriteColor: 'red'},function() {
