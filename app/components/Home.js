@@ -180,11 +180,16 @@ export default class Home extends Component {
     });
   }
   onLeftPress(){
-    this.setEventVisible(true);
-  }
+    this.setState({
+      eventModal: true,
+    })}
+  setEventVisible(visible){
 
-  onExitPress(){
-    this.setEventVisible(false);
+  }
+  onCloseCreateEvent(){
+    this.setState({
+      eventModal: false,
+    })
   }
 
   getRef() {
@@ -525,14 +530,7 @@ export default class Home extends Component {
         />
         {viewToShow}
         <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)}/>
-        <Modal
-          animationType='slide'
-          transparent={false}
-          visible={this.state.eventModal}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-        >
-            <CreateEvent close={ () => this.onExitPress()} />
-        </Modal>
+        <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
       </View>
     )
   }

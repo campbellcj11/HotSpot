@@ -20,14 +20,19 @@ import {
   Platform,
   KeyboardAvoidingView,
   ScrollView,
+  Picker,
 } from 'react-native'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import ModalPicker from 'react-native-modal-picker'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 import { Actions } from 'react-native-router-flux';
 import icon3 from '../images/settings.png'
+import closeImage from '../images/delete.png'
+import checkImage from '../images/check.png'
+
 
 var {height, width} = Dimensions.get('window');
 
@@ -85,6 +90,7 @@ export default class Profile extends Component {
       Image: this.props.user.Image,
       modalVisible: false,
       selectedGender: 'none',
+      selectedAge: '',
       categories: [],
       dataSource: ds,
 
@@ -124,6 +130,22 @@ export default class Profile extends Component {
   setModalVisible(visible) {
   this.setState({modalVisible: visible});
 }
+  closeModal(){
+    this.setState({modalVisible: false});
+  }
+
+  renderRightButton(){
+    return (
+      <ImageButton image={checkImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.closeModal.bind(this)}>
+      </ImageButton>
+    );
+  }
+  renderLeftButton(){
+    return(
+      <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this._submitChanges.bind(this)}>
+      </ImageButton>
+    )
+  }
 
 renderImage(){
   ImagePicker.showImagePicker((response) => {
@@ -139,13 +161,13 @@ renderImage(){
   })
 }
 
-_submitChanges(userRef){
+_submitChanges(){
   console.log(this.state.First_Name);
   this.userRef.update({
     First_Name: this.state.First_Name,
     Last_Name: this.state.Last_Name,
-    Age: this.state.Age,
-    Gender: this.state.Gender,
+    Age: this.state.selectedAge,
+    Gender: this.state.selectedGender,
     Phone: this.state.Phone,
   })
   this.setModalVisible(false);
@@ -171,6 +193,24 @@ _submitChanges(userRef){
 
   renderModal()
   {
+    const genderOptions = [
+      {key: 0, label: 'Male'},
+      {key: 1, label: 'Female'},
+      {key: 2, label: 'Not Specified'},
+    ]
+
+    const ageOptions = [];
+    var ageObject = {};
+    for(var i = 0; i < 121; i++)
+    {
+      ageObject = {
+        key: i,
+        label: i,
+      };
+
+      ageOptions.push(ageObject);
+    }
+
     return(
       <Modal
         animationType={'none'}
@@ -284,16 +324,14 @@ _submitChanges(userRef){
                   <Text style = {styles.settings_NameInput}>AGE</Text>
                 </View>
                 <View style={styles.settings_LastInput}>
-                <TextInput
-                  style = {styles.TextInput}
-                  ref='Age'
-                  placeholder = {this.state.Age.toString()}
-                  placeholderTextColor='black'
-                  onChangeText={(Age) => this.setState({Age})}
-                  underlineColorAndroid='transparent'
-                  keyboardType='numeric'
-                >
-                </TextInput>
+                <ModalPicker
+                  selectStyle={{borderRadius:0, borderWidth: 0}}
+                  selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
+                  style ={{ borderRadius:0}}
+                  data={ageOptions}
+                  initValue="Age"
+                  onChange={(age) => this.setState({selectedAge: age})}>
+                </ModalPicker>
               </View>
              </View>
             </View>
@@ -305,14 +343,14 @@ _submitChanges(userRef){
                 <Text style = {styles.settings_NameInput}>GENDER</Text>
               </View>
               <View style={styles.settings_FirstInput}>
-              <TextInput
-                style = {styles.TextInput}
-                placeholder={this.state.Gender}
-                ref='Gender'
-                onChangeText={(Gender) => this.setState({Gender})}
-                placeholderTextColor='black'
-                underlineColorAndroid='transparent'>
-              </TextInput>
+              <ModalPicker
+                selectStyle={{borderRadius:0, borderWidth: 0}}
+                selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
+                style ={{flex: 1, borderRadius:0}}
+                data={genderOptions}
+                initValue="Select Gender"
+                onChange={(gender) => this.setState({selectedGender: gender})}>
+              </ModalPicker>
               </View>
             </View>
           </View>
@@ -426,8 +464,9 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
   },
   settings_card: {
-     //borderWidth: 2,
-     //borderColor: 'red',
+    top: HEADER_HEIGHT,
+    //  borderWidth: 2,
+    //  borderColor: 'red',
     width:CARD_WIDTH,
     height:CARD_HEIGHT+TAB_HEIGHT,
   },
@@ -457,6 +496,7 @@ const styles = StyleSheet.create({
   container_settings: {
     backgroundColor: '#f2f2f2',
     flex:1,
+    flexDirection: 'column',
   },
   backgroundImage: {
     position: 'absolute',
@@ -482,6 +522,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
     fontSize: 18,
+  },
+  picker: {
+    width: 100
   },
   userLocation: {
     // borderWidth: 2,
