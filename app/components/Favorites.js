@@ -28,9 +28,10 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
+import EventCell from './EventCell'
 import Swiper from 'react-native-swiper';
 
-const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
 const CARD_WIDTH = width;
 const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
@@ -202,41 +203,61 @@ export default class Favorites extends Component {
 
     var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
     return (
-      <TouchableHighlight
-        underlayColor = '#dddddd'
-        style = {styles.item}
-        onPress = {() => this.pressRow(rowData)}
-      >
-      <View style={styles.item}>
-      <View style={{flex:.85}}>
-          <View style={{flex:.75}}>
-            <Text style={styles.itemTitle}>{rowData.Event_Name}</Text>
-            <Text numberOfLines={2} style={styles.itemText}>{rowData.Short_Description}</Text>
-          </View>
-          <View style={{marginLeft:5,flex:.25,justifyContent:'center'}}>
-            <Text numberOfLines={1} style={{color:'#261851',fontSize: 14,fontFamily: 'Futura-Medium'}}>{dateString}</Text>
-          </View>
-      </View>
-      <View style={{flex:.15}}>
-        <Image style={{flex:1,resizeMode:'cover'}} source={{uri: rowData.Image}}>
-        </Image>
-      </View>
-      </View>
-      </TouchableHighlight>
+      <EventCell partOfFavorites={true} cellPressed={(rowData) => this.pressRow(rowData)} large={true} eventInfo={rowData} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+      // <TouchableHighlight
+      //   underlayColor = '#dddddd'
+      //   style = {styles.item}
+      //   onPress = {() => this.pressRow(rowData)}
+      // >
+      // <View style={styles.item}>
+      // <View style={{flex:.85}}>
+      //     <View style={{flex:.75}}>
+      //       <Text style={styles.itemTitle}>{rowData.Event_Name}</Text>
+      //       <Text numberOfLines={2} style={styles.itemText}>{rowData.Short_Description}</Text>
+      //     </View>
+      //     <View style={{marginLeft:5,flex:.25,justifyContent:'center'}}>
+      //       <Text numberOfLines={1} style={{color:'#261851',fontSize: 14,fontFamily: 'Futura-Medium'}}>{dateString}</Text>
+      //     </View>
+      // </View>
+      // <View style={{flex:.15}}>
+      //   <Image style={{flex:1,resizeMode:'cover'}} source={{uri: rowData.Image}}>
+      //   </Image>
+      // </View>
+      // </View>
+      // </TouchableHighlight>
     )
+  }
+  renderSlides() {
+
+    var eventCells = [];
+
+    for(var i=0;i < this.state.items.length; i++)
+    {
+      var cellInfo = this.state.items[i];
+      // console.log('Cell Info ',i,': ',cellInfo);
+      eventCells.push(
+        <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+      );
+    }
+    return eventCells;
   }
   viewWithFavorites()
   {
     return(
       <View style={styles.container}>
-        <View>
-          <ListView style={styles.scroll}
-          contentContainerStyle={styles.list}
-            dataSource={this.state.dataSource}
-            renderRow= {this.renderRow.bind(this)}>
-          </ListView>
-        </View>
+        <ScrollView ref='swiper' style={{height:height,width:width,backgroundColor:'#E2E2E2'}}>
+            {this.renderSlides()}
+        </ScrollView>
       </View>
+      // <View style={styles.container}>
+      //   <View>
+      //     <ListView style={styles.scroll}
+      //       contentContainerStyle={styles.list}
+      //       dataSource={this.state.dataSource}
+      //       renderRow= {this.renderRow.bind(this)}>
+      //     </ListView>
+      //   </View>
+      // </View>
     )
   }
   viewWithoutFavorites()
@@ -276,8 +297,7 @@ export default class Favorites extends Component {
 const styles = StyleSheet.create({
   container: {
     top: Platform.OS == 'ios' ? 64:44,
-    height: height - (Platform.OS == 'ios' ? 64:44) - 45,
-    bottom: 45,
+    height: height - (Platform.OS == 'ios' ? 64:44) - 50,
   },
   modalContainer: {
     flex: 1,
@@ -424,9 +444,9 @@ const styles = StyleSheet.create({
   },
   scroll: {
     flex: 1,
+    backgroundColor:'#E2E2E2',
   },
   rowContainer: {
-    flex: 1,
     flexDirection: 'row',
     padding:10,
   },

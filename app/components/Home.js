@@ -107,13 +107,13 @@ export default class Home extends Component {
   }
   renderRightButton(){
     return (
-      <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
+      <ImageButton image={filterImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
       </ImageButton>
     );
   }
   renderLeftButton(){
     return(
-      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)}>
+      <ImageButton image={plusImage} style={{top:2,width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)}>
       </ImageButton>
     )
   }
@@ -173,20 +173,25 @@ export default class Home extends Component {
   listenForItems(itemsRef) {
     var today = new Date();
     var timeUTC = today.getTime();
+    var items = [];
     // console.log("TIME UTC: " + timeUTC);
     itemsRef.orderByChild("Date").startAt(timeUTC).on('value', (snap) => {
-      var items = [];
       snap.forEach((child) => {
         var tagsRef = this.getRef().child('tags/' + child.key);
         var Tags = [];
+        // items = [];
         tagsRef.on("value", (snapshot) => {
           snapshot.forEach((childUnder) => {
             Tags.push(childUnder.key);
           });
+          // console.warn(child.val().City);
+          // console.warn(this.state.city);
           if(this.state.city == '' || child.val().City == this.state.city)
           {
+            // console.warn('State == city');
             if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
             {
+              // console.warn('tag in interests');
               items.push({
                 Key : child.key,
                 Event_Name: child.val().Event_Name,
@@ -204,14 +209,13 @@ export default class Home extends Component {
                 Event_Contact: child.val().Email_Contact,
               });
             }
+            // console.log('ITLs: ',items.length);
+            // console.log('ITs: ',items);
+            clearTimeout(this.loadTimeout);
+            this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
           }
         });
       });
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(items),
-        items: items,
-      });
-
     });
   }
 
@@ -297,13 +301,12 @@ export default class Home extends Component {
     this.setState({hasCurrentSelection:false});
   }
   renderSlides() {
-
     var eventCells = [];
-
+    console.warn(this.state.items.length);
     for(var i=0;i < this.state.items.length; i++)
     {
       var cellInfo = this.state.items[i];
-      // console.log('Cell Info ',i,': ',cellInfo);
+      console.log('Cell Info ',i,': ',cellInfo);
       eventCells.push(
         <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
       );

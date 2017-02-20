@@ -96,13 +96,23 @@ export default class Profile extends Component {
   }
 
   componentWillMount() {
-
+    Actions.refresh({
+             renderRightButton: () => this.renderRightButton(),
+        })
   }
 
   componentDidMount() {
     //this.renderCategories();
   }
-
+  renderRightButton(){
+    return (
+      <ImageButton image={icon3} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
+      </ImageButton>
+    );
+  }
+  onRightPress(){
+    this.setModalVisible(true);
+  }
   getRef() {
     return firebase.database().ref();
   }
@@ -169,28 +179,20 @@ _submitChanges(userRef){
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
+            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false)}}>
+              <Text style={{color:'#F97237',textAlign:'center'}}>Exit</Text>
+            </TouchableHighlight>
             <Text style = {styles.navigationBarTextStyle}>
               Edit Profile
             </Text>
+            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => this._submitChanges()}>
+              <Text style={{color: '#F97237',textAlign:'center'}}>Save</Text>
+            </TouchableHighlight>
           </View>
 
           <KeyboardAwareScrollView scrollEnabled={false}>
           <ScrollView style={{flex:1}} scrollEnabled={false}>
           <View style={styles.settings_card}>
-            <View style={{flexDirection: 'row',justifyContent: 'space-between'}}>
-            <View style={styles.settings_closeModal}>
-            <TouchableHighlight
-              onPress={() => {this.setModalVisible(false)}}>
-              <Text style={{color:'#F97237'}}>Exit</Text>
-            </TouchableHighlight>
-            </View>
-            <View style={styles.settings_saveModal}>
-            <TouchableHighlight
-            onPress={() => this._submitChanges()}>
-            <Text style={{color: '#F97237'}}>Save</Text>
-            </TouchableHighlight>
-            </View>
-            </View>
             <View style = {styles.settings_imageView}>
               <View style = {styles.settings_image}>
                 <Image source={{uri: this.state.Image }} style={styles.userImage}/>
@@ -333,16 +335,6 @@ _submitChanges(userRef){
     <View style = {styles.innerContainer}>
     <View style= {styles.container_profile}>
       <View style= {styles.container_upper}>
-      <View style = {styles.view_iconSettings}>
-      <View style = {styles.view_iconView}>
-       <TouchableHighlight
-         onPress={()=> { this.setModalVisible(true)}}
-         underlayColor = 'transparent'
-        >
-         <Image source={icon3} style={styles.profile_Icon}/>
-       </TouchableHighlight>
-       </View>
-        </View>
         <View style={styles.container_image}>
           <Image source={{uri: this.state.Image}} style={styles.userImage}/>
         </View>
@@ -541,17 +533,23 @@ const styles = StyleSheet.create({
 
   },
   navigationBarStyle: {
+    flexGrow:1,
     height: HEADER_HEIGHT,
     width: width,
     backgroundColor:'#0E476A',
     borderBottomWidth: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
   navigationBarTextStyle: {
+    marginTop:20,
+    flex:.6,
     color:'#F97237',
     fontSize:20,
     fontFamily:'Futura-Medium',
+    textAlign:'center',
+    lineHeight: HEADER_HEIGHT-21,
   },
   settings_image: {
     width: 100,
