@@ -59,7 +59,6 @@ export default class Home extends Component {
       interests: this.props.interests,
       city: this.props.city,
     }
-    this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
 
     // this.props.loadUserData();
@@ -68,7 +67,8 @@ export default class Home extends Component {
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
     this.props.loadLocationData();
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
+    this.getLocation();
   }
 
   componentWillMount() {
@@ -78,27 +78,77 @@ export default class Home extends Component {
         })
 
     // this.props.loadUserData();
-    // this.listenForItems(this.itemsRef);
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
     {
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.city != this.props.city)
     {
       this.setState({
         city: nextProps.city,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.interests != this.props.interests)
     {
       this.setState({
         interests: nextProps.interests,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
+  }
+  getLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        var initialPosition = JSON.stringify(position);
+        // console.log('position: ',position);
+        // console.log('initialPosition: ',initialPosition);
+        this.determineAddress(position);
+        // this.setState({initialPosition});
+      },
+      (error) => alert(JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+  determineAddress(initialPosition)
+  {
+    console.log('Address from location');
+    var obj = {}
+    var string = 'https://maps.googleapis.com/maps/api/geocode/json?&latlng='+initialPosition.coords.latitude+','+initialPosition.coords.longitude;//baseURL + 'api/v1/workflows/'+workflow_ID+'/tasks/'+task_ID;
+    // console.log("Fetch url: ",string);
+    fetch(string,obj)
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseJson) => {
+      var cityName = '';
+      for(var i=0;i<responseJson.results[0].address_components.length;i++)
+      {
+        var address_components = responseJson.results[0].address_components[i];
+        var types = address_components.types;
+        if(types.indexOf('locality') != -1)
+        {
+          cityName = address_components.long_name
+        }
+      }
+      // console.log('RAH: ',responseJson.results[0].address_components);
+      // console.log('RAH: ',responseJson.results[0].address_components[3].long_name);
+      // console.log('CityName: ',cityName);
+
+      // console.log('Lat: ',responseJson.results[0].geometry.location.lat);
+      // console.log('Long: ',responseJson.results[0].geometry.location.lng);
+      // var cityName = responseJson.results[0].address_components[3].long_name;
+      // var lat = responseJson.results[0].geometry.location.lat;
+      // var lng = responseJson.results[0].geometry.location.lng;
+      this.setState({city:cityName});
+      this.updateInfo();
+      return responseJson;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
   setEventVisible(visible){
     this.setState({
@@ -168,14 +218,15 @@ export default class Home extends Component {
   updateInfo(){
     this.props.saveInterests(this.state.interests);
     this.props.saveLocation(this.state.city);
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
   }
-  listenForItems(itemsRef) {
+  listenForItems() {
     var today = new Date();
     var timeUTC = today.getTime();
     var items = [];
     // console.log("TIME UTC: " + timeUTC);
-    itemsRef.orderByChild("Date").startAt(timeUTC).on('value', (snap) => {
+    var ref = this.getRef().child('events/' + this.state.city);
+    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
       snap.forEach((child) => {
         var tagsRef = this.getRef().child('tags/' + child.key);
         var Tags = [];
@@ -207,6 +258,7 @@ export default class Home extends Component {
                 Website: child.val().Website,
                 MainTag: Tags ? Tags[0]:[],
                 Event_Contact: child.val().Email_Contact,
+                City: child.val().City,
               });
             }
             // console.log('ITLs: ',items.length);
@@ -306,7 +358,7 @@ export default class Home extends Component {
     for(var i=0;i < this.state.items.length; i++)
     {
       var cellInfo = this.state.items[i];
-      console.log('Cell Info ',i,': ',cellInfo);
+    //   console.log('Cell Info ',i,': ',cellInfo);
       eventCells.push(
         <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
       );
