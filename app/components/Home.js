@@ -332,19 +332,18 @@ export default class Home extends Component {
     })
     console.log(user);
   }
-  /*
   _loginWithGoogle()
   {
     const manager = new OAuthManager('Project Now')
     manager.configure({
       google: {
-        callback_url: 'http://127.0.0.1',
+        callback_url: 'https://projectnow.firebaseapp.com',
         client_id: '14798821887-8v5j5qtnn2m6bm3aghefq2pg2ngd0jsk.apps.googleusercontent.com',
         client_secret: 'c9TBrQXY_cvsXLTp3iSv7keL'
       }
     })
     console.log('starting google auth');
-    manager.authorize('google', {scopes: 'email,profile'})
+    manager.authorize('google', {scopes: 'email'})
       .then(resp =>{
 
         this._initGoogleUser(manager)
@@ -357,12 +356,22 @@ export default class Home extends Component {
   _initGoogleUser(manager)
   {
     const googleUrl = 'https://www.googleapis.com/plus/v1/people/me';
-    manager.makeRequest('twitter', googleUrl)
+    manager.makeRequest('google', googleUrl)
       .then(resp => {
         console.log('Data ->', resp.data);
+        user = {'email': resp.data.emails[0].value,
+                'password' : resp.data.id};
+      console.log('XXXXXXXXXXXXXXXXxTHIS IS THE EMAILXXXXXXXXXXXXX', resp.data.emails[0].value);
+        if(this.state.isSignUp)
+        {
+          this.props.signUpUser(user);
+        }
+        else
+        {
+          this.props.loginUser(user);
+        }
       });
   }
-  */
 /*
   _loginWithTwitter()
   {
@@ -539,6 +548,12 @@ export default class Home extends Component {
             style={styles.facebookLogin}
             textStyle={styles.facebookLoginText}>
             {loginWithFacebookButtonText}
+          </Button>
+          <Button
+            onPress={() => this._loginWithGoogle()}
+            style={styles.googleLogin}
+            textStyle={styles.googleLoginText}>
+            {loginWithGoogleButtonText}
           </Button>
           <Button
             onPress={() => this._loginWithoutAccount()}
