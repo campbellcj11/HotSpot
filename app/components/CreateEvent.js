@@ -137,39 +137,64 @@ export default class CreateEvent extends Component {
       }
     })
   }
-
-  _submitEvent(userRef){
-    var newEventKey = this.eventQueue.push().key;
-
-    uploadImage(this.state.responseURI, newEventKey+'.jpg');
-    var imageLocation = this.eventImageRef + '/'+newEventKey + '.jpg';
+  checkComplete(){
     var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
     var unixTime = new Date(mergeDateAndTime).getTime();
-    firebase.database().ref('approvalQueue/'+newEventKey).update({
-      "Address" : this.state.Event_Address,
-      "City": this.state.City,
-      "County": this.state.County,
-      "Date": unixTime,
-      "Email_Contact": this.state.Email_Contact,
-      "Event_Name" : this.state.Event_Name,
-      "Event_Type": this.state.Event_Type,
-      "Image": imageLocation,
-      "Latitude": this.state.Latitude,
-      "Location": this.state.Event_Location,
-      "Longitude": this.state.Longitude,
-      "Long_Description": this.state.Long_Description,
-      "Short_Description": this.state.Short_Description,
-      "Sort_Date": unixTime,
-      "State": this.state.State,
-      "Status": this.state.Status,
-      "Tags": this.state.tags,
-      "Ticket_URI": this.state.Ticket_URI,
-      "Website" : this.state.Website,
-    });
-    this.setState({
-      responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756'
-    })
-    this.props.close();
+    if(
+      this.state.Event_Address != '' &&
+      this.state.City != '' &&
+      this.state.Event_Name != '' &&
+      this.state.Long_Description != '' &&
+      this.state.Short_Description != '' &&
+      this.state.State != ''
+    )
+    {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+  _submitEvent(userRef){
+    var isComplete = this.checkComplete();
+    if(isComplete)
+    {
+      var newEventKey = this.eventQueue.push().key;
+
+      uploadImage(this.state.responseURI, newEventKey+'.jpg');
+      var imageLocation = this.eventImageRef + '/'+newEventKey + '.jpg';
+      var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
+      var unixTime = new Date(mergeDateAndTime).getTime();
+      firebase.database().ref('approvalQueue/'+newEventKey).update({
+        "Address" : this.state.Event_Address,
+        "City": this.state.City,
+        "County": this.state.County,
+        "Date": unixTime,
+        "Email_Contact": this.state.Email_Contact,
+        "Event_Name" : this.state.Event_Name,
+        "Event_Type": this.state.Event_Type,
+        "Image": imageLocation,
+        "Latitude": this.state.Latitude,
+        "Location": this.state.Event_Location,
+        "Longitude": this.state.Longitude,
+        "Long_Description": this.state.Long_Description,
+        "Short_Description": this.state.Short_Description,
+        "Sort_Date": unixTime,
+        "State": this.state.State,
+        "Status": this.state.Status,
+        "Tags": this.state.tags,
+        "Ticket_URI": this.state.Ticket_URI,
+        "Website" : this.state.Website,
+      });
+      this.setState({
+        responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756'
+      })
+      this.props.close();
+    }
+    else
+    {
+      Alert.alert('Please fill out all of the information.');
+    }
   }
 
   setEventVisible(visible){
@@ -238,7 +263,7 @@ export default class CreateEvent extends Component {
     console.log("see!"+ expandingView);
     if(this.state.tags.length === 0)
     {
-      tagString = 'Event Type';
+      tagString = 'Tags';
     }
     else {
       tagString = this.state.tags.join(', ');

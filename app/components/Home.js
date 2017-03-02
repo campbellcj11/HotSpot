@@ -359,7 +359,7 @@ export default class Home extends Component {
   }
   renderSlides() {
     var eventCells = [];
-    console.warn(this.state.items.length);
+    // console.warn(this.state.items.length);
     for(var i=0;i < this.state.items.length; i++)
     {
       var cellInfo = this.state.items[i];

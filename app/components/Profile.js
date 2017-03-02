@@ -225,6 +225,7 @@ _submitChanges(){
         animationType={'none'}
         transparent={false}
         visible = {this.state.modalVisible}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
