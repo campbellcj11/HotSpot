@@ -160,7 +160,7 @@ export default class EventCard extends Component {
   openShare()
   {
     let shareOptions = {
-          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/html/getHotspot.html?id=' + this.props.currentSelection.Key,
+          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ this.props.currentSelection.Key + '&l=' + this.props.location,
     };
 
     Share.open(shareOptions);
