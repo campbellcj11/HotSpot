@@ -91,8 +91,8 @@ export default class Profile extends Component {
       Image: this.props.user.Image,
       Email: this.props.user.Email,
       modalVisible: false,
-      selectedGender: 'none',
-      selectedAge: '',
+      selectedGender: this.props.user.Gender,
+      selectedAge: this.props.user.Age,
       categories: [],
       dataSource: ds,
 
@@ -172,6 +172,7 @@ _submitChanges(){
     "First_Name": this.state.First_Name,
     "Last_Name": this.state.Last_Name,
     "Age": this.state.selectedAge.label,
+    "Image": imageLocation,
     "Gender": this.state.selectedGender.label,
     "Email": this.state.Email,
     "Phone": this.state.Phone,
@@ -199,7 +200,7 @@ _submitChanges(){
 
   renderModal()
   {
-    var ageString = this.props.user.Age;
+    var ageString = this.props.user.Age.toString();
     var genderString = this.props.user.Gender;
     const genderOptions = [
       {key: 0, label: 'Male'},
@@ -227,7 +228,7 @@ _submitChanges(){
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
-            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false), this.setState({ Image:this.props.user.Image })}}>
+            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false), this.setState({ Image: this.props.user.Image })}}>
               <Text style={{color:'#F97237',textAlign:'center'}}>Exit</Text>
             </TouchableHighlight>
             <Text style = {styles.navigationBarTextStyle}>
@@ -339,7 +340,12 @@ _submitChanges(){
                   style ={{ borderRadius:0}}
                   data={ageOptions}
                   initValue= {ageString}
-                  onChange={(age) => this.setState({selectedAge: age})}>
+                  onChange={(age) => this.setState({selectedAge: age.label})}>
+
+                  <TextInput
+                    style={{padding:10, height:CARD_HEIGHT*.075}}
+                    editable={false}
+                    value = {this.state.selectedAge.toString()} />
                 </ModalPicker>
               </View>
              </View>
@@ -358,7 +364,12 @@ _submitChanges(){
                 style ={{flex: 1, borderRadius:0}}
                 data={genderOptions}
                 initValue= {genderString}
-                onChange={(gender) => this.setState({selectedGender: gender})}>
+                onChange={(gender) => this.setState({selectedGender: gender.label})}>
+
+                <TextInput
+                  style={{padding:10, height:CARD_HEIGHT*.075}}
+                  editable={false}
+                  value = {this.state.selectedGender} />
               </ModalPicker>
               </View>
             </View>
@@ -383,7 +394,7 @@ _submitChanges(){
     <View style= {styles.container_profile}>
       <View style= {styles.container_upper}>
         <View style={styles.container_image}>
-          <Image source={{uri:this.props.user.Image}} style={styles.userImage}/>
+          <Image source={{uri: this.state.Image}} style={styles.userImage}/>
         </View>
         <View>
           <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
@@ -473,8 +484,8 @@ const styles = StyleSheet.create({
     // borderWidth: 2,
   },
   settings_card: {
-     borderWidth: 2,
-     borderColor: 'red',
+    //  borderWidth: 2,
+    //  borderColor: 'red',
     width:CARD_WIDTH,
     height:CARD_HEIGHT+TAB_HEIGHT,
   },
