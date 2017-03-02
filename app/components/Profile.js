@@ -32,6 +32,7 @@ import { Actions } from 'react-native-router-flux';
 import icon3 from '../images/settings.png'
 import closeImage from '../images/delete.png'
 import checkImage from '../images/check.png'
+import styleVariables from '../Utils/styleVariables'
 
 
 var {height, width} = Dimensions.get('window');
@@ -368,6 +369,21 @@ _submitChanges(){
       </View>
     </View>
   }
+  renderInterests(){
+    var interests = this.props.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
+    var interestsViews = [];
+
+    for(var i=0;i<interests.length;i++)
+    {
+      var interest = interests[i];
+      // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      interestsViews.push(
+          <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{interest}</Button>
+      );
+    }
+
+    return interestsViews;
+  }
   renderProfile() {
   return(
     <View style = {styles.innerContainer}>
@@ -380,19 +396,15 @@ _submitChanges(){
           <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
         </View>
         <View>
-          <Text style={styles.userLocation}></Text>
+          <Text style={styles.userLocation}>{this.props.location}</Text>
         </View>
        </View>
       <View style={styles.container_lower}>
         <View style={styles.profile_interestHeader}>
           <Text style={styles.profile_interests}>Interests</Text>
         </View>
-        <View style={{flex:1}}>
-        <ListView style={styles.scroll}
-        contentContainerStyle={styles.list}
-          dataSource={this.state.dataSource}
-          renderRow= {this.renderRow.bind(this)}>
-        </ListView>
+        <View style={styles.interestsHolder}>
+          {this.renderInterests()}
         </View>
       </View>
     </View>
@@ -704,5 +716,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     // borderWidth: 2,
     // borderColor: 'red',
-  }
+  },
+  interestsHolder: {
+    flex:1,
+    marginLeft: 16,
+    marginRight: 16,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+  },
+  interestsCell: {
+    margin: 8,
+  },
+  interestsCellText: {
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 14,
+    color: 'white',
+  },
 })

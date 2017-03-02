@@ -92,8 +92,8 @@ export default class Favorites extends Component {
           ref.on('value', (snap) => {
             var today = new Date();
             var timeUTC = today.getTime();
-            console.log("Error date: " + snap.val().Date);
-            console.log("Key error: " + snap.key);
+            // console.log("Error date: " + snap.val().Date);
+            // console.log("Key error: " + snap.key);
           if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
               items.push({
                 Key : snap.key,

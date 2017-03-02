@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
+import * as firebase from 'firebase';
 import {
   ListView,
   StyleSheet,
@@ -38,6 +39,7 @@ import dollarImage from '../images/coin-icon.png'
 import infoImage from '../images/interface.png'
 import connectImage from '../images/connection.png'
 import linkImage from '../images/link.png'
+import postcardImage from '../images/postcard.png'
 import Share, {ShareSheet} from 'react-native-share';
 import Moment from 'moment'
 var Mailer = require('NativeModules').RNMail;
@@ -55,6 +57,7 @@ export default class EventCard extends Component {
       // latitude: this.props.currentSelection.latitude,
       // longitude: this.props.currentSelection.longitude,
       scrollY: 0,
+      postcardSaved: false,
     }
     // this.determineLatAndLong();
   }
@@ -112,7 +115,7 @@ export default class EventCard extends Component {
     }
     else
     {
-      uriString = 'https://' + this.props.currentSelection.Website;
+      uriString = this.props.currentSelection.Website;
     }
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
@@ -161,6 +164,42 @@ export default class EventCard extends Component {
     };
 
     Share.open(shareOptions);
+  }
+  openPostcard(){
+    if(this.state.postcardSaved)
+    {
+      Alert.alert(
+        'You already save a postcard',
+        'A postcard from this event has already been saved. You can view it in your profile.',
+        [
+          {text: 'Ok', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        ],
+      )
+    }
+    else
+    {
+      Alert.alert(
+        'Save a postcard',
+        'Postcards will be saved to your profile where you can view, edit, and share.',
+        [
+          {text: 'Save', onPress: () => this.savePostCard()},
+          {text: 'Save and do not show again', onPress: () => this.savePostCard(true)},
+          {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+        ],
+      )
+    }
+  }
+  savePostCard(shouldNotShowAgain){
+    if(shouldNotShowAgain)
+    {
+      console.warn('Wont show again');
+      this.setState({postcardSaved:true});
+    }
+    else
+    {
+      console.warn('Will show again');
+      this.setState({postcardSaved:true});
+    }
   }
   render() {
     var dateNumber;
@@ -303,6 +342,12 @@ export default class EventCard extends Component {
             <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.openURL()}/>
             <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
             <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
+            {/*{
+              (firebase.auth().currentUser.email != 'test@test.com')  ?
+                <ImageButton style={{flex:.25}} image={postcardImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:this.state.postcardSaved ? styleVariables.greyColor:'#0B82CC'}} onPress={this.openPostcard.bind(this)} />
+              :
+                <View/>
+            }*/}
           </View>
           <View style={{marginTop:5}}>
 
