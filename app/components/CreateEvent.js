@@ -21,6 +21,7 @@ import Button from './Button'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
+import DatePicker from 'react-native-datepicker'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import titleImage from '../images/hs-title.png'
@@ -29,7 +30,7 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
-import exitImage from '../images/delete.png'
+import closeImage from '../images/delete.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
@@ -101,7 +102,8 @@ export default class CreateEvent extends Component {
       Website : '',
       eventID: '',
       allowUpload: false,
-      responseURI: '',
+      responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756',
+      currentDate: new Date(),
     }
 
     this.eventQueue = this.getRef().child('approvalQueue/');
@@ -137,12 +139,13 @@ export default class CreateEvent extends Component {
 
     uploadImage(this.state.responseURI, newEventKey+'.jpg');
     var imageLocation = this.eventImageRef + '/'+newEventKey + '.jpg';
-    //this.setEventVisible(false);
+    var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
+    var unixTime = new Date(mergeDateAndTime).getTime();
     firebase.database().ref('approvalQueue/'+newEventKey).update({
       "Address" : this.state.Event_Address,
       "City": this.state.City,
       "County": this.state.County,
-      "Date": this.state.Event_Date,
+      "Date": unixTime,
       "Email_Contact": this.state.Email_Contact,
       "Event_Name" : this.state.Event_Name,
       "Event_Type": this.state.Event_Type,
@@ -152,12 +155,13 @@ export default class CreateEvent extends Component {
       "Longitude": this.state.Longitude,
       "Long_Description": this.state.Long_Description,
       "Short_Description": this.state.Short_Description,
-      "Sort_Date": this.state.Sort_Date,
+      "Sort_Date": unixTime,
       "State": this.state.State,
       "Status": this.state.Status,
       "Ticket_URI": this.state.Ticket_URI,
       "Website" : this.state.Website,
     });
+    this.props.close();
   }
 
   setEventVisible(visible){
@@ -180,11 +184,17 @@ export default class CreateEvent extends Component {
     var saveButtonText = 'Create your event!';
     var changePhoto = 'Change Image';
     return(
+    <Modal
+      animationType={'slide'}
+      transparent = {false}
+      visible = {this.props.showing}
+      onRequestClose={() => {alert("Modal can not be closed.")}}
+    >
       <View style={{flex:1, flexDirection: 'column'}}>
        <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
          <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
            <View>
-           <ImageButton image={exitImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={() => this.props.close()}>
+           <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.props.close()}>
            </ImageButton>
            </View>
          </View>
@@ -193,6 +203,12 @@ export default class CreateEvent extends Component {
               <KeyboardAwareScrollView>
        <ScrollView style={{flex:1}}>
 
+       <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+         </View>
+       <View style={styles.eventImageView}>
+         <Image source={{uri: this.state.responseURI }} style={styles.eventImage}/>
+
+       </View>
        <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
          </View>
        <View style={styles.imageView}>
@@ -239,15 +255,20 @@ export default class CreateEvent extends Component {
            </View>
            <View style={styles.creator_EventView}>
              <View style={styles.creator_NameInput}>
-               <TextInput
-                 style = {styles.TextInput}
-                 placeholder = 'Date'
-                 ref='Date'
-                // onChangeText={(Event_Date) => this.setState({Event_Date})}
-                 placeholderTextColor='black'
-                 underlineColorAndroid='transparent'
-               >
-               </TextInput>
+              <DatePicker
+                style={{width: null}}
+                date={this.state.Event_Date}
+                mode="date"
+                placeholder="select date"
+                format="MMMM DD, YYYY"
+                minDate={this.state.currentDate}
+                showIcon={false}
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={{
+                }}
+                onDateChange={(Event_Date) => {this.setState({Event_Date: Event_Date}), console.log("here!"+Event_Date)}}
+              />
              </View>
            </View>
 
@@ -255,15 +276,19 @@ export default class CreateEvent extends Component {
              </View>
              <View style={styles.creator_EventView}>
                <View style={styles.creator_NameInput}>
-                 <TextInput
-                   style = {styles.TextInput}
-                   placeholder = 'Time'
-                   ref='Time'
-                   // onChangeText={(Time) => this.setState({Time})}
-                   placeholderTextColor='black'
-                   underlineColorAndroid='transparent'
-                 >
-                 </TextInput>
+               <DatePicker
+                 style={{width: null}}
+                 mode="time"
+                 placeholder="select time"
+                 date={this.state.Time}
+                 format="h:mm a"
+                 showIcon={false}
+                 confirmBtnText="Confirm"
+                 cancelBtnText="Cancel"
+                 customStyles={{
+                 }}
+                 onDateChange={(Time) => {this.setState({Time: Time}),console.log("here!"+Time)}}
+               />
                </View>
              </View>
 
@@ -273,7 +298,7 @@ export default class CreateEvent extends Component {
                <View style={styles.creator_NameInput}>
                  <TextInput
                    style = {styles.TextInput}
-                   placeholder = 'Location'
+                   placeholder = 'Venue'
                    ref='Location'
                    onChangeText={(Event_Location) => this.setState({Event_Location})}
                    placeholderTextColor='black'
@@ -391,6 +416,7 @@ export default class CreateEvent extends Component {
 
        </View>
      </View>
+    </Modal>
     )
   }
 }
@@ -416,6 +442,16 @@ const styles = StyleSheet.create({
       backgroundColor:'white',
       borderWidth:.5,
       borderColor:'#d3d3d3',
+    },
+    eventImage: {
+      flex: 1,
+    },
+    eventImageView: {
+      height: CARD_HEIGHT*.25,
+      width: width,
+      paddingLeft: 10,
+      paddingRight: 10,
+
     },
     imageView: {
       alignItems: 'center',

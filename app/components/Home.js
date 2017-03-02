@@ -61,7 +61,6 @@ export default class Home extends Component {
       interests: this.props.interests,
       city: this.props.city,
     }
-    this.itemsRef = this.getRef().child('events');
     this.currentIndex = 0;
 
     // this.props.loadUserData();
@@ -70,7 +69,8 @@ export default class Home extends Component {
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
     this.props.loadLocationData();
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
+    this.getLocation();
   }
 
   componentWillMount() {
@@ -80,27 +80,77 @@ export default class Home extends Component {
         })
 
     // this.props.loadUserData();
-    // this.listenForItems(this.itemsRef);
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
     {
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.city != this.props.city)
     {
       this.setState({
         city: nextProps.city,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
     if(nextProps.interests != this.props.interests)
     {
       this.setState({
         interests: nextProps.interests,
       })
-      this.listenForItems(this.itemsRef);
+      this.listenForItems();
     }
+  }
+  getLocation() {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        var initialPosition = JSON.stringify(position);
+        // console.log('position: ',position);
+        // console.log('initialPosition: ',initialPosition);
+        this.determineAddress(position);
+        // this.setState({initialPosition});
+      },
+      (error) => alert(JSON.stringify(error)),
+      {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+    );
+  }
+  determineAddress(initialPosition)
+  {
+    console.log('Address from location');
+    var obj = {}
+    var string = 'https://maps.googleapis.com/maps/api/geocode/json?&latlng='+initialPosition.coords.latitude+','+initialPosition.coords.longitude;//baseURL + 'api/v1/workflows/'+workflow_ID+'/tasks/'+task_ID;
+    // console.log("Fetch url: ",string);
+    fetch(string,obj)
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseJson) => {
+      var cityName = '';
+      for(var i=0;i<responseJson.results[0].address_components.length;i++)
+      {
+        var address_components = responseJson.results[0].address_components[i];
+        var types = address_components.types;
+        if(types.indexOf('locality') != -1)
+        {
+          cityName = address_components.long_name
+        }
+      }
+      // console.log('RAH: ',responseJson.results[0].address_components);
+      // console.log('RAH: ',responseJson.results[0].address_components[3].long_name);
+      // console.log('CityName: ',cityName);
+
+      // console.log('Lat: ',responseJson.results[0].geometry.location.lat);
+      // console.log('Long: ',responseJson.results[0].geometry.location.lng);
+      // var cityName = responseJson.results[0].address_components[3].long_name;
+      // var lat = responseJson.results[0].geometry.location.lat;
+      // var lng = responseJson.results[0].geometry.location.lng;
+      this.setState({city:cityName});
+      this.updateInfo();
+      return responseJson;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   }
   setEventVisible(visible){
     this.setState({
@@ -109,13 +159,13 @@ export default class Home extends Component {
   }
   renderRightButton(){
     return (
-      <ImageButton image={filterImage} style={{width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
+      <ImageButton image={filterImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
       </ImageButton>
     );
   }
   renderLeftButton(){
     return(
-      <ImageButton image={plusImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)}>
+      <ImageButton image={plusImage} style={{top:2,width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onLeftPress.bind(this)}>
       </ImageButton>
     )
   }
@@ -132,11 +182,16 @@ export default class Home extends Component {
     });
   }
   onLeftPress(){
-    this.setEventVisible(true);
-  }
+    this.setState({
+      eventModal: true,
+    })}
+  setEventVisible(visible){
 
-  onExitPress(){
-    this.setEventVisible(false);
+  }
+  onCloseCreateEvent(){
+    this.setState({
+      eventModal: false,
+    })
   }
 
   getRef() {
@@ -170,25 +225,31 @@ export default class Home extends Component {
   updateInfo(){
     this.props.saveInterests(this.state.interests);
     this.props.saveLocation(this.state.city);
-    this.listenForItems(this.itemsRef);
+    this.listenForItems();
   }
-  listenForItems(itemsRef) {
+  listenForItems() {
     var today = new Date();
     var timeUTC = today.getTime();
+    var items = [];
     // console.log("TIME UTC: " + timeUTC);
-    itemsRef.orderByChild("Date").startAt(timeUTC).on('value', (snap) => {
-      var items = [];
+    var ref = this.getRef().child('events/' + this.state.city);
+    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
       snap.forEach((child) => {
         var tagsRef = this.getRef().child('tags/' + child.key);
         var Tags = [];
+        // items = [];
         tagsRef.on("value", (snapshot) => {
           snapshot.forEach((childUnder) => {
             Tags.push(childUnder.key);
           });
+          // console.warn(child.val().City);
+          // console.warn(this.state.city);
           if(this.state.city == '' || child.val().City == this.state.city)
           {
+            // console.warn('State == city');
             if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
             {
+              // console.warn('tag in interests');
               items.push({
                 Key : child.key,
                 Event_Name: child.val().Event_Name,
@@ -204,16 +265,16 @@ export default class Home extends Component {
                 Website: child.val().Website,
                 MainTag: Tags ? Tags[0]:[],
                 Event_Contact: child.val().Email_Contact,
+                City: child.val().City,
               });
             }
+            // console.log('ITLs: ',items.length);
+            // console.log('ITs: ',items);
+            clearTimeout(this.loadTimeout);
+            this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
           }
         });
       });
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(items),
-        items: items,
-      });
-
     });
   }
 
@@ -414,13 +475,12 @@ export default class Home extends Component {
     this.setState({hasCurrentSelection:false});
   }
   renderSlides() {
-
     var eventCells = [];
-
+    // console.warn(this.state.items.length);
     for(var i=0;i < this.state.items.length; i++)
     {
       var cellInfo = this.state.items[i];
-      // console.log('Cell Info ',i,': ',cellInfo);
+    //   console.log('Cell Info ',i,': ',cellInfo);
       eventCells.push(
         <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
       );
@@ -603,14 +663,7 @@ export default class Home extends Component {
         />
         {viewToShow}
         <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)}/>
-        <Modal
-          animationType='slide'
-          transparent={false}
-          visible={this.state.eventModal}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-        >
-            <CreateEvent close={ () => this.onExitPress()} />
-        </Modal>
+        <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
       </View>
     )
   }
