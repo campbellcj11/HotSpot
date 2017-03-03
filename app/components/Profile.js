@@ -96,7 +96,7 @@ export default class Profile extends Component {
       selectedAge: this.props.user.Age,
       categories: [],
       dataSource: ds,
-
+      interests: this.props.interests,
     }
     this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
@@ -112,6 +112,12 @@ export default class Profile extends Component {
 
   componentDidMount() {
     //this.renderCategories();
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.interests != this.props.interests)
+    {
+      this.setState({interests:nextProps.interests});
+    }
   }
   renderRightButton(){
     return (
@@ -391,7 +397,7 @@ _submitChanges(){
     </View>
   }
   renderInterests(){
-    var interests = this.props.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
+    var interests = this.state.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
     var interestsViews = [];
 
     for(var i=0;i<interests.length;i++)
