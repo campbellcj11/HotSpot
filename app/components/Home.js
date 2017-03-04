@@ -372,10 +372,11 @@ export default class Home extends Component {
   {
     var user;
     console.log("Fetching data");
-    fetch('https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' + token)
+    fetch('https://graph.facebook.com/v2.5/me?fields=email&access_token=' + token)
     .then((response) => response.json())
     .then((json) => {
       // Some user object has been set up somewhere, build that user here
+      console.log(json);
       user = {'email': json.email,
               'password' : json.id};
 
@@ -389,7 +390,7 @@ export default class Home extends Component {
       }
     })
     .catch(() => {
-      reject('ERROR GETTING DATA FROM FACEBOOK')
+      console.log('ERROR GETTING DATA FROM FACEBOOK')
     })
     console.log(user);
   }
