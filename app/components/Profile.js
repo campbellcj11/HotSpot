@@ -32,6 +32,7 @@ import { Actions } from 'react-native-router-flux';
 import icon3 from '../images/settings.png'
 import closeImage from '../images/delete.png'
 import checkImage from '../images/check.png'
+import styleVariables from '../Utils/styleVariables'
 
 
 var {height, width} = Dimensions.get('window');
@@ -70,6 +71,7 @@ const uploadImage = (uri, imageName, mime = 'image/jpg') => {
         resolve(url)
       })
       .catch((error) => {
+        console.log("error!" + error);
         reject(error)
       })
   })
@@ -86,14 +88,15 @@ export default class Profile extends Component {
       Age: this.props.user.Age,
       Gender: this.props.user.Gender,
       Phone: this.props.user.Phone,
-      imagePath: '',
+      responseURI: this.props.user.Image,
       Image: this.props.user.Image,
+      Email: this.props.user.Email,
       modalVisible: false,
-      selectedGender: 'none',
-      selectedAge: '',
+      selectedGender: this.props.user.Gender,
+      selectedAge: this.props.user.Age,
       categories: [],
       dataSource: ds,
-
+      interests: this.props.interests,
     }
     this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
@@ -109,6 +112,12 @@ export default class Profile extends Component {
 
   componentDidMount() {
     //this.renderCategories();
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.interests != this.props.interests)
+    {
+      this.setState({interests:nextProps.interests});
+    }
   }
   renderRightButton(){
     return (
@@ -155,20 +164,25 @@ renderImage(){
     else if (response.error) {
       console.log('ImagePicker Error: ', response.error);
     }else {
-      uploadImage(response.uri, firebase.auth().currentUser.uid + '.jpg');
-
+      this.setState({
+        responseURI: response.uri,
+      })
     }
   })
 }
 
 _submitChanges(){
-  console.log(this.state.First_Name);
+  uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg');
+  var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
+
   this.userRef.update({
-    First_Name: this.state.First_Name,
-    Last_Name: this.state.Last_Name,
-    Age: this.state.selectedAge,
-    Gender: this.state.selectedGender,
-    Phone: this.state.Phone,
+    "First_Name": this.state.First_Name,
+    "Last_Name": this.state.Last_Name,
+    "Age": this.state.selectedAge.label,
+    "Image": imageLocation,
+    "Gender": this.state.selectedGender.label,
+    "Email": this.state.Email,
+    "Phone": this.state.Phone,
   })
   this.setModalVisible(false);
 }
@@ -193,6 +207,8 @@ _submitChanges(){
 
   renderModal()
   {
+    var ageString = this.props.user.Age.toString();
+    var genderString = this.props.user.Gender;
     const genderOptions = [
       {key: 0, label: 'Male'},
       {key: 1, label: 'Female'},
@@ -207,19 +223,20 @@ _submitChanges(){
         key: i,
         label: i,
       };
-
       ageOptions.push(ageObject);
     }
+
 
     return(
       <Modal
         animationType={'none'}
         transparent={false}
         visible = {this.state.modalVisible}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
-            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false)}}>
+            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false), this.setState({ Image: this.props.user.Image })}}>
               <Text style={{color:'#F97237',textAlign:'center'}}>Exit</Text>
             </TouchableHighlight>
             <Text style = {styles.navigationBarTextStyle}>
@@ -235,7 +252,7 @@ _submitChanges(){
           <View style={styles.settings_card}>
             <View style = {styles.settings_imageView}>
               <View style = {styles.settings_image}>
-                <Image source={{uri: this.state.Image }} style={styles.userImage}/>
+                <Image source={{uri: this.state.responseURI }} style={styles.userImage}/>
                 <TouchableHighlight
                  onPress={()=> this.renderImage()}
                  underlayColor = '#dddddd'>
@@ -287,6 +304,7 @@ _submitChanges(){
               <View style={styles.settings_EmailInput}>
               <TextInput
                 style = {styles.TextInput}
+                onChangeText={(Email) => this.setState({Email})}
                 placeholder={this.props.user.Email}
                 ref='Email'
                 placeholderTextColor='black'
@@ -329,8 +347,13 @@ _submitChanges(){
                   selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
                   style ={{ borderRadius:0}}
                   data={ageOptions}
-                  initValue="Age"
-                  onChange={(age) => this.setState({selectedAge: age})}>
+                  initValue= {ageString}
+                  onChange={(age) => this.setState({selectedAge: age.label})}>
+
+                  <TextInput
+                    style={{padding:10, height:CARD_HEIGHT*.075}}
+                    editable={false}
+                    value = {this.state.selectedAge.toString()} />
                 </ModalPicker>
               </View>
              </View>
@@ -348,8 +371,13 @@ _submitChanges(){
                 selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
                 style ={{flex: 1, borderRadius:0}}
                 data={genderOptions}
-                initValue="Select Gender"
-                onChange={(gender) => this.setState({selectedGender: gender})}>
+                initValue= {genderString}
+                onChange={(gender) => this.setState({selectedGender: gender.label})}>
+
+                <TextInput
+                  style={{padding:10, height:CARD_HEIGHT*.075}}
+                  editable={false}
+                  value = {this.state.selectedGender} />
               </ModalPicker>
               </View>
             </View>
@@ -368,6 +396,21 @@ _submitChanges(){
       </View>
     </View>
   }
+  renderInterests(){
+    var interests = this.state.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
+    var interestsViews = [];
+
+    for(var i=0;i<interests.length;i++)
+    {
+      var interest = interests[i];
+      // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      interestsViews.push(
+          <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{interest}</Button>
+      );
+    }
+
+    return interestsViews;
+  }
   renderProfile() {
   return(
     <View style = {styles.innerContainer}>
@@ -380,19 +423,15 @@ _submitChanges(){
           <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
         </View>
         <View>
-          <Text style={styles.userLocation}></Text>
+          <Text style={styles.userLocation}>{this.props.location}</Text>
         </View>
        </View>
       <View style={styles.container_lower}>
         <View style={styles.profile_interestHeader}>
           <Text style={styles.profile_interests}>Interests</Text>
         </View>
-        <View style={{flex:1}}>
-        <ListView style={styles.scroll}
-        contentContainerStyle={styles.list}
-          dataSource={this.state.dataSource}
-          renderRow= {this.renderRow.bind(this)}>
-        </ListView>
+        <View style={styles.interestsHolder}>
+          {this.renderInterests()}
         </View>
       </View>
     </View>
@@ -465,8 +504,6 @@ const styles = StyleSheet.create({
   },
   settings_card: {
     top: 0,
-    //  borderWidth: 2,
-    //  borderColor: 'red,
     width:CARD_WIDTH,
     height:CARD_HEIGHT+TAB_HEIGHT,
   },
@@ -704,5 +741,20 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     // borderWidth: 2,
     // borderColor: 'red',
-  }
+  },
+  interestsHolder: {
+    flex:1,
+    marginLeft: 16,
+    marginRight: 16,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+  },
+  interestsCell: {
+    margin: 8,
+  },
+  interestsCellText: {
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 14,
+    color: 'white',
+  },
 })

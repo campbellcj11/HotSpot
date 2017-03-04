@@ -5,7 +5,7 @@ import * as UserActions from '../actions/userActions'
 
 function mapStateToProps(state) {
   return {
-
+    location: state.user.city,
   }
 }
 
