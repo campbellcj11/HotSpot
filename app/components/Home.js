@@ -610,12 +610,17 @@ export default class Home extends Component {
             textStyle={styles.facebookLoginText}>
             {loginWithFacebookButtonText}
           </Button>
-          <Button
-            onPress={() => this._loginWithGoogle()}
-            style={styles.googleLogin}
-            textStyle={styles.googleLoginText}>
-            {loginWithGoogleButtonText}
-          </Button>
+          {
+            Platform.OS == 'ios' ?
+            <View/>
+            :
+            <Button
+              onPress={() => this._loginWithGoogle()}
+              style={styles.googleLogin}
+              textStyle={styles.googleLoginText}>
+              {loginWithGoogleButtonText}
+            </Button>
+          }
           <Button
             onPress={() => this._loginWithoutAccount()}
             style={styles.loginBlankButton}
