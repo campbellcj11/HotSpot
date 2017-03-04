@@ -85,10 +85,12 @@ export default class Profile extends Component {
     this.state = {
       First_Name: this.props.user.First_Name,
       Last_Name: this.props.user.Last_Name,
-      Age: this.props.user.Age,
+      Age: this.props.user.Age ? this.props.user.Age : '',
       Gender: this.props.user.Gender,
       Phone: this.props.user.Phone,
       responseURI: this.props.user.Image,
+      Phone: this.props.user.Phone ? this.props.user.Phone : '',
+      imagePath: '',
       Image: this.props.user.Image,
       Email: this.props.user.Email,
       modalVisible: false,
@@ -207,7 +209,7 @@ _submitChanges(){
 
   renderModal()
   {
-    var ageString = this.props.user.Age.toString();
+    var ageString = this.props.user.Age;
     var genderString = this.props.user.Gender;
     const genderOptions = [
       {key: 0, label: 'Male'},
@@ -327,7 +329,7 @@ _submitChanges(){
                 <TextInput
                   style = {styles.TextInput}
                   ref='Phone'
-                  placeholder={this.state.Phone.toString()}
+                  placeholder={this.state.Phone}
                   placeholderTextColor='black'
                   onChangeText={(Phone) => this.setState({Phone})}
                   underlineColorAndroid='transparent'
@@ -353,7 +355,7 @@ _submitChanges(){
                   <TextInput
                     style={{padding:10, height:CARD_HEIGHT*.075}}
                     editable={false}
-                    value = {this.state.selectedAge.toString()} />
+                    value = {this.state.selectedAge} />
                 </ModalPicker>
               </View>
              </View>

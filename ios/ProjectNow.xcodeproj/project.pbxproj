@@ -29,6 +29,10 @@
 		90AFF5B11DDDEEC000B8A571 /* libBVLinearGradient.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90AFF5AB1DDD614200B8A571 /* libBVLinearGradient.a */; };
 		90AFF5CA1DDDF86700B8A571 /* Nexa Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90AFF5AC1DDD631A00B8A571 /* Nexa Bold.otf */; };
 		90AFF5CB1DDDF86700B8A571 /* Nexa Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 90AFF5AD1DDD631A00B8A571 /* Nexa Light.otf */; };
+		90C4B8881E6A4DE80056851D /* libRNSocialAuth.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C4B8871E6A4DC50056851D /* libRNSocialAuth.a */; };
+		90C4B88C1E6A50590056851D /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C4B8891E6A50590056851D /* Bolts.framework */; };
+		90C4B88D1E6A50590056851D /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C4B88A1E6A50590056851D /* FBSDKCoreKit.framework */; };
+		90C4B88E1E6A50590056851D /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90C4B88B1E6A50590056851D /* FBSDKLoginKit.framework */; };
 		E9A13DAB0D6441F3B78E18EF /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D50A963314B145AAA12ACBD8 /* libRNFetchBlob.a */; };
 /* End PBXBuildFile section */
 
@@ -222,6 +226,13 @@
 			remoteGlobalIDString = 134814201AA4EA6300B7C361;
 			remoteInfo = BVLinearGradient;
 		};
+		90C4B8861E6A4DC50056851D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 90C4B8681E6A4DC40056851D /* RNSocialAuth.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 533DBF7D1C23D77400AE7307;
+			remoteInfo = RNSocialAuth;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -253,6 +264,10 @@
 		902F80CF1E36434200C95D9A /* RNMail.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNMail.xcodeproj; path = "../node_modules/react-native-mail/RNMail.xcodeproj"; sourceTree = "<group>"; };
 		90AFF5AC1DDD631A00B8A571 /* Nexa Bold.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nexa Bold.otf"; path = "ProjectNow/Nexa Bold.otf"; sourceTree = "<group>"; };
 		90AFF5AD1DDD631A00B8A571 /* Nexa Light.otf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Nexa Light.otf"; path = "ProjectNow/Nexa Light.otf"; sourceTree = "<group>"; };
+		90C4B8681E6A4DC40056851D /* RNSocialAuth.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNSocialAuth.xcodeproj; path = "../node_modules/react-native-social-auth/ios/RNSocialAuth.xcodeproj"; sourceTree = "<group>"; };
+		90C4B8891E6A50590056851D /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Bolts.framework; sourceTree = "<group>"; };
+		90C4B88A1E6A50590056851D /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKCoreKit.framework; sourceTree = "<group>"; };
+		90C4B88B1E6A50590056851D /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FBSDKLoginKit.framework; sourceTree = "<group>"; };
 		D50A963314B145AAA12ACBD8 /* libRNFetchBlob.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFetchBlob.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -269,13 +284,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				90C4B8881E6A4DE80056851D /* libRNSocialAuth.a in Frameworks */,
 				902783991E52479F00BFC6C6 /* libRCTAnimation.a in Frameworks */,
+				90C4B88E1E6A50590056851D /* FBSDKLoginKit.framework in Frameworks */,
 				902F80E71E36439900C95D9A /* libRNMail.a in Frameworks */,
 				830E547E1E307CD8009B675B /* libRNImagePicker.a in Frameworks */,
 				90AFF5B11DDDEEC000B8A571 /* libBVLinearGradient.a in Frameworks */,
 				90AFF5B01DDDEEB300B8A571 /* libAirMaps.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
+				90C4B88D1E6A50590056851D /* FBSDKCoreKit.framework in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
@@ -283,6 +301,7 @@
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
+				90C4B88C1E6A50590056851D /* Bolts.framework in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				E9A13DAB0D6441F3B78E18EF /* libRNFetchBlob.a in Frameworks */,
 			);
@@ -371,6 +390,9 @@
 		13B07FAE1A68108700A75B9A /* ProjectNow */ = {
 			isa = PBXGroup;
 			children = (
+				90C4B8891E6A50590056851D /* Bolts.framework */,
+				90C4B88A1E6A50590056851D /* FBSDKCoreKit.framework */,
+				90C4B88B1E6A50590056851D /* FBSDKLoginKit.framework */,
 				90AFF5AC1DDD631A00B8A571 /* Nexa Bold.otf */,
 				90AFF5AD1DDD631A00B8A571 /* Nexa Light.otf */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -411,6 +433,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				90C4B8681E6A4DC40056851D /* RNSocialAuth.xcodeproj */,
 				9027836A1E52479400BFC6C6 /* RCTAnimation.xcodeproj */,
 				902F80CF1E36434200C95D9A /* RNMail.xcodeproj */,
 				830E54451E307C8D009B675B /* RNImagePicker.xcodeproj */,
@@ -508,6 +531,14 @@
 			isa = PBXGroup;
 			children = (
 				90AFF5AB1DDD614200B8A571 /* libBVLinearGradient.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		90C4B8691E6A4DC40056851D /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				90C4B8871E6A4DC50056851D /* libRNSocialAuth.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -648,6 +679,10 @@
 				{
 					ProductGroup = 902F80521E3596CC00C95D9A /* Products */;
 					ProjectRef = 2668751818294409945C4DFD /* RNShare.xcodeproj */;
+				},
+				{
+					ProductGroup = 90C4B8691E6A4DC40056851D /* Products */;
+					ProjectRef = 90C4B8681E6A4DC40056851D /* RNSocialAuth.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -841,6 +876,13 @@
 			remoteRef = 90AFF5AA1DDD614200B8A571 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		90C4B8871E6A4DC50056851D /* libRNSocialAuth.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNSocialAuth.a;
+			remoteRef = 90C4B8861E6A4DC50056851D /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -960,6 +1002,11 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = L49S5QB67W;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../node_modules/react-native-social-auth/ios/FacebookSDK",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -967,7 +1014,10 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)..\node_modules\neact-native-shareios",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-shareios",
+					"$(SRCROOT)/../node_modules/react-native-social-auth/ios",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -989,6 +1039,11 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L49S5QB67W;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+					"$(SRCROOT)/../node_modules/react-native-social-auth/ios/FacebookSDK",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
@@ -996,7 +1051,10 @@
 					"$(SRCROOT)/../node_modules/react-native-linear-gradient/BVLinearGradient",
 					"$(SRCROOT)/../node_modules/react-native-maps/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
-					"$(SRCROOT)..\node_modules\neact-native-shareios",
+					"$(SRCROOT)..",
+					ode_modules,
+					"eact-native-shareios",
+					"$(SRCROOT)/../node_modules/react-native-social-auth/ios",
 				);
 				INFOPLIST_FILE = ProjectNow/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

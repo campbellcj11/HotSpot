@@ -34,6 +34,8 @@ import EventCell from './EventCell'
 import CreateEvent from './CreateEvent'
 import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
+import SocialAuth from 'react-native-social-auth';
+import OAuthManager from 'react-native-oauth';
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -346,6 +348,122 @@ export default class Home extends Component {
       </TouchableHighlight>
     )
   }
+  _loginWithFacebook()
+  {
+      SocialAuth.setFacebookApp({id: '1738197196497592', name: 'projectnow'});
+      SocialAuth.getFacebookCredentials(["email", "public_profile"],
+      SocialAuth.facebookPermissionsType.read).then((credentials) => {
+      this.setState({
+        error: null,
+        credentials,
+      })
+      console.log(this.state.credentials);
+      this._initFacebookUser(credentials.accessToken)
+    })
+    .catch((error) => {
+      this.setState({
+        error,
+        credentials: null,
+      })
+    })
+  }
+
+  _initFacebookUser(token)
+  {
+    var user;
+    console.log("Fetching data");
+    fetch('https://graph.facebook.com/v2.5/me?fields=email&access_token=' + token)
+    .then((response) => response.json())
+    .then((json) => {
+      // Some user object has been set up somewhere, build that user here
+      console.log(json);
+      user = {'email': json.email,
+              'password' : json.id};
+
+      if(this.state.isSignUp)
+      {
+        this.props.signUpUser(user);
+      }
+      else
+      {
+        this.props.loginUser(user);
+      }
+    })
+    .catch(() => {
+      console.log('ERROR GETTING DATA FROM FACEBOOK')
+    })
+    console.log(user);
+  }
+  _loginWithGoogle()
+  {
+    const manager = new OAuthManager('Project Now')
+    manager.configure({
+      google: {
+        callback_url: 'https://projectnow.firebaseapp.com',
+        client_id: '14798821887-8v5j5qtnn2m6bm3aghefq2pg2ngd0jsk.apps.googleusercontent.com',
+        client_secret: 'c9TBrQXY_cvsXLTp3iSv7keL'
+      }
+    })
+    console.log('starting google auth');
+    manager.authorize('google', {scopes: 'email'})
+      .then(resp =>{
+
+        this._initGoogleUser(manager)
+
+        console.log(resp)
+      })
+      .catch(err => console.log(err));
+  }
+
+  _initGoogleUser(manager)
+  {
+    const googleUrl = 'https://www.googleapis.com/plus/v1/people/me';
+    manager.makeRequest('google', googleUrl)
+      .then(resp => {
+        console.log('Data ->', resp.data);
+        user = {'email': resp.data.emails[0].value,
+                'password' : resp.data.id};
+      console.log('XXXXXXXXXXXXXXXXxTHIS IS THE EMAILXXXXXXXXXXXXX', resp.data.emails[0].value);
+        if(this.state.isSignUp)
+        {
+          this.props.signUpUser(user);
+        }
+        else
+        {
+          this.props.loginUser(user);
+        }
+      });
+  }
+/*
+  _loginWithTwitter()
+  {
+    const manager = new OAuthManager('Project Now')
+    manager.configure({
+      twitter: {
+        consumer_key: 'Lh63FfZqpywO7xTLNGsafDZwi',
+        consumer_secret: '7clzZEImtw2Ogz2Uwo5EThH7EfyFGLSf6Ad7iYz72ECfrnPWOy'
+      }
+    })
+    console.log("starting twitter auth");
+    manager.authorize('twitter')
+      .then(resp =>{
+
+        this._initTwitterUser(manager)
+
+        console.log(resp)
+      })
+      .catch(err => console.log(err));
+  }
+
+  _initTwitterUser(manager)
+  {
+    const userTimelineUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+    manager.makeRequest('twitter', userTimelineUrl)
+      .then(resp => {
+        console.log('Data ->', resp.data);
+      });
+  }
+*/
   pressRow(rowData) {
     console.log('RowData: ',rowData);
     // this.setState({currentSelection:rowData});
@@ -440,6 +558,10 @@ export default class Home extends Component {
     var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
     var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
     var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
+    var loginWithFacebookButtonText = this.state.isSignUp ? 'Signup with Facebook' : 'Login with Facebook';
+    var loginWithTwitterButtonText = this.state.isSignUp ? 'Signup with Twitter' : 'Login with Twitter';
+    var loginWithGoogleButtonText = this.state.isSignUp ? 'Signup with Google' : 'Login with Google';
+
     return (
       <Modal
           animationType={'none'}
@@ -482,6 +604,23 @@ export default class Home extends Component {
             textStyle={styles.buttonText}>
             {loginButtonText}
           </Button>
+          <Button
+            onPress={() => this._loginWithFacebook()}
+            style={styles.facebookLogin}
+            textStyle={styles.facebookLoginText}>
+            {loginWithFacebookButtonText}
+          </Button>
+          {
+            Platform.OS == 'ios' ?
+            <View/>
+            :
+            <Button
+              onPress={() => this._loginWithGoogle()}
+              style={styles.googleLogin}
+              textStyle={styles.googleLoginText}>
+              {loginWithGoogleButtonText}
+            </Button>
+          }
           <Button
             onPress={() => this._loginWithoutAccount()}
             style={styles.loginBlankButton}
@@ -625,6 +764,63 @@ const styles = StyleSheet.create({
     height: 50,
     marginLeft: width*.2,
     marginRight: width*.2,
+  },
+  facebookLogin: {
+    marginTop: 5,
+    backgroundColor: '#3B5998',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#3B5998',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  facebookLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
+  },
+  twitterLogin: {
+    marginTop: 5,
+    backgroundColor: '#4099FF',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#4099FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  twitterLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
+  },
+  googleLogin: {
+    marginTop: 5,
+    backgroundColor: '#4099FF',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#4099FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
   },
   signupBlankButton: {
     position: 'absolute',
