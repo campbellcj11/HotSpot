@@ -178,13 +178,13 @@ _submitChanges(){
   var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
 
   this.userRef.update({
-    "First_Name": this.state.First_Name,
-    "Last_Name": this.state.Last_Name,
-    "Age": this.state.selectedAge.label,
-    "Image": imageLocation,
-    "Gender": this.state.selectedGender.label,
-    "Email": this.state.Email,
-    "Phone": this.state.Phone,
+    "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
+    "Last_Name": typeof(this.state.Last_Name) != "undefined" ? this.state.Last_Name : "",
+    "Age": typeof(this.state.selectedAge) != "undefined" ? this.state.selectedAge.label : "",
+    "Image": typeof(imageLocation) != "undefined" ? imageLocation : "",
+    "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender.label : "",
+    "Email": typeof(this.state.Email) != "undefined" ? this.state.Email : "",
+    "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
   this.setModalVisible(false);
 }
