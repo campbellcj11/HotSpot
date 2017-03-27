@@ -185,9 +185,7 @@ export default class Home extends Component {
     this.setState({
       eventModal: true,
     })}
-  setEventVisible(visible){
 
-  }
   onCloseCreateEvent(){
     this.setState({
       eventModal: false,

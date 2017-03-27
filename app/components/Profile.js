@@ -87,10 +87,9 @@ export default class Profile extends Component {
       Last_Name: this.props.user.Last_Name,
       Age: this.props.user.Age ? this.props.user.Age : '',
       Gender: this.props.user.Gender,
-      Phone: this.props.user.Phone,
       responseURI: this.props.user.Image,
       Phone: this.props.user.Phone ? this.props.user.Phone : '',
-      imagePath: '',
+      imageLocation: this.props.user.Image,
       Image: this.props.user.Image,
       Email: this.props.user.Email,
       modalVisible: false,
@@ -100,7 +99,7 @@ export default class Profile extends Component {
       dataSource: ds,
       interests: this.props.interests,
     }
-    this.currentUserID = firebase.auth().currentUser.uid;
+  //  this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
     this.userImageRef = this.getStorageRef().child('UserImages');
     this.categoriesRef = this.getRef().child('categories/'+firebase.auth().currentUser.uid);
@@ -143,6 +142,7 @@ export default class Profile extends Component {
 }
   closeModal(){
     this.setState({modalVisible: false});
+
   }
 
   renderSaveButton(){
@@ -174,15 +174,18 @@ renderImage(){
 }
 
 _submitChanges(){
-  uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg');
-  var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
-
+  uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg')
+  .then(url => this.setState({imageLocation: url}))
+  .catch((error) => {
+  reject(error)
+});
+  //var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
   this.userRef.update({
     "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
     "Last_Name": typeof(this.state.Last_Name) != "undefined" ? this.state.Last_Name : "",
-    "Age": typeof(this.state.selectedAge) != "undefined" ? this.state.selectedAge.label : "",
-    "Image": typeof(imageLocation) != "undefined" ? imageLocation : "",
-    "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender.label : "",
+    "Age": typeof(this.state.selectedAge) != "undefined" ? this.state.selectedAge : "",
+    "Image": typeof(this.state.imageLocation) != "undefined" ? this.state.imageLocation : "",
+    "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender : "",
     "Email": typeof(this.state.Email) != "undefined" ? this.state.Email : "",
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
@@ -210,7 +213,7 @@ _submitChanges(){
   renderModal()
   {
     var ageString = this.props.user.Age;
-    var genderString = this.props.user.Gender;
+     var genderString = this.props.user.Gender;
     const genderOptions = [
       {key: 0, label: 'Male'},
       {key: 1, label: 'Female'},
@@ -249,8 +252,133 @@ _submitChanges(){
             </TouchableHighlight>
           </View>
 
+          <KeyboardAwareScrollView scrollEnabled = {true} style={{backgroundColor: 'white'}}>
+
+          <View style = {styles.settings_imageView}>
+               <Image source={{uri: this.state.responseURI }} style={styles.userImage}/>
+               <TouchableHighlight
+               onPress={()=> this.renderImage()}
+               underlayColor={'white'}>
+                 <Text style={styles.settings_imageText}>Change Photo</Text>
+               </TouchableHighlight>
+          </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>First name</Text>
+              </View>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder={this.state.First_Name}
+                ref='First_Name'
+                onChangeText={(First_Name) => this.setState({First_Name})}
+                placeholderTextColor='black'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>Last name</Text>
+              </View>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder={this.state.Last_Name}
+                ref='Last_Name'
+                onChangeText={(Last_Name) => this.setState({Last_Name})}
+                placeholderTextColor='black'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>Email</Text>
+              </View>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder={this.props.user.Email}
+                ref='Email'
+                onChangeText={(Email) => this.setState({Email})}
+                placeholderTextColor='black'
+                underlineColorAndroid='transparent'
+                keyboardType='email-address'>
+              </TextInput>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>Phone number</Text>
+              </View>
+              <TextInput
+                style = {styles.TextInput}
+                ref='Phone'
+                placeholder={this.state.Phone}
+                placeholderTextColor='black'
+                onChangeText={(Phone) => this.setState({Phone})}
+                underlineColorAndroid='transparent'
+                keyboardType='numeric'
+                maxLength={10}>
+              </TextInput>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>Age</Text>
+              </View>
+              <ModalPicker
+                selectStyle={{borderRadius:0, borderWidth: 0}}
+                selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
+                style ={{ borderRadius:0}}
+                data={ageOptions}
+                onChange={(age) => this.setState({selectedAge: age.label})}>
+
+                <TextInput
+                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
+                  editable={false}
+                  value = {this.state.selectedAge.toString()} />
+              </ModalPicker>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+            </View>
+
+            <View style={styles.settings_InputView}>
+              <View style = {styles.settings_InfoField}>
+                <Text style={styles.settings_Header}>Gender</Text>
+              </View>
+              <ModalPicker
+                selectStyle={{borderRadius:0, borderWidth: 0}}
+                selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
+                style ={{flex: 1, borderRadius:0}}
+                data={genderOptions}
+                initValue= {genderString}
+                onChange={(gender) => this.setState({selectedGender: gender.label})}>
+
+                <TextInput
+                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
+                  editable={false}
+                  value = {this.state.selectedGender} />
+              </ModalPicker>
+            </View>
+
+
+
+{/*
           <KeyboardAwareScrollView scrollEnabled={false}>
-          <ScrollView style={{flex:1}} scrollEnabled={false}>
+
           <View style={styles.settings_card}>
             <View style = {styles.settings_imageView}>
               <View style = {styles.settings_image}>
@@ -349,13 +477,12 @@ _submitChanges(){
                   selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
                   style ={{ borderRadius:0}}
                   data={ageOptions}
-                  initValue= {ageString}
                   onChange={(age) => this.setState({selectedAge: age.label})}>
 
                   <TextInput
                     style={{padding:10, height:CARD_HEIGHT*.075}}
                     editable={false}
-                    value = {this.state.selectedAge} />
+                    value = {this.state.selectedAge.toString()} />
                 </ModalPicker>
               </View>
              </View>
@@ -384,8 +511,11 @@ _submitChanges(){
               </View>
             </View>
           </View>
-          </ScrollView>
+
           </KeyboardAwareScrollView>
+
+          */}
+            </KeyboardAwareScrollView>
          </View>
      </Modal>
     )
@@ -419,7 +549,7 @@ _submitChanges(){
     <View style= {styles.container_profile}>
       <View style= {styles.container_upper}>
         <View style={styles.container_image}>
-          <Image source={{uri: this.state.Image}} style={styles.userImage}/>
+          <Image source={{uri: this.state.imageLocation }} style={styles.userImage}/>
         </View>
         <View>
           <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
@@ -462,6 +592,7 @@ _submitChanges(){
   }
   render() {
     let viewToShow
+    console.log("userref! " + this.userImageRef);
 
     viewToShow = (firebase.auth().currentUser.email != 'test@test.com') ? this.renderLoggedIn() : this.renderNotLoggedIn()
     return(
@@ -533,7 +664,7 @@ const styles = StyleSheet.create({
     // borderColor: 'green',
   },
   container_settings: {
-    backgroundColor: '#f2f2f2',
+    backgroundColor: 'white',
     flex:1,
     flexDirection: 'column',
   },
@@ -630,6 +761,36 @@ const styles = StyleSheet.create({
     textAlign:'center',
     lineHeight: HEADER_HEIGHT-21,
   },
+  settings_InputView: {
+    marginLeft: 10,
+    marginRight: 10,
+    height: CARD_HEIGHT *0.07,
+    // borderColor: 'blue',
+    // borderWidth: 2,
+    borderBottomWidth: .5,
+    borderBottomColor: styleVariables.greyColor,
+
+  },
+  settings_InfoField: {
+    // height: CARD_HEIGHT*.075,
+    justifyContent: 'center',
+    // borderColor: 'red',
+    // borderWidth: 2,
+  },
+  TextInput: {
+      flex: 1,
+      fontSize: 14,
+      fontFamily: styleVariables.systemRegularFont,
+      borderBottomColor: 'green',
+      borderBottomWidth: 2,
+
+  },
+  settings_Header: {
+    fontFamily: styleVariables.systemRegularFont,
+    fontSize: 12,
+    color: styleVariables.greyColor,
+
+  },
   settings_image: {
     width: 100,
     height: 100,
@@ -642,6 +803,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: width,
     height: CARD_HEIGHT * .4,
+    // borderWidth: 2,
+    // borderColor: 'red',
   },
   settings_closeModal: {
     paddingTop: 3,
@@ -661,6 +824,7 @@ const styles = StyleSheet.create({
     width: width/2,
     height: CARD_HEIGHT * .1,
   },
+
   settings_EmailView: {
     // borderBottomWidth: .75,
     // borderBottomColor: '#d3d3d3',
@@ -721,16 +885,6 @@ const styles = StyleSheet.create({
   profile_Icon: {
     height: 25,
     width:25,
-  },
-
-  TextInput: {
-    // borderWidth: 2,
-    // borderColor: 'blue',
-    width: width,
-    height: 25,
-    paddingLeft: 10,
-    fontSize: 15,
-    fontFamily: 'Futura-Medium',
   },
   uploadAvatar: {
     width: 100,
