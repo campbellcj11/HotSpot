@@ -264,9 +264,9 @@ _submitChanges(){
           </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>First name</Text>
+
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>First name</Text>
-              </View>
               <TextInput
                 style = {styles.TextInput}
                 placeholder={this.state.First_Name}
@@ -275,15 +275,15 @@ _submitChanges(){
                 placeholderTextColor='black'
                 underlineColorAndroid='transparent'>
               </TextInput>
+              </View>
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>Last name</Text>
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>Last name</Text>
-              </View>
               <TextInput
                 style = {styles.TextInput}
                 placeholder={this.state.Last_Name}
@@ -292,15 +292,15 @@ _submitChanges(){
                 placeholderTextColor='black'
                 underlineColorAndroid='transparent'>
               </TextInput>
+              </View>
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>Email</Text>
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>Email</Text>
-              </View>
               <TextInput
                 style = {styles.TextInput}
                 placeholder={this.props.user.Email}
@@ -310,15 +310,16 @@ _submitChanges(){
                 underlineColorAndroid='transparent'
                 keyboardType='email-address'>
               </TextInput>
+              </View>
+
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>Phone number</Text>
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>Phone number</Text>
-              </View>
               <TextInput
                 style = {styles.TextInput}
                 ref='Phone'
@@ -329,15 +330,15 @@ _submitChanges(){
                 keyboardType='numeric'
                 maxLength={10}>
               </TextInput>
+              </View>
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>Age</Text>
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>Age</Text>
-              </View>
               <ModalPicker
                 selectStyle={{borderRadius:0, borderWidth: 0}}
                 selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
@@ -345,20 +346,22 @@ _submitChanges(){
                 data={ageOptions}
                 onChange={(age) => this.setState({selectedAge: age.label})}>
 
-                <TextInput
-                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
-                  editable={false}
-                  value = {this.state.selectedAge.toString()} />
+                <Text
+                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color:'black'}}
+                >
+                {this.state.selectedAge.toString()}
+
+                  </Text>
               </ModalPicker>
+              </View>
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
             </View>
 
             <View style={styles.settings_InputView}>
+            <Text style={styles.settings_Header}>Gender</Text>
               <View style = {styles.settings_InfoField}>
-                <Text style={styles.settings_Header}>Gender</Text>
-              </View>
               <ModalPicker
                 selectStyle={{borderRadius:0, borderWidth: 0}}
                 selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
@@ -367,11 +370,13 @@ _submitChanges(){
                 initValue= {genderString}
                 onChange={(gender) => this.setState({selectedGender: gender.label})}>
 
-                <TextInput
-                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
-                  editable={false}
-                  value = {this.state.selectedGender} />
+                <Text
+                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color: 'black'}}
+                >
+                  {this.state.selectedGender}
+                  </Text>
               </ModalPicker>
+              </View>
             </View>
 
 
@@ -603,6 +608,23 @@ _submitChanges(){
   }
 }
 const styles = StyleSheet.create({
+  creator_EventView: {
+    width: width,
+    height: CARD_HEIGHT *0.1,
+    borderWidth: 2,
+    borderColor: 'red',
+
+  },
+  creator_NameInput: {
+    marginLeft:10,
+    marginRight: 5,
+    height: CARD_HEIGHT*.075,
+    justifyContent: 'center',
+    borderBottomWidth:.5,
+    borderBottomColor: '#d3d3d3',
+    borderWidth: 2,
+    borderColor: 'blue',
+  },
   item: {
     backgroundColor: '#FFFFFF',
     width: 200,
@@ -762,27 +784,20 @@ const styles = StyleSheet.create({
     lineHeight: HEADER_HEIGHT-21,
   },
   settings_InputView: {
+    width: width-20,
+    height: CARD_HEIGHT *0.1,
     marginLeft: 10,
-    marginRight: 10,
-    height: CARD_HEIGHT *0.07,
-    // borderColor: 'blue',
-    // borderWidth: 2,
     borderBottomWidth: .5,
     borderBottomColor: styleVariables.greyColor,
-
   },
   settings_InfoField: {
-    // height: CARD_HEIGHT*.075,
+    height: CARD_HEIGHT*.075,
     justifyContent: 'center',
-    // borderColor: 'red',
-    // borderWidth: 2,
   },
   TextInput: {
       flex: 1,
       fontSize: 14,
       fontFamily: styleVariables.systemRegularFont,
-      borderBottomColor: 'green',
-      borderBottomWidth: 2,
 
   },
   settings_Header: {
