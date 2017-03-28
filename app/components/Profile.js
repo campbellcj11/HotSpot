@@ -175,10 +175,7 @@ renderImage(){
 
 _submitChanges(){
   uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg')
-  .then(url => this.setState({imageLocation: url}))
-  .catch((error) => {
-  reject(error)
-});
+  .then(url => this.setState({imageLocation: url}));
   //var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
   this.userRef.update({
     "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
@@ -323,7 +320,7 @@ _submitChanges(){
               <TextInput
                 style = {styles.TextInput}
                 ref='Phone'
-                placeholder={this.state.Phone}
+                placeholder={this.state.Phone.toString()}
                 placeholderTextColor='black'
                 onChangeText={(Phone) => this.setState({Phone})}
                 underlineColorAndroid='transparent'
@@ -350,7 +347,6 @@ _submitChanges(){
                   style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color:'black'}}
                 >
                 {this.state.selectedAge.toString()}
-
                   </Text>
               </ModalPicker>
               </View>
