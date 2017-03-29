@@ -200,6 +200,10 @@ export default class EventCard extends Component {
       console.warn('Will show again');
       this.setState({postcardSaved:true});
     }
+    var postcards = this.props.postcards;
+    var postCardObject = {name:this.props.currentSelection.Event_Name,date: this.props.currentSelection.Date,cardImage: {uri: this.props.currentSelection.Image},color:'#0E476A',userImages:[]};
+    postcards.push(postCardObject);
+    this.props.savePostcards(postcards);
   }
   render() {
     var dateNumber;
@@ -342,12 +346,12 @@ export default class EventCard extends Component {
             <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.openURL()}/>
             <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
             <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
-            {/*{
+            {
               (firebase.auth().currentUser.email != 'test@test.com')  ?
                 <ImageButton style={{flex:.25}} image={postcardImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:this.state.postcardSaved ? styleVariables.greyColor:'#0B82CC'}} onPress={this.openPostcard.bind(this)} />
               :
                 <View/>
-            }*/}
+            }
           </View>
           <View style={{marginTop:5}}>
 

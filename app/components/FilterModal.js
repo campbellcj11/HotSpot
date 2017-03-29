@@ -6,19 +6,38 @@ import {
   View,
   TouchableHighlight,
   Modal,
+  ScrollView,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import closeImage from '../images/delete.png'
 import styleVariables from '../Utils/styleVariables'
+import DatePicker from 'react-native-datepicker'
+import Moment from 'moment'
 
 export default class FilterModal extends Component {
 
   constructor(props) {
     super(props);
+    var startDateToBe = new Date();
+    if(this.props.startDate)
+    {
+      if(this.props.startDate > new Date())
+      {
+
+        startDateToBe = this.props.startDate
+      }
+      else
+      {
+        // console.warn('Date is older than right now setting date to ',new Date());
+      }
+    }
     this.state = {
       interests: this.props.interests ? this.props.interests : [],
       city: this.props.city ? this.props.city : '',
+      startDate: this.props.startDate ? startDateToBe : new Date(),
+      endDate: this.props.startDate ? this.props.endDate : new Date(),
+      dateFilterIndex: 3,
     };
   }
   getLocation() {
@@ -46,6 +65,31 @@ export default class FilterModal extends Component {
     {
       this.setState({
         interests: nextProps.interests,
+      })
+    }
+    if(nextProps.startDate != this.props.startDate)
+    {
+      var startDateToBe = new Date();
+      if(nextProps.startDate)
+      {
+        if(nextProps.startDate > new Date())
+        {
+
+          startDateToBe = nextProps.startDate
+        }
+        else
+        {
+          // console.warn('Date is older than right now setting date to ',new Date());
+        }
+      }
+      this.setState({
+        startDate: nextProps.startDate ? startDateToBe : new Date(),
+      })
+    }
+    if(nextProps.endDate != this.props.endDate)
+    {
+      this.setState({
+        endDate: nextProps.endDate,
       })
     }
   }
@@ -89,6 +133,8 @@ export default class FilterModal extends Component {
   closeModal(){
     this.props.setLocation(this.state.city);
     this.props.interestPressed(this.state.interests);
+    this.props.saveStartDate(this.state.startDate);
+    this.props.saveEndDate(this.state.endDate);
     this.props.close();
   }
   buttonPressed(sentInterest) {
@@ -110,6 +156,42 @@ export default class FilterModal extends Component {
     }
 
   }
+  dateFilterButtonPressed(sentIndex){
+    this.setState({dateFilterIndex:sentIndex});
+    if(sentIndex == 0)
+    {
+      var today = new Date();
+      var tomorrow = new Date();
+      tomorrow = tomorrow.setDate(tomorrow.getDate() + 1);
+
+      this.setState({startDate: Moment(today),endDate: Moment(tomorrow)})
+    }
+    else if(sentIndex == 1)
+    {
+      var tomorrow = new Date();
+      tomorrow = tomorrow.setDate(tomorrow.getDate() + 1);
+      var dayAfterTomorrow = new Date();
+      dayAfterTomorrow = dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+
+      this.setState({startDate: Moment(tomorrow),endDate: Moment(dayAfterTomorrow)})
+    }
+    else if(sentIndex == 2)
+    {
+      var tagetStartDay = 6; //Saturday
+      var targetEndDay = 1; //Monday
+      var today = new Date();
+      var currentDayOfWeek = today.getDay();
+      // console.warn(currentDayOfWeek);
+      var saturday = new Date();
+      saturday = saturday.setDate(saturday.getDate() + (tagetStartDay-currentDayOfWeek));
+      // console.warn(Moment(saturday));
+      var monday = new Date();
+      monday = monday.setDate(monday.getDate() + (8-currentDayOfWeek));
+      // console.warn(Moment(monday));
+
+      this.setState({startDate: Moment(saturday),endDate: Moment(monday)})
+    }
+  }
   setCity(sentText){
     this.setState({city:sentText});
   }
@@ -127,6 +209,78 @@ export default class FilterModal extends Component {
     }
 
     return interestsViews;
+  }
+  renderDateFilter(){
+    var presetFilters = ['Today','Tomorrow','Weekend','Custom'];
+
+    var presetFiltersViews = [];
+
+    var startDateString = '8/29/95';
+    var endDateString = '8/31/95';
+
+    for(var i=0;i<presetFilters.length;i++)
+    {
+      var presetFilter = presetFilters[i];
+      var isPressed = this.state.dateFilterIndex == i ? true : false;
+      presetFiltersViews.push(
+          <Button ref={presetFilters} key={i} style={isPressed ? styles.selectedDateCell : styles.dateCell} textStyle={styles.dateCellText} onPress={this.dateFilterButtonPressed.bind(this,i)}>{presetFilter}</Button>
+      );
+    }
+    return(
+      <View>
+        <View style={styles.datesHolder}>
+          {presetFiltersViews}
+        </View>
+        <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+          <DatePicker
+            style={{borderWidth:1,borderColor:styleVariables.greyColor,alignItems:'center',justifyContent:'center'}}
+            date={this.state.startDate}
+            mode="date"
+            placeholder='Start Date'
+            format="MMM DD, YYYY"
+            minDate={new Date()}
+            showIcon={false}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              placeholderText: {
+                color: styleVariables.greyColor,
+                fontFamily: styleVariables.systemFont,
+                fontSize: 15,
+              },
+              dateInput: {
+                borderWidth: 0,
+              }
+            }}
+            onDateChange={(Event_Date) => {this.setState({startDate: Event_Date,dateFilterIndex:3})}}
+          />
+          <Text style={{marginLeft:8,marginRight:8,fontFamily:styleVariables.systemBoldFont,fontSize:18}}>-</Text>
+          <DatePicker
+            style={{borderWidth:1,borderColor:styleVariables.greyColor,alignItems:'center',justifyContent:'center'}}
+            date={this.state.endDate}
+            mode="date"
+            placeholder='End Date'
+            format="MMM DD, YYYY"
+            minDate={this.state.startDate}
+            showIcon={false}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              placeholderText: {
+                color: styleVariables.greyColor,
+                fontFamily: styleVariables.systemFont,
+                fontSize: 15,
+              },
+              dateInput: {
+                borderWidth: 0,
+              }
+            }}
+            onDateChange={(Event_Date) => {this.setState({endDate: Event_Date,dateFilterIndex:3})}}
+          />
+        </View>
+
+      </View>
+    )
   }
   render() {
 
@@ -151,7 +305,11 @@ export default class FilterModal extends Component {
             </View>
           </View>
 
-          <View>
+          <ScrollView>
+            <View>
+              <Text style={styles.filterTypeTitle}>Date</Text>
+              {this.renderDateFilter()}
+            </View>
             <View>
               <Text style={styles.filterTypeTitle}>Location</Text>
               <View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
@@ -171,7 +329,7 @@ export default class FilterModal extends Component {
                 {this.renderInterests()}
               </View>
             </View>
-          </View>
+          </ScrollView>
       </Modal>
     );
   }
@@ -207,18 +365,52 @@ var styles = StyleSheet.create({
     padding: 4,
   },
   interestsHolder: {
-    flex:1,
     marginLeft: 16,
     marginRight: 16,
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
   interestsCell: {
-    margin: 8,
+    margin:8
   },
   interestsCellText: {
     fontFamily: styleVariables.systemBoldFont,
     fontSize: 14,
     color: 'white',
   },
+  datesHolder: {
+    marginLeft: 16,
+    marginRight: 16,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  dateCell: {
+    backgroundColor: styleVariables.greyColor,
+    marginTop:8,
+    marginBottom:8,
+  },
+  selectedDateCell:{
+    backgroundColor: '#0B82CC',
+    marginTop:8,
+    marginBottom:8,
+  },
+  dateCellText: {
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 14,
+    color: 'white',
+  },
+  dateButton: {
+    marginTop:8,
+    marginBottom:8,
+    paddingLeft:8,
+    paddingRight:8,
+    borderWidth:1,
+    borderColor: styleVariables.greyColor,
+  },
+  dateButtonText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 14,
+    color: 'black',
+  }
 });

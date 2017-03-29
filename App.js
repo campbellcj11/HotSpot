@@ -20,7 +20,7 @@ const store = configureStore()
 
 class TabIcon extends Component {
     render(){
-      console.log('Tab Icon Props: ', this.props);
+      // console.log('Tab Icon Props: ', this.props);
       var iconName = this.props.iconName || 'rocket';
       var color = this.props.selected ? '#F97237' : 'white';
         return (

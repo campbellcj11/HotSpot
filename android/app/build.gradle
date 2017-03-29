@@ -95,6 +95,15 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "x86"
         }
+        vectorDrawables.useSupportLibrary = true
+    }
+    signingConfigs {
+        release {
+            storeFile file("my-app-key.keystore")
+            storePassword "Cover2cover"
+            keyAlias "my-key-alias"
+            keyPassword "Cover2cover"
+        }
     }
     splits {
         abi {
@@ -126,6 +135,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-crop-picker')
     compile project(':react-native-image-picker')
     compile project(':react-native-fetch-blob')
     compile project(':RNMail')

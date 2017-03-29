@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import LinearGradient from 'react-native-linear-gradient';
 import backgroundImage from '../images/City-Light.png'
 import * as firebase from 'firebase';
 import {
@@ -27,13 +26,26 @@ import ModalPicker from 'react-native-modal-picker'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import ImagePicker from 'react-native-image-picker';
+import PostCardImagePicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 import { Actions } from 'react-native-router-flux';
-import icon3 from '../images/settings.png'
+import settingsImage from '../images/settings.png'
 import closeImage from '../images/delete.png'
 import checkImage from '../images/check.png'
+import addImage from '../images/plus.png'
 import styleVariables from '../Utils/styleVariables'
+import LinearGradient from 'react-native-linear-gradient'
+import Moment from 'moment'
+import Swiper from 'react-native-swiper';
+import SortableGrid from 'react-native-sortable-grid';
 
+import postcardImage1 from '../images/postcard1.png'
+import postcardImage2 from '../images/postcard2.jpg'
+import postcardImage2_1 from '../images/postcard2_1.jpg'
+import postcardImage2_2 from '../images/postcard2_2.jpg'
+import postcardImage2_3 from '../images/postcard2_3.jpg'
+import postcardImage3 from '../images/postcard3.jpg'
+import postcardImage4 from '../images/postcard4.jpg'
 
 var {height, width} = Dimensions.get('window');
 
@@ -98,6 +110,11 @@ export default class Profile extends Component {
       categories: [],
       dataSource: ds,
       interests: this.props.interests,
+      hasPostCardSelected: false,
+      selectedPostCardInfo: {},
+      currentIndex: 0,
+      postcardSettingsOpen: false,
+      postcards: this.props.postcards,
     }
   //  this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
@@ -119,10 +136,14 @@ export default class Profile extends Component {
     {
       this.setState({interests:nextProps.interests});
     }
+    if(nextProps.postcards != this.props.postcards)
+    {
+      this.setState({postcards:nextProps.postcards});
+    }
   }
   renderRightButton(){
     return (
-      <ImageButton image={icon3} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
+      <ImageButton image={settingsImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
       </ImageButton>
     );
   }
@@ -544,6 +565,254 @@ _submitChanges(){
 
     return interestsViews;
   }
+  openPostCard(sentPostCardInfo){
+    this.setState({hasPostCardSelected:true,selectedPostCardInfo:sentPostCardInfo});
+  }
+  closePostCard(){
+    this.setState({hasPostCardSelected:false,currentIndex:0},
+      function(){
+        this.props.savePostcards(this.state.postcards);
+        this.setState({selectedPostCardInfo:{}})
+    })
+  }
+  openPostCardSettings(){
+    this.setState({postcardSettingsOpen:true});
+  }
+  closePostCardSettings(){
+    this.setState({postcardSettingsOpen:false});
+  }
+  openImagePicker(){
+    PostCardImagePicker.openPicker({
+      multiple: true
+    }).then(images => {
+      console.log(images);
+      var imagePaths = [];
+      var postCardInfo = this.state.selectedPostCardInfo;
+      var userImages = postCardInfo.userImages;
+      for(var i=0; i < images.length; i++)
+      {
+        var imagePath = images[i].path;
+        var imagePathObject = {uri : imagePath};
+        console.log(imagePath);
+        imagePaths.push(imagePath);
+        userImages.push(imagePathObject);
+      }
+
+      postCardInfo.userImages = userImages;
+      console.log(userImages);
+      console.log(imagePaths);
+      this.setState({selectedPostCardInfo:postCardInfo});
+    });
+  }
+  renderPostcards(){
+    var maxViews = 5;
+
+    // var postCards = [{name:'Coachella',date: new Date(),cardImage: postcardImage1,color:'#0E476A',userImages:[]},{name:'Drake @ Colonial Life Arena',date: new Date(), cardImage: postcardImage2,color:'#F06D37',userImages:[postcardImage2_1,postcardImage2_2,postcardImage2_3]}]
+    var postCardViews = [];
+
+    var postCards = this.state.postcards || [];
+
+    for(var i=0;i<postCards.length;i++)
+    {
+      var postCard = postCards[i];
+      var postCardColor = postCard.color;//'#0B82CC' '#0E476A' '#F06D37'
+      // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      //<Button ref={postCard} key={i} style={[styles.postCard,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{postCard.name}</Button>
+      // postCardViews.push(
+      //     <FaderView key={i}/>
+      // );
+      postCardViews.push(
+        <TouchableHighlight key={i} style={{width:width,height:90,justifyContent:'center',marginBottom:8}} onPress={this.openPostCard.bind(this,postCard)}>
+        <View style={{flex:1}}>
+          <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+            <Image style={{flex:1}} source={postCard.cardImage} resizeMode={'cover'}/>
+          </View>
+          <LinearGradient
+            start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
+            locations={[0,1]}
+            colors={[postCardColor, '#FFFFFF00']}
+            style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
+          />
+          <Text style={{position:'absolute',left:8,top:8,right:8,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white'}}>{postCard.name}</Text>
+          <View style={{position:'absolute',left:-4,bottom:8,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
+            <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:14,color:postCardColor}}>{Moment(postCard.date).format('MMM DD, YYYY')}</Text>
+          </View>
+        </View>
+        </TouchableHighlight>
+      )
+    }
+
+    return (
+      <View style={{backgroundColor:'white'}}>
+        {postCardViews}
+      </View>
+    )
+  }
+  renderPostCardPage1(){
+    return(
+      <View key={-1} style={{flex:1}}>
+        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+          <Image style={{flex:1}} source={this.state.selectedPostCardInfo.cardImage} resizeMode={'cover'}/>
+        </View>
+        <LinearGradient
+          start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
+          locations={[0,1]}
+          colors={[this.state.selectedPostCardInfo.color, '#FFFFFF00']}
+          style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
+        />
+        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}}>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={settingsImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.openPostCardSettings()}>
+            </ImageButton>
+          </View>
+          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}>{this.state.selectedPostCardInfo.name}</Text>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCard()}>
+            </ImageButton>
+          </View>
+        </View>
+        <View style={{position:'absolute',left:-4,bottom:48,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
+          <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:18,color:this.state.selectedPostCardInfo.color}}>{Moment(this.state.selectedPostCardInfo.date).format('MMM DD, YYYY')}</Text>
+        </View>
+      </View>
+    )
+  }
+  renderPostCardViewWithImage(sentImage){
+    return(
+      <View key={-1} style={{flex:1}}>
+        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+          <Image style={{flex:1}} source={sentImage} resizeMode={'cover'}/>
+        </View>
+        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}}>
+          <View style={{flex:.15}}/>
+          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}></Text>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCard()}>
+            </ImageButton>
+          </View>
+        </View>
+      </View>
+    )
+  }
+  _onMomentumScrollEnd(e, state, context) {
+    console.log(context.state)
+    this.setState({currentIndex: context.state.index});
+  }
+  renderPostCardModal(){
+    var viewToShow = <View/>
+    if(this.state.postcardSettingsOpen)
+    {
+      viewToShow = this.renderPostCardSettings();
+    }
+    else {
+      viewToShow = this.renderPostCard();
+    }
+    return (
+      <Modal
+        animationType={'fade'}
+        transparent={false}
+        visible = {this.state.hasPostCardSelected}
+      >
+        {viewToShow}
+      </Modal>
+    )
+  }
+  startDelete(){
+    console.warn(
+      this.refs.SortableGrid.toggleDeleteMode()
+    )
+  }
+  reorderImages(sentItemOrder){
+    // console.log("Drag was released, the blocks are in the following order: ", sentItemOrder.itemOrder)
+    var newImages = [];
+    for(var i=0;i<sentItemOrder.itemOrder.length;i++)
+    {
+      var imageOrderData = sentItemOrder.itemOrder[i];
+      var key = imageOrderData.key;
+      var order = imageOrderData.order;
+      var image = this.state.selectedPostCardInfo.userImages[key];
+      newImages.push(image);
+    }
+    // console.log('New Images: ', newImages);
+    var postCardInfo = this.state.selectedPostCardInfo;
+    postCardInfo.userImages = newImages;
+    this.setState({selectedPostCardInfo:postCardInfo});
+  }
+  renderPostCardSettings(){
+    // this.numbers = [0,1,2,3,4,5,6,7,8,9,10,11]
+    var userImages = this.state.selectedPostCardInfo.userImages;
+    return(
+      <View style={{flex:1,backgroundColor:'red',paddingTop:20}}>
+        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+          <Image style={{flex:1}} source={this.state.selectedPostCardInfo.cardImage} resizeMode={'cover'}/>
+        </View>
+        <LinearGradient
+          start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
+          locations={[0,1]}
+          colors={[this.state.selectedPostCardInfo.color, '#FFFFFF00']}
+          style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
+        />
+        <View style={{flex:.1,flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginHorizontal:8}}>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={addImage} style={{marginLeft:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.openImagePicker()}>
+            </ImageButton>
+          </View>
+          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}>{this.state.selectedPostCardInfo.name}</Text>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCardSettings()}>
+            </ImageButton>
+          </View>
+        </View>
+        <SortableGrid
+          style={{flex:.9}}
+          blockTransitionDuration      = { 400 }
+          activeBlockCenteringDuration = { 200 }
+          itemsPerRow                  = { 3 }
+          dragActivationTreshold       = { 200 }
+          onDragRelease                = { (itemOrder) => this.reorderImages(itemOrder) }
+          onDragStart                  = { ()          => console.log("Some block is being dragged now!") }
+          onDeleteItem                 = { (item)      => console.log("Item was deleted:", item) }
+          ref={'SortableGrid'}
+        >
+          {
+            userImages.map( (image, index) =>
+              <View
+                ref={ 'itemref_' + index }
+                onTap={ this.startDelete.bind(this) }
+                key={ index }
+                style={{flex:1, margin: 8, borderRadius: 4,justifyContent: 'center', alignItems: 'center', backgroundColor:'#FFFFFF60'}}
+              >
+                <Image style={{width:88,height:88}} source={image} resizeMode={'contain'}/>
+              </View>
+            )
+          }
+        </SortableGrid>
+      </View>
+    )
+  }
+  renderPostCard(){
+    var postCardPages = [this.renderPostCardPage1()];
+    for(var i=0; i < this.state.selectedPostCardInfo.userImages.length; i++)
+    {
+        var postCardImage = this.state.selectedPostCardInfo.userImages[i];
+        postCardPages.push(this.renderPostCardViewWithImage(postCardImage));
+    }
+    var numberOfPages = postCardPages.length - 1;
+    var barChangePerPage = width / numberOfPages;
+    return(
+      <View>
+        <Swiper
+          loop={false}
+          onMomentumScrollEnd ={this._onMomentumScrollEnd.bind(this)}
+          showsPagination={false}
+        >
+          {postCardPages}
+        </Swiper>
+        <View style={{position:'absolute',bottom:20,height:4,left:0,right:0,backgroundColor:'#FFFFFF60'}}></View>
+        <View style={{position:'absolute',bottom:20,height:4,left:0,width:barChangePerPage*this.state.currentIndex,backgroundColor:'#FFFFFF'}}></View>
+      </View>
+    )
+  }
   renderProfile() {
   return(
     <View style = {styles.innerContainer}>
@@ -559,14 +828,20 @@ _submitChanges(){
           <Text style={styles.userLocation}>{this.props.location}</Text>
         </View>
        </View>
-      <View style={styles.container_lower}>
+      <ScrollView style={styles.container_lower}>
         <View style={styles.profile_interestHeader}>
           <Text style={styles.profile_interests}>Interests</Text>
         </View>
         <View style={styles.interestsHolder}>
           {this.renderInterests()}
         </View>
-      </View>
+        <View style={styles.profile_interestHeader}>
+          <Text style={styles.profile_interests}>Post Cards</Text>
+        </View>
+        <View>
+          {this.renderPostcards()}
+        </View>
+      </ScrollView>
     </View>
   </View>
 )
@@ -582,9 +857,13 @@ _submitChanges(){
   }
   renderLoggedIn()
   {
-    if(this.state.modalVisible === false)
+    if(this.state.modalVisible === false && this.state.hasPostCardSelected === false)
     {
       return this.renderProfile();
+    }
+    else if(this.state.hasPostCardSelected === true)
+    {
+      return this.renderPostCardModal();
     }
     else
     {
@@ -620,6 +899,9 @@ const styles = StyleSheet.create({
     borderBottomColor: '#d3d3d3',
     borderWidth: 2,
     borderColor: 'blue',
+  },
+  linearGradient: {
+    flex:1,
   },
   item: {
     backgroundColor: '#FFFFFF',
@@ -680,6 +962,7 @@ const styles = StyleSheet.create({
     flex:1.75,
     // borderWidth: 2,
     // borderColor: 'green',
+    backgroundColor:'#E2E2E2',
   },
   container_settings: {
     backgroundColor: 'white',
@@ -724,15 +1007,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Futura-Medium',
     fontSize: 12,
   },
-  linearGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    width: CARD_WIDTH,
-    height: height,
-  },
   loginButton: {
     marginTop: 5,
     backgroundColor: '#50E3C2',
@@ -759,6 +1033,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#4F4F4F',
     height: CARD_HEIGHT*.075,
     justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
 
   },
   navigationBarStyle: {
@@ -910,11 +1185,12 @@ const styles = StyleSheet.create({
     // borderColor: 'red',
   },
   interestsHolder: {
-    flex:1,
-    marginLeft: 16,
-    marginRight: 16,
+    paddingLeft: 16,
+    paddingLeft: 16,
+    marginBottom: 8,
     flexWrap: 'wrap',
     flexDirection: 'row',
+    backgroundColor:'#FFFFFF',
   },
   interestsCell: {
     margin: 8,

@@ -36,6 +36,7 @@ import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
+import Moment from 'moment';
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -60,6 +61,8 @@ export default class Home extends Component {
       filterOpen: false,
       interests: this.props.interests,
       city: this.props.city,
+      startDate: this.props.startDate ? this.props.startDate : new Date(),
+      endDate: this.props.endDate,
     }
     this.currentIndex = 0;
 
@@ -69,7 +72,13 @@ export default class Home extends Component {
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
     this.props.loadLocationData();
-    this.listenForItems();
+    this.props.loadStartDate();
+    this.props.loadEndDate();
+    this.props.loadPostcards();
+    if(this.props.loggedIn)
+    {
+      this.listenForItems();
+    }
     this.getLocation();
   }
 
@@ -90,15 +99,46 @@ export default class Home extends Component {
     {
       this.setState({
         city: nextProps.city,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
       })
-      this.listenForItems();
     }
     if(nextProps.interests != this.props.interests)
     {
       this.setState({
         interests: nextProps.interests,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
       })
-      this.listenForItems();
+    }
+    if(nextProps.startDate != this.props.startDate)
+    {
+      // console.warn('Has new props');
+      this.setState({
+        startDate: nextProps.startDate,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
+      })
+    }
+    if(nextProps.endDate != this.props.endDate)
+    {
+      this.setState({
+        endDate: nextProps.endDate,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
+      })
     }
   }
   getLocation() {
@@ -220,60 +260,84 @@ export default class Home extends Component {
   setLocation(sentLocationString){
     this.setState({city:sentLocationString});
   }
+  setStartDate(sentStartDate){
+    this.setState({startDate:sentStartDate});
+  }
+  setEndDate(sentEndDate){
+    this.setState({endDate:sentEndDate});
+  }
   updateInfo(){
     this.props.saveInterests(this.state.interests);
     this.props.saveLocation(this.state.city);
-    this.listenForItems();
+    this.props.saveStartDate(this.state.startDate);
+    this.props.saveEndDate(this.state.endDate);
+    if(this.props.loggedIn)
+    {
+      this.listenForItems();
+    }
   }
   listenForItems() {
-    var today = new Date();
-    var timeUTC = today.getTime();
+    // var date = new Date();
+    var date = this.state.startDate || new Date();
+    // console.warn('AAA: ',date);
+    // console.log('AAA: ',date);
+    // var timeUTC = date.getTime();
+    var timeUTC = Moment.utc(date).valueOf();
     var items = [];
-    // console.log("TIME UTC: " + timeUTC);
-    var ref = this.getRef().child('events/' + this.state.city);
-    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
-      snap.forEach((child) => {
-        var tagsRef = this.getRef().child('tags/' + child.key);
-        var Tags = [];
-        // items = [];
-        tagsRef.on("value", (snapshot) => {
-          snapshot.forEach((childUnder) => {
-            Tags.push(childUnder.key);
-          });
-          // console.warn(child.val().City);
-          // console.warn(this.state.city);
-          if(this.state.city == '' || child.val().City == this.state.city)
-          {
-            // console.warn('State == city');
-            if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+    // console.warn("TIME UTC: ", timeUTC);
+    // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
+    if(this.state.city)
+    {
+      var ref = this.getRef().child('events/' + this.state.city);
+      ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
+        snap.forEach((child) => {
+          var tagsRef = this.getRef().child('tags/' + child.key);
+          var Tags = [];
+          // items = [];
+          tagsRef.on("value", (snapshot) => {
+            snapshot.forEach((childUnder) => {
+              Tags.push(childUnder.key);
+            });
+            // console.warn(child.val().City);
+            if(this.state.city == '' || child.val().City == this.state.city)
             {
-              // console.warn('tag in interests');
-              items.push({
-                Key : child.key,
-                Event_Name: child.val().Event_Name,
-                Date: new Date(child.val().Date),
-                Location: child.val().Location,
-                Image: child.val().Image,
-                latitude: child.val().Latitude,
-                longitude: child.val().Longitude,
-                Tags: child.val().Tags,
-                Short_Description: child.val().Short_Description,
-                Long_Description: child.val().Long_Description,
-                Address: child.val().Address,
-                Website: child.val().Website,
-                MainTag: Tags ? Tags[0]:[],
-                Event_Contact: child.val().Email_Contact,
-                City: child.val().City,
-              });
+              // console.warn('State == city');
+              if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+              {
+                // console.warn('tag in interests');
+                if(this.state.endDate)
+                {
+                  if(this.state.endDate > new Date(child.val().Date))
+                  {
+                    items.push({
+                      Key : child.key,
+                      Event_Name: child.val().Event_Name,
+                      Date: new Date(child.val().Date),
+                      Location: child.val().Location,
+                      Image: child.val().Image,
+                      latitude: child.val().Latitude,
+                      longitude: child.val().Longitude,
+                      Tags: child.val().Tags,
+                      Short_Description: child.val().Short_Description,
+                      Long_Description: child.val().Long_Description,
+                      Address: child.val().Address,
+                      Website: child.val().Website,
+                      MainTag: Tags ? Tags[0]:[],
+                      Event_Contact: child.val().Email_Contact,
+                      City: child.val().City,
+                    });
+                  }
+                }
+              }
+              // console.log('ITLs: ',items.length);
+              // console.log('ITs: ',items);
+              clearTimeout(this.loadTimeout);
+              this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
             }
-            // console.log('ITLs: ',items.length);
-            // console.log('ITs: ',items);
-            clearTimeout(this.loadTimeout);
-            this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
-          }
+          });
         });
       });
-    });
+    }
   }
 
   _login(){
@@ -666,7 +730,7 @@ export default class Home extends Component {
           barStyle="light-content"
         />
         {viewToShow}
-        <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)}/>
+        <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
         <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
       </View>
     )
