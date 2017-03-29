@@ -314,11 +314,17 @@ export default class Home extends Component {
                 // console.warn('State == city');
                 if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
                 {
-                  // console.warn('tag in interests');
-                  console.warn(this.state.endDate);
-                  if(this.state.endDate)
+                  var endDate = this.state.endDate;
+                  if(isNaN(endDate))
                   {
-                    if(this.state.endDate > new Date(child.val().Date))
+                    endDate = new Date();
+                    endDate.setDate(date.getDate() + 365);
+                  }
+                  // console.warn('tag in interests');
+                  // console.warn(this.state.endDate);
+                  if(endDate)
+                  {
+                    if(endDate > new Date(child.val().Date))
                     {
                       items.push({
                         Key : child.key,
