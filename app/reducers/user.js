@@ -22,8 +22,8 @@ const initialState = {
   user: {},
   city: '',
   interests: [],
-  startDate: '',
-  endDate: '',
+  startDate: new Date(),
+  endDate: new Date(),
   postcards: [],
 }
 

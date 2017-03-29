@@ -742,7 +742,7 @@ _submitChanges(){
     // this.numbers = [0,1,2,3,4,5,6,7,8,9,10,11]
     var userImages = this.state.selectedPostCardInfo.userImages;
     return(
-      <View style={{flex:1,backgroundColor:'red',paddingTop:20}}>
+      <View style={{flex:1,paddingTop:20}}>
         <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
           <Image style={{flex:1}} source={this.state.selectedPostCardInfo.cardImage} resizeMode={'cover'}/>
         </View>

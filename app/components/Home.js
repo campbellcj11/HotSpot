@@ -93,7 +93,10 @@ export default class Home extends Component {
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
     {
-      this.listenForItems();
+      if(nextProps.loggedIn)
+      {
+        this.listenForItems();
+      }
     }
     if(nextProps.city != this.props.city)
     {
@@ -121,7 +124,7 @@ export default class Home extends Component {
     {
       // console.warn('Has new props');
       this.setState({
-        startDate: nextProps.startDate,
+        startDate: nextProps.startDate ? nextProps.startDate : new Date(),
       },function(){
         if(nextProps.loggedIn)
         {
@@ -278,7 +281,11 @@ export default class Home extends Component {
   }
   listenForItems() {
     // var date = new Date();
-    var date = this.state.startDate || new Date();
+    var date = this.state.startDate ? this.state.startDate : new Date();
+    if(isNaN(this.state.startDate))
+    {
+      date = new Date();
+    }
     // console.warn('AAA: ',date);
     // console.log('AAA: ',date);
     // var timeUTC = date.getTime();
@@ -286,57 +293,62 @@ export default class Home extends Component {
     var items = [];
     // console.warn("TIME UTC: ", timeUTC);
     // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
-    if(this.state.city)
+    if(date)
     {
-      var ref = this.getRef().child('events/' + this.state.city);
-      ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
-        snap.forEach((child) => {
-          var tagsRef = this.getRef().child('tags/' + child.key);
-          var Tags = [];
-          // items = [];
-          tagsRef.on("value", (snapshot) => {
-            snapshot.forEach((childUnder) => {
-              Tags.push(childUnder.key);
-            });
-            // console.warn(child.val().City);
-            if(this.state.city == '' || child.val().City == this.state.city)
-            {
-              // console.warn('State == city');
-              if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+      // console.warn('Has a start date');
+      if(this.state.city)
+      {
+        var ref = this.getRef().child('events/' + this.state.city);
+        ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
+          snap.forEach((child) => {
+            var tagsRef = this.getRef().child('tags/' + child.key);
+            var Tags = [];
+            // items = [];
+            tagsRef.on("value", (snapshot) => {
+              snapshot.forEach((childUnder) => {
+                Tags.push(childUnder.key);
+              });
+              // console.warn(child.val().City);
+              if(this.state.city == '' || child.val().City == this.state.city)
               {
-                // console.warn('tag in interests');
-                if(this.state.endDate)
+                // console.warn('State == city');
+                if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
                 {
-                  if(this.state.endDate > new Date(child.val().Date))
+                  // console.warn('tag in interests');
+                  console.warn(this.state.endDate);
+                  if(this.state.endDate)
                   {
-                    items.push({
-                      Key : child.key,
-                      Event_Name: child.val().Event_Name,
-                      Date: new Date(child.val().Date),
-                      Location: child.val().Location,
-                      Image: child.val().Image,
-                      latitude: child.val().Latitude,
-                      longitude: child.val().Longitude,
-                      Tags: child.val().Tags,
-                      Short_Description: child.val().Short_Description,
-                      Long_Description: child.val().Long_Description,
-                      Address: child.val().Address,
-                      Website: child.val().Website,
-                      MainTag: Tags ? Tags[0]:[],
-                      Event_Contact: child.val().Email_Contact,
-                      City: child.val().City,
-                    });
+                    if(this.state.endDate > new Date(child.val().Date))
+                    {
+                      items.push({
+                        Key : child.key,
+                        Event_Name: child.val().Event_Name,
+                        Date: new Date(child.val().Date),
+                        Location: child.val().Location,
+                        Image: child.val().Image,
+                        latitude: child.val().Latitude,
+                        longitude: child.val().Longitude,
+                        Tags: child.val().Tags,
+                        Short_Description: child.val().Short_Description,
+                        Long_Description: child.val().Long_Description,
+                        Address: child.val().Address,
+                        Website: child.val().Website,
+                        MainTag: Tags ? Tags[0]:[],
+                        Event_Contact: child.val().Email_Contact,
+                        City: child.val().City,
+                      });
+                    }
                   }
                 }
+                // console.log('ITLs: ',items.length);
+                // console.log('ITs: ',items);
+                clearTimeout(this.loadTimeout);
+                this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
               }
-              // console.log('ITLs: ',items.length);
-              // console.log('ITs: ',items);
-              clearTimeout(this.loadTimeout);
-              this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
-            }
+            });
           });
         });
-      });
+      }
     }
   }
 
