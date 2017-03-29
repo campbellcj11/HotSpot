@@ -677,9 +677,9 @@ _submitChanges(){
       </View>
     )
   }
-  renderPostCardViewWithImage(sentImage){
+  renderPostCardViewWithImage(index,sentImage){
     return(
-      <View key={-1} style={{flex:1}}>
+      <View key={index} style={{flex:1}}>
         <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
           <Image style={{flex:1}} source={sentImage} resizeMode={'cover'}/>
         </View>
@@ -695,7 +695,7 @@ _submitChanges(){
     )
   }
   _onMomentumScrollEnd(e, state, context) {
-    console.log(context.state)
+    // console.warn(context.state.index)
     this.setState({currentIndex: context.state.index});
   }
   renderPostCardModal(){
@@ -795,10 +795,11 @@ _submitChanges(){
     for(var i=0; i < this.state.selectedPostCardInfo.userImages.length; i++)
     {
         var postCardImage = this.state.selectedPostCardInfo.userImages[i];
-        postCardPages.push(this.renderPostCardViewWithImage(postCardImage));
+        postCardPages.push(this.renderPostCardViewWithImage(i,postCardImage));
     }
     var numberOfPages = postCardPages.length - 1;
     var barChangePerPage = width / numberOfPages;
+    // console.warn(postCardPages.length);
     return(
       <View>
         <Swiper
