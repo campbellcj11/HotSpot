@@ -15,6 +15,8 @@ import styleVariables from '../Utils/styleVariables'
 import DatePicker from 'react-native-datepicker'
 import Moment from 'moment'
 
+var eventActions = require("../actions/eventActions.js");
+
 export default class FilterModal extends Component {
 
   constructor(props) {
@@ -196,16 +198,16 @@ export default class FilterModal extends Component {
     this.setState({city:sentText});
   }
   renderInterests(){
-    var interests = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
-    var interestsViews = [];
+    // Call to database to populate the possible tags
+    interests = eventActions.renderPossibleInterests();
 
-    for(var i=0;i<interests.length;i++)
-    {
-      var interest = interests[i];
-      var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
-      interestsViews.push(
-          <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
-      );
+    var interestsViews = [];
+    for (i in interests){
+        var interest = i;
+        var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+        interestsViews.push(
+            <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
+        );
     }
 
     return interestsViews;

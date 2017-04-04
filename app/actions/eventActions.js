@@ -97,3 +97,13 @@ export function unFavorite(userUID, eventUID, city)
     }
   }
 }
+
+
+export function renderPossibleInterests()
+{
+    let db = firebase.database();
+    var query = db.ref("possibleTags/");
+    var possibleTags = [];
+    query.on('value', function(snap) { possibleTags = snap.val() });
+    return possibleTags;
+}
