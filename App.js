@@ -10,22 +10,25 @@ import EventView from './app/containers/EventCard'
 import EventView2 from './app/containers/Profile'
 import configureStore from './app/store/configureStore'
 import { Router, Scene } from 'react-native-router-flux'
-import icon1 from './app/images/time-icon.png'
+// import icon1 from './app/images/time-icon.png'
 // import icon2 from './app/images/calendar-icon.png'
-import icon2 from './app/images/favorite-heart-button.png'
-import icon3 from './app/images/search-icon.png'
-import icon4 from './app/images/profile-icon.png'
+// import icon2 from './app/images/favorite-heart-button.png'
+// import icon3 from './app/images/search-icon.png'
+// import icon4 from './app/images/profile-icon.png'
+import icon1 from './app/imgs/time.png'
+import icon2 from './app/imgs/heart-empty.png'
+import icon3 from './app/imgs/search.png'
+import icon4 from './app/imgs/profile.png'
 import styleVariables from './app/Utils/styleVariables'
 const store = configureStore()
 
 class TabIcon extends Component {
     render(){
-      console.log('Tab Icon Props: ', this.props);
-      var iconName = this.props.iconName || 'rocket';
+      // console.log('Tab Icon Props: ', this.props);
       var color = this.props.selected ? '#F97237' : 'white';
         return (
-            <View style={{alignItems:'center'}}>
-              <Image source={this.props.image} style={{tintColor: color,resizeMode: 'cover',marginBottom:3,width: 25, height: 25,}}/>
+            <View style={{justifyContent:'center',alignItems:'center'}}>
+              <Image source={this.props.image} style={{tintColor: color,resizeMode: 'contain',marginBottom:3,width: 25, height: 25,}}/>
               <Text style={[styles.smallFontSize,{fontFamily:styleVariables.systemNormalFont,color: color}]}>{this.props.title}</Text>
             </View>
         );
@@ -68,9 +71,9 @@ var styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   navigationBarTextStyle: {
-    color:'#F97237',
-    fontSize:20,
-    fontFamily: styleVariables.systemBoldFont,
+    color:'#FFFFFF',
+    fontSize:18,
+    fontFamily: styleVariables.systemFont,
   },
   baseBoldFontStyle:
   {

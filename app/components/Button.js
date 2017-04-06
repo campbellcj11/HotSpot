@@ -27,7 +27,7 @@ export default class Button extends Component {
         onPress={this.props.onPress}
         onShowUnderlay={this._onHighlight}
         style={[styles.button, this.props.style]}
-        underlayColor="transparent">
+        underlayColor={this.props.underlayColor ? this.props.underlayColor : "transparent"}>
           <Text style={[styles.buttonText,this.props.textStyle]}>{this.props.children}</Text>
       </TouchableHighlight>
     );

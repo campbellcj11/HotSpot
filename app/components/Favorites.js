@@ -262,11 +262,11 @@ export default class Favorites extends Component {
       </View>
       // <View style={styles.container}>
       //   <View>
-      //     <ListView style={styles.scroll}
-      //       contentContainerStyle={styles.list}
-      //       dataSource={this.state.dataSource}
-      //       renderRow= {this.renderRow.bind(this)}>
-      //     </ListView>
+          // <ListView style={styles.scroll}
+          //   contentContainerStyle={styles.list}
+          //   dataSource={this.state.dataSource}
+          //   renderRow= {this.renderRow.bind(this)}>
+          // </ListView>
       //   </View>
       // </View>
     )

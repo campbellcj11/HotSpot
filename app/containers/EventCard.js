@@ -8,6 +8,7 @@ function mapStateToProps(state) {
     loggedIn: state.user.loggedIn,
     user: state.user.user,
     location: state.user.city,
+    postcards: state.user.postcards
   }
 }
 

@@ -7,6 +7,7 @@ var {
   Alert,
   Platform,
 } = ReactNative;
+import Moment from 'moment';
 
 //reducers
 export const LOG_IN = 'LOG_IN'
@@ -22,6 +23,9 @@ export const LOAD_USER_DATA = 'LOAD_USER_DATA';
 export const LOAD_ISLOGGEDIN_DATA = 'LOAD_ISLOGGEDIN_DATA';
 export const SAVE_INTERESTS = 'SAVE_INTERESTS';
 export const SAVE_CITY = 'SAVE_CITY';
+export const SAVE_START_DATE = 'SAVE_START_DATE';
+export const SAVE_END_DATE = 'SAVE_END_DATE';
+export const SAVE_POSTCARDS = 'SAVE_POSTCARDS';
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -127,6 +131,54 @@ export function saveLocation(city){
   return {
     type: SAVE_CITY,
     city: city
+  }
+}
+export function loadStartDate(){
+  return dispatch => { offline.get('startDate').then((startDate) => {
+    dispatch(saveStartDate(startDate || ''))
+  })}
+}
+export function saveStartDate(startDate){
+  var dateToSave = Moment(startDate);
+  // console.warn('DD: ',dateToSave);
+  if(dateToSave < new Date())
+  {
+    dateToSave = new Date()
+  }
+  offline.save('startDate', dateToSave);
+  return {
+    type: SAVE_START_DATE,
+    startDate: dateToSave
+  }
+}
+export function loadEndDate(){
+  return dispatch => { offline.get('endDate').then((endDate) => {
+    dispatch(saveEndDate(endDate || ''))
+  })}
+}
+export function saveEndDate(endDate){
+  var dateToSave = Moment(endDate);
+  // console.warn('DD: ',dateToSave);
+  if(dateToSave < new Date())
+  {
+    dateToSave = new Date()
+  }
+  offline.save('endDate', dateToSave);
+  return {
+    type: SAVE_END_DATE,
+    endDate: dateToSave
+  }
+}
+export function loadPostcards(){
+  return dispatch => { offline.get('postcards').then((postcards) => {
+    dispatch(savePostcards(postcards || []))
+  })}
+}
+export function savePostcards(postcards){
+  offline.save('postcards', postcards);
+  return {
+    type: SAVE_POSTCARDS,
+    postcards: postcards
   }
 }
 /*

@@ -9,6 +9,7 @@ function mapStateToProps(state) {
     user: state.user.user,
     location: state.user.city,
     interests: state.user.interests,
+    postcards: state.user.postcards,
   }
 }
 

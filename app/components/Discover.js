@@ -20,11 +20,13 @@ import { Actions } from 'react-native-router-flux';
 import * as firebase from 'firebase';
 var {height, width} = Dimensions.get('window');
 import EventCell from './EventCell'
+import styleVariables from '../Utils/styleVariables'
+
 
 const database = firebase.database();
 
 import icon3 from '../images/search-icon.png'
-const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT = styleVariables.titleBarHeight
 const TAB_HEIGHT = 50;
 
 export default class Discover extends Component {
@@ -36,11 +38,30 @@ export default class Discover extends Component {
       items: [],
       dataSource: ds,
     }
+    this.loadEvents(this.props.location)
   }
 
   componentWillMount() {
-
+    if (!this.eventsInLocale && this.props.location) {
+      this.loadEvents(this.props.location)
+    }
   }
+
+  loadEvents(locale) {
+    database.ref('events/' + locale)
+      .orderByChild('Date')
+      .on('value', (snapshot) => {
+          let eventArray = []
+          snapshot.forEach((child) => {
+            let event = child.val()
+            event.key = child.key
+            eventArray.push(event)
+          })
+          this.eventsInLocale = eventArray
+          //console.warn('Loaded ' + this.eventsInLocale.length + ' events')
+      })
+  }
+
   pressRow(rowData) {
     console.log('RowData2: ',rowData);
     // this.setState({currentSelection:rowData});
@@ -115,7 +136,7 @@ export default class Discover extends Component {
    //console.log(items);
    this.setState({
      dataSource: this.state.dataSource.cloneWithRows(items),
-     items: items,
+     items: items
    });
   }
 
@@ -123,103 +144,90 @@ export default class Discover extends Component {
     return firebase.database().ref();
   }
 
-  renderTag()
+  // execute simple case insensitive search on all event fields for all events in current locale
+  search()
   {
-    var interests = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
-    if(interests.indexOf(this.state.searchText) != -1)
-    {
-      var index = 0;
-      var tagEvents = [];
-      var tag = this.state.searchText;
-      var tagQuery = database.ref("tags/").orderByKey();
-      tagQuery.once("value", (snapshot) => {
-          snapshot.forEach((childSnapshot) => {
-            var object = childSnapshot.val();
-            if (Object.keys(object)[0] == this.state.searchText)
-            {
-              tagEvents[index] = childSnapshot.key;
-            }
-            index++;
-          })
-          console.warn('Tag Events: ',tagEvents.length);
-         this.renderEvent(tagEvents);
-      });
+    if (!this.state.searchText || !this.eventsInLocale) {
+      return
     }
-    else
-    {
-      var today = new Date();
-      var timeUTC = today.getTime();
-      var items = [];
-      // console.log("TIME UTC: " + timeUTC);
-      var ref = this.getRef().child('events/' + this.state.searchText);
-      ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
-        snap.forEach((child) => {
-          var tagsRef = this.getRef().child('tags/' + child.key);
-          var Tags = [];
-          // items = [];
-          tagsRef.on("value", (snapshot) => {
-            snapshot.forEach((childUnder) => {
-              Tags.push(childUnder.key);
-            });
-            // console.warn(child.val().City);
-            // console.warn(this.state.city);
-            if(this.state.searchText == '' || child.val().City == this.state.searchText)
-            {
-              // console.warn('State == city');
-              // if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
-              // {
-                // console.warn('tag in interests');
-                items.push({
-                  Key : child.key,
-                  Event_Name: child.val().Event_Name,
-                  Date: new Date(child.val().Date),
-                  Location: child.val().Location,
-                  Image: child.val().Image,
-                  latitude: child.val().Latitude,
-                  longitude: child.val().Longitude,
-                  Tags: child.val().Tags,
-                  Short_Description: child.val().Short_Description,
-                  Long_Description: child.val().Long_Description,
-                  Address: child.val().Address,
-                  Website: child.val().Website,
-                  MainTag: Tags ? Tags[0]:[],
-                  Event_Contact: child.val().Email_Contact,
-                  City: child.val().City,
-                });
-              // }
-              // console.log('ITLs: ',items.length);
-              // console.log('ITs: ',items);
-              clearTimeout(this.loadTimeout);
-              this.loadTimeout = setTimeout(() => {this.setState({dataSource: this.state.dataSource.cloneWithRows(items),items: items}), 250});
-            }
-          });
-        });
-      });
+    // perform search
+    let matches = []
+    let query = new RegExp(this.state.searchText, 'i')
+    this.eventsInLocale.forEach(function(event, index) {
+      for (key in event) {
+        if (query.test(event[key])) {
+          matches.push(event)
+          return
+        }
+      }
+    })
+    //console.warn('Found ' + matches.length + ' matches')
+    // populate item array with match data + tags
+    let items = []
+    let matchIndex = matches.length
+    this.addMatchesWithTags(items, matches, 0, (items) => {
+      // set data for scroll view
+      clearTimeout(this.loadTimeout)
+      this.loadTimeout = setTimeout(() => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(items),
+          items: items
+        })
+      }, 250)
+    })
+  }
+
+  // asynchronously add tags to matches before setting datasource
+  addMatchesWithTags(items, matches, index, callback) {
+    if (index == matches.length) {
+      callback(items)
+      return
     }
+    let match = matches[index]
+    getTags.call(this, match.key, (tags) => {
+      items.push({
+        Key : match.key,
+        Event_Name: match.Event_Name,
+        Date: new Date(match.Date),
+        Location: match.Location,
+        Image: match.Image,
+        latitude: match.Latitude,
+        longitude: match.Longitude,
+        Tags: tags,
+        Short_Description: match.Short_Description,
+        Long_Description: match.Long_Description,
+        Address: match.Address,
+        Website: match.Website,
+        MainTag: tags.length ? tags[0] : '',
+        Event_Contact: match.Email_Contact,
+        City: match.City,
+      })
+      this.addMatchesWithTags(items, matches, ++index, callback)
+    })
   }
 
   render() {
     return(
       <View style={styles.container}>
         <View style={styles.searchView}>
-          <Image source={icon3} style={{tintColor: '#a6a6a6',resizeMode: 'cover',width: 20, height: 20, marginLeft:2, marginRight:2}}/>
+          <Image source={icon3} style={styles.searchBarImage}/>
           <TextInput style={[styles.searchText, {textAlignVertical: 'center'}]}
                    placeholder='Search'
                    placeholderTextColor='#a6a6a6'
                    selectionColor='#000000'
-                   onChangeText={(tag) => this.setState({searchText: tag})}
+                   onChangeText={(query) => this.setState({searchText: query})}
           >
           </TextInput>
           <Button
             style = {styles.searchButton}
             textStyle={styles.buttonText}
-            onPress = {() => this.renderTag()}
+            onPress = {() => this.search()}
           >
             Go
           </Button>
         </View>
         <View>
-          <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT-25,width:width,backgroundColor:'#E2E2E2'}}>
+          <ScrollView ref='swiper' style={styles.swiper}>
               {this.renderSlides()}
           </ScrollView>
         </View>
@@ -235,28 +243,55 @@ const styles = StyleSheet.create({
   },
   searchView: {
     flexDirection: 'row',
-    backgroundColor: '#e6e6e6',
-    margin: 3,
-    height:25,
-    alignItems:'center',
+    backgroundColor: '#fff',
+    margin: 1,
+    height: 35,
+    alignItems:'center'
   },
   searchText: {
     color: 'black',
+    fontSize: 16,
     flex: 1,
-    fontFamily: 'Futura-Medium',
+    fontFamily: styleVariables.systemRegularFont,
+    padding: 0
   },
   buttonText: {
       color: 'white',
       fontSize: 20,
       textAlign: 'center',
-      fontFamily: 'Futura-Medium',
-      height: 50,
-      lineHeight: 50,
+      fontFamily: styleVariables.systemRegularFont,
       backgroundColor: 'transparent',
+      padding: 0
   },
   searchButton: {
-    backgroundColor: '#F97237',
+    backgroundColor: '#0E476A',
     flex: .20,
-    height:25,
+    height: 35,
+    borderRadius: 3
   },
+  searchBarImage: {
+    tintColor: '#a6a6a6',
+    resizeMode: 'cover',
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+    marginRight: 2
+  },
+  swiper: {
+    height: height - HEADER_HEIGHT - TAB_HEIGHT - 25,
+    width: width,
+    backgroundColor: '#E2E2E2'
+  }
 })
+
+// TODO move to eventActions
+function getTags(eventId, callback) {
+  let ref = database.ref('tags/' + eventId)
+  ref.on('value', (snapshot) => {
+    let tags = []
+    snapshot.forEach(child => {
+      tags.push(child.key)
+    })
+    callback(tags, eventId, ref)
+  })
+}

@@ -21,7 +21,8 @@ import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 var {height, width} = Dimensions.get('window');
-import heartImage from '../images/favorite-heart-button.png'
+// import heartImage from '../images/favorite-heart-button.png'
+import heartImage from '../imgs/heart-full.png'
 import styleVariables from '../Utils/styleVariables'
 
 var eventActions = require("../actions/eventActions.js");
@@ -103,7 +104,7 @@ export default class EventCell extends Component {
   viewToRender()
   {
     return (
-      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
+      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="#FFFFFF">
         <View style={styles.container}>
           <View style={{marginBottom:8,marginLeft:8,marginTop:8}}>
             <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize: 18,marginBottom:4,}}>{this.props.eventInfo.Event_Name}</Text>

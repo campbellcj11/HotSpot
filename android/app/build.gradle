@@ -84,7 +84,7 @@ def enableProguardInReleaseBuilds = false
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.1"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.projectnow"
@@ -94,6 +94,15 @@ android {
         versionName "1.0"
         ndk {
             abiFilters "armeabi-v7a", "x86"
+        }
+        vectorDrawables.useSupportLibrary = true
+    }
+    signingConfigs {
+        release {
+            storeFile file("my-app-key.keystore")
+            storePassword "Cover2cover"
+            keyAlias "my-key-alias"
+            keyPassword "Cover2cover"
         }
     }
     splits {
@@ -126,6 +135,7 @@ android {
 }
 
 dependencies {
+    compile project(':react-native-image-crop-picker')
     compile project(':react-native-image-picker')
     compile project(':react-native-fetch-blob')
     compile project(':RNMail')

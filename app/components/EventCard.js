@@ -30,15 +30,24 @@ import MapView from 'react-native-maps';
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import HTMLView from 'react-native-htmlview'
 import styleVariables from '../Utils/styleVariables'
-import phoneImage from '../images/phone-receiver.png'
-import webImage from '../images/web.png'
-import emailImage from '../images/close-envelope.png'
-import clockImage from '../images/time.png'
-import pinImage from '../images/placeholder.png'
-import dollarImage from '../images/coin-icon.png'
-import infoImage from '../images/interface.png'
-import connectImage from '../images/connection.png'
-import linkImage from '../images/link.png'
+// import phoneImage from '../images/phone-receiver.png'
+import phoneImage from '../imgs/phone.png'
+// import webImage from '../images/web.png'
+import webImage from '../imgs/globe.png'
+// import emailImage from '../images/close-envelope.png'
+import emailImage from '../imgs/mail.png'
+// import clockImage from '../images/time.png'
+import clockImage from '../imgs/time.png'
+// import pinImage from '../images/placeholder.png'
+import pinImage from '../imgs/pin.png'
+// import dollarImage from '../images/coin-icon.png'
+import dollarImage from '../imgs/money.png'
+// import infoImage from '../images/interface.png'
+import infoImage from '../imgs/info.png'
+// import connectImage from '../images/connection.png'
+import connectImage from '../imgs/share-android.png'
+// import linkImage from '../images/link.png'
+import linkImage from '../imgs/share-ios.png'
 import postcardImage from '../images/postcard.png'
 import Share, {ShareSheet} from 'react-native-share';
 import Moment from 'moment'
@@ -200,6 +209,10 @@ export default class EventCard extends Component {
       console.warn('Will show again');
       this.setState({postcardSaved:true});
     }
+    var postcards = this.props.postcards;
+    var postCardObject = {name:this.props.currentSelection.Event_Name,date: this.props.currentSelection.Date,cardImage: {uri: this.props.currentSelection.Image},color:'#0E476A',userImages:[]};
+    postcards.push(postCardObject);
+    this.props.savePostcards(postcards);
   }
   render() {
     var dateNumber;
@@ -342,12 +355,12 @@ export default class EventCard extends Component {
             <ImageButton style={{flex:.25}} image={webImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.openURL()}/>
             <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
             <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
-            {/*{
+            {
               (firebase.auth().currentUser.email != 'test@test.com')  ?
                 <ImageButton style={{flex:.25}} image={postcardImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:this.state.postcardSaved ? styleVariables.greyColor:'#0B82CC'}} onPress={this.openPostcard.bind(this)} />
               :
                 <View/>
-            }*/}
+            }
           </View>
           <View style={{marginTop:5}}>
 
