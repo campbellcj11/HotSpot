@@ -21,7 +21,8 @@ import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 var {height, width} = Dimensions.get('window');
-import heartImage from '../images/favorite-heart-button.png'
+// import heartImage from '../images/favorite-heart-button.png'
+import heartImage from '../imgs/heart-full.png'
 import styleVariables from '../Utils/styleVariables'
 
 var eventActions = require("../actions/eventActions.js");

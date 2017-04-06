@@ -10,7 +10,9 @@ import {
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
-import closeImage from '../images/delete.png'
+// import closeImage from '../images/delete.png'
+import closeImage from '../imgs/check.png'
+
 import styleVariables from '../Utils/styleVariables'
 import DatePicker from 'react-native-datepicker'
 import Moment from 'moment'
@@ -132,11 +134,14 @@ export default class FilterModal extends Component {
       console.error(error);
     });
   }
-  closeModal(){
+  saveData(){
     this.props.setLocation(this.state.city);
     this.props.interestPressed(this.state.interests);
     this.props.saveStartDate(this.state.startDate);
     this.props.saveEndDate(this.state.endDate);
+  }
+  closeModal(){
+    this.saveData();
     this.props.close();
   }
   buttonPressed(sentInterest) {
@@ -291,7 +296,7 @@ export default class FilterModal extends Component {
         animationType={'slide'}
         transparent={false}
         visible={this.props.showing}
-        onRequestClose={() => {alert("Modal can not be closed.")}}
+        onRequestClose={() => {this.closeModal()}}
       >
           <View style={styles.topNav}>
             <View style={{height:20}}></View>

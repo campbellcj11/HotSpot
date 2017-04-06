@@ -19,12 +19,10 @@ import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import titleImage from '../images/hs-title.png'
-import userImage from '../images/avatar.png'
-import passwordImage from '../images/key.png'
-import logoutImage from '../images/arrows.png'
-import searchImage from '../images/magnifying-glass.png'
-import plusImage from '../images/plus.png'
-import filterImage from '../images/filter.png'
+// import plusImage from '../images/plus.png'
+import plusImage from '../imgs/plus.png'
+// import filterImage from '../images/filter.png'
+import filterImage from '../imgs/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
@@ -37,6 +35,7 @@ import Swiper from 'react-native-swiper';
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
 import Moment from 'moment';
+import LandingPage from './LandingPage'
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -79,7 +78,7 @@ export default class Home extends Component {
     {
       this.listenForItems();
     }
-    this.getLocation();
+    // this.getLocation();
   }
 
   componentWillMount() {
@@ -286,12 +285,12 @@ export default class Home extends Component {
     {
       date = new Date();
     }
-    // console.warn('AAA: ',date);
+    console.warn('AAA: ',date);
     // console.log('AAA: ',date);
     // var timeUTC = date.getTime();
     var timeUTC = Moment.utc(date).valueOf();
     var items = [];
-    // console.warn("TIME UTC: ", timeUTC);
+    console.warn("TIME UTC: ", timeUTC);
     // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
     if(date)
     {
@@ -613,26 +612,6 @@ export default class Home extends Component {
     // })
     // return (Arr)
   }
-  renderView(){
-    return (
-      <View>
-        <Modal
-          animationType='fade'
-          transparent={false}
-          visible={this.state.hasCurrentSelection}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-        >
-            <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
-        </Modal>
-
-        <View style={styles.container}>
-          <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
-              {this.renderSlides()}
-          </ScrollView>
-        </View>
-      </View>
-    )
-  }
   renderModal(){
     var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
     var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
@@ -718,40 +697,126 @@ export default class Home extends Component {
       </Modal>
     )
   }
-  render() {
-    console.log('PROPS!')
-    console.log(this.props)
-    let user, readonlyMessage, viewToShow
-    //if(firebase.auth().currentUser)
-    if(this.props.loggedIn && this.props.user != {})
-    {
-      user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
-      viewToShow = this.renderView();
-    }
-    else
-    {
-      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
-      viewToShow = this.renderModal();
-    }
-
-    var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
-    };
-    var innerContainerTransparentStyle = this.state.transparent
-      ? {backgroundColor: '#fff'}
-      : null;
+  renderView() {
 
     return (
       <View style={{flex:1}}>
         <StatusBar
           barStyle="light-content"
         />
-        {viewToShow}
+        <View>
+          <Modal
+            animationType='fade'
+            transparent={false}
+            visible={this.state.hasCurrentSelection}
+            onRequestClose={() => {alert("Modal can not be closed.")}}
+          >
+              <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
+          </Modal>
+
+          <View style={styles.container}>
+            <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
+                {this.renderSlides()}
+            </ScrollView>
+          </View>
+        </View>
         <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
         <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
       </View>
     )
+  }
+  renderLogin(){
+    var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
+    var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
+    var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
+    var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
+    var loginWithFacebookButtonText = this.state.isSignUp ? 'Signup with Facebook' : 'Login with Facebook';
+    var loginWithTwitterButtonText = this.state.isSignUp ? 'Signup with Twitter' : 'Login with Twitter';
+    var loginWithGoogleButtonText = this.state.isSignUp ? 'Signup with Google' : 'Login with Google';
+
+    return (
+      <LandingPage>
+        {/*<Modal>
+        <View style={{flexDirection:'row'}}>
+          <View style={styles.modalBackground}>
+            <Image source={titleImage} style={styles.titleImage}/>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='email'
+                onChangeText={(email) => this.setState({email})}
+                placeholder='Email'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+
+            <View style={styles.passwordView}>
+              <TextInput style={styles.userNameTextInput}
+                secureTextEntry={!this.state.isSignUp}
+                ref='password'
+                onChangeText={(password) => this.setState({password})}
+                placeholder='Password'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            <Button
+              onPress={() => this._resetPassword()}
+              style={styles.forgotPasswordBlankButton}
+              textStyle={styles.forgotPasswordText}>
+              {forgotPasswordButtonText}
+            </Button>
+            <Button
+              onPress={() => this._login()}
+              style={styles.loginButton}
+              textStyle={styles.buttonText}>
+              {loginButtonText}
+            </Button>
+            <Button
+              onPress={() => this._loginWithFacebook()}
+              style={styles.facebookLogin}
+              textStyle={styles.facebookLoginText}>
+              {loginWithFacebookButtonText}
+            </Button>
+            {
+              Platform.OS == 'ios' ?
+              <View/>
+              :
+              <Button
+                onPress={() => this._loginWithGoogle()}
+                style={styles.googleLogin}
+                textStyle={styles.googleLoginText}>
+                {loginWithGoogleButtonText}
+              </Button>
+            }
+            <Button
+              onPress={() => this._loginWithoutAccount()}
+              style={styles.loginBlankButton}
+              textStyle={styles.buttonBlankText}>
+              {loginWithoutAccountButtonText}
+            </Button>
+            <Button
+              onPress={() => this._openSignupPage()}
+              style={styles.signupBlankButton}
+              textStyle={styles.buttonBlankText}>
+              {signUpButtonText}
+            </Button>
+          </View>
+        </View>
+        </Modal>*/}
+        </LandingPage>
+    )
+  }
+  render(){
+
+    if(this.props.loggedIn && this.props.user != {})
+    {
+      return this.renderView();
+    }
+    else
+    {
+      return this.renderLogin();
+    }
   }
 }
 
