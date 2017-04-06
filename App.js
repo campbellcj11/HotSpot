@@ -71,9 +71,9 @@ var styles = StyleSheet.create({
     borderBottomWidth: 0,
   },
   navigationBarTextStyle: {
-    color:'#F97237',
-    fontSize:20,
-    fontFamily: styleVariables.systemBoldFont,
+    color:'#FFFFFF',
+    fontSize:18,
+    fontFamily: styleVariables.systemFont,
   },
   baseBoldFontStyle:
   {

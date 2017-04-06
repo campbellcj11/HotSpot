@@ -7,9 +7,12 @@ import {
   TouchableHighlight,
   Modal,
   ScrollView,
+  ListView,
+  Dimensions,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
+var {height, width} = Dimensions.get('window');
 // import closeImage from '../images/delete.png'
 import closeImage from '../imgs/check.png'
 
@@ -42,6 +45,7 @@ export default class FilterModal extends Component {
       startDate: this.props.startDate ? startDateToBe : new Date(),
       endDate: this.props.startDate ? this.props.endDate : new Date(),
       dateFilterIndex: 3,
+      locationSearch: '',
     };
   }
   getLocation() {
@@ -208,11 +212,12 @@ export default class FilterModal extends Component {
 
     var interestsViews = [];
     for (i in interests){
-        var interest = i;
-        var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
-        interestsViews.push(
-            <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
-        );
+      var interest = i;
+      var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
+      // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      interestsViews.push(
+          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
+      );
     }
 
     return interestsViews;
@@ -230,7 +235,7 @@ export default class FilterModal extends Component {
       var presetFilter = presetFilters[i];
       var isPressed = this.state.dateFilterIndex == i ? true : false;
       presetFiltersViews.push(
-          <Button ref={presetFilters} key={i} style={isPressed ? styles.selectedDateCell : styles.dateCell} textStyle={styles.dateCellText} onPress={this.dateFilterButtonPressed.bind(this,i)}>{presetFilter}</Button>
+          <Button ref={presetFilters} key={i} style={isPressed ? styles.selectedDateCell : styles.dateCell} textStyle={isPressed ? styles.selectedDateCellText : styles.dateCellText} onPress={this.dateFilterButtonPressed.bind(this,i)}>{presetFilter}</Button>
       );
     }
     return(
@@ -240,7 +245,7 @@ export default class FilterModal extends Component {
         </View>
         <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
           <DatePicker
-            style={{borderWidth:1,borderColor:styleVariables.greyColor,alignItems:'center',justifyContent:'center'}}
+            style={{borderWidth:1,borderColor:'#848484',borderRadius:4,alignItems:'center',justifyContent:'center'}}
             date={this.state.startDate}
             mode="date"
             placeholder='Start Date'
@@ -263,7 +268,7 @@ export default class FilterModal extends Component {
           />
           <Text style={{marginLeft:8,marginRight:8,fontFamily:styleVariables.systemBoldFont,fontSize:18}}>-</Text>
           <DatePicker
-            style={{borderWidth:1,borderColor:styleVariables.greyColor,alignItems:'center',justifyContent:'center'}}
+            style={{borderWidth:1,borderColor:'#848484',borderRadius:4,alignItems:'center',justifyContent:'center'}}
             date={this.state.endDate}
             mode="date"
             placeholder='End Date'
@@ -286,6 +291,63 @@ export default class FilterModal extends Component {
           />
         </View>
 
+      </View>
+    )
+  }
+  getPossibleLocation() {
+    var unfilteredList = ['Columbia','Atlantic City','New York City','Dallas','Houston','Miami','Atlanta'];
+    var filteredList = [];
+    if(this.state.locationSearch == '')
+    {
+      filteredList = unfilteredList;
+    }
+    else
+    {
+      for(var i=0;i<unfilteredList.length;i++)
+      {
+        var item = unfilteredList[i];
+        if(item.indexOf(this.state.locationSearch) != -1)
+        {
+          filteredList.push(item);
+        }
+      }
+    }
+    return filteredList;
+  }
+  renderRow(rowData){
+    var isSelected = this.state.city == rowData ? true : false;
+    return(
+      <TouchableHighlight underlayColor={'#FFFFFF'} style={isSelected ? styles.selectedLocationCell : styles.locationCell} onPress = {() => this.pressRow(rowData)}>
+        <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData}</Text>
+      </TouchableHighlight>
+    )
+  }
+  pressRow(rowData){
+    this.setState({city:rowData});
+  }
+  renderLocation(){
+    var possibleLocations = this.getPossibleLocation();
+
+    var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
+    return(
+      <View style={{flex:1}}>
+        <View style={styles.textInputHolder}>
+          <TextInput style={styles.textInput}
+            ref='locationSearch'
+            onChangeText={(locationSearch) => this.setState({locationSearch})}
+            placeholder='Search Location'
+            placeholderTextColor='#DCE3E3'
+            underlineColorAndroid='transparent'>
+          </TextInput>
+        </View>
+        <View style={{height:height*.4}}>
+          <ListView
+            style={styles.locationList}
+            dataSource={ds.cloneWithRows(possibleLocations)}
+            renderRow= {this.renderRow.bind(this)}
+            enableEmptySections={true}>
+          </ListView>
+        </View>
       </View>
     )
   }
@@ -319,7 +381,8 @@ export default class FilterModal extends Component {
             </View>
             <View>
               <Text style={styles.filterTypeTitle}>Location</Text>
-              <View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
+              {this.renderLocation()}
+              {/*<View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
                 <TextInput
                   style={styles.locationInput}
                   placeholder={'City'}
@@ -328,7 +391,7 @@ export default class FilterModal extends Component {
                   underlineColorAndroid='transparent'
                 />
                 <Button onPress={() => this.getLocation()}>Locate Me</Button>
-              </View>
+              </View>*/}
             </View>
             <View>
               <Text style={styles.filterTypeTitle}>Interests</Text>
@@ -348,21 +411,20 @@ var styles = StyleSheet.create({
     backgroundColor: '#0E476A',
   },
   navTitle: {
-    fontFamily: styleVariables.systemBoldFont,
-    color:'#F97237',
-    fontSize:20,
+    fontFamily: styleVariables.systemFont,
+    color:'#FFFFFF',
+    fontSize:18,
     textAlign:'center',
-  },
-  closeButton: {
-    flex:1,
   },
   filterTypeTitle: {
     fontFamily: styleVariables.systemBoldFont,
-    fontSize: 14,
-    color: styleVariables.greyColor,
+    fontSize: 24,
+    color: '#F97237',
     marginLeft: 16,
+    marginRight: 16,
     marginBottom: 8,
     marginTop:8,
+    textAlign:'center',
   },
   locationInput: {
     flex:.6,
@@ -377,13 +439,30 @@ var styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
   },
-  interestsCell: {
-    margin:8
+  interestCell:{
+    margin:8,
+    borderWidth:1,
+    borderColor:'#848484',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
   },
-  interestsCellText: {
+  selectedCell:{
+    marginHorizontal: 7,
+    marginVertical:8,
+    borderWidth:2,
+    borderColor:'#0B82CC',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  interestCellText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 18,
+    color: '#848484',
+  },
+  selectedCellText:{
     fontFamily: styleVariables.systemBoldFont,
-    fontSize: 14,
-    color: 'white',
+    fontSize: 17,
+    color: '#0B82CC',
   },
   datesHolder: {
     marginLeft: 16,
@@ -393,31 +472,85 @@ var styles = StyleSheet.create({
     justifyContent: 'space-between'
   },
   dateCell: {
-    backgroundColor: styleVariables.greyColor,
+    borderWidth:1,
+    borderColor: '#848484',
     marginTop:8,
     marginBottom:8,
+    borderRadius:4,
   },
   selectedDateCell:{
-    backgroundColor: '#0B82CC',
+    borderWidth:2,
+    borderColor: '#0B82CC',
     marginTop:8,
     marginBottom:8,
+    borderRadius:4,
   },
   dateCellText: {
-    fontFamily: styleVariables.systemBoldFont,
-    fontSize: 14,
-    color: 'white',
-  },
-  dateButton: {
-    marginTop:8,
-    marginBottom:8,
-    paddingLeft:8,
-    paddingRight:8,
-    borderWidth:1,
-    borderColor: styleVariables.greyColor,
-  },
-  dateButtonText:{
     fontFamily: styleVariables.systemFont,
     fontSize: 14,
-    color: 'black',
-  }
+    color: '#848484',
+  },
+  selectedDateCellText: {
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 14,
+    color: '#0B82CC',
+  },
+  textInputHolder:{
+    backgroundColor:'#FFFFFF',
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  textInput:{
+    flex: 1,
+    height: 44,
+    backgroundColor: 'transparent',
+    color:'black',
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    padding: 2,
+    paddingLeft: 16,
+    borderWidth: 1,
+    borderColor: '#848484',
+    borderRadius:4,
+  },
+  locationList:{
+    marginLeft:32,
+    marginRight: 32,
+    marginBottom: 16,
+  },
+  locationCell:{
+    marginHorizontal:8,
+    marginVertical:4,
+    paddingLeft:8,
+    height:32,
+    borderWidth:1,
+    backgroundColor:'#FFFFFF',
+    borderColor:'#848484',
+    justifyContent:'center',
+    borderRadius:4,
+  },
+  selectedLocationCell:{
+    marginHorizontal:8,
+    marginVertical:4,
+    paddingLeft:8,
+    height:32,
+    borderWidth:2,
+    backgroundColor:'#FFFFFF',
+    borderColor:'#0B82CC',
+    justifyContent:'center',
+    borderRadius:4,
+  },
+  locationCellText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    color: '#848484',
+  },
+  selectedLocationCellText:{
+    fontFamily:styleVariables.systemBoldFont,
+    fontSize:16,
+    color:'#0B82CC',
+  },
 });

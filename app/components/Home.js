@@ -106,6 +106,7 @@ export default class Home extends Component {
         {
           this.listenForItems();
         }
+        // Actions.refresh({title:nextProps.city})
       })
     }
     if(nextProps.interests != this.props.interests)
