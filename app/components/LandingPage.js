@@ -26,7 +26,7 @@ import landingImage from '../imgs/Landing-Image.png'
 import LinearGradient from 'react-native-linear-gradient'
 import Swiper from 'react-native-swiper'
 
-import LoginView from './LoginView'
+import LoginView from '../containers/LoginView'
 
 export default class LandingPage extends Component {
   constructor(props) {
@@ -38,6 +38,12 @@ export default class LandingPage extends Component {
 
   componentWillMount() {
 
+  }
+  loginWithoutAccount() {
+    user = {'email': 'test@test.com',
+            'password' : 'password'};
+
+    this.props.loginUser(user);
   }
   setToLanding(){
     this.refs.swiper.scrollBy(-1,true);
@@ -88,7 +94,7 @@ export default class LandingPage extends Component {
           </Button>
           </View>
           <Button
-            onPress={() => this._loginWithoutAccount()}
+            onPress={() => this.loginWithoutAccount()}
             style={styles.loginBlankButton}
             textStyle={styles.buttonBlankText}
           >

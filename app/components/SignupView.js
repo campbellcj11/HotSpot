@@ -36,7 +36,7 @@ import DropDown, {
   OptionList,
 } from 'react-native-selectme';
 
-
+var userActions = require("../actions/userActions.js");
 var eventActions = require("../actions/eventActions.js");
 
 export default class Login extends Component {
@@ -70,6 +70,15 @@ export default class Login extends Component {
     //   firstName: '',
     //   lastName: '',
     // });
+  }
+  signup(){
+    user = {
+      email: this.state.email,
+      password: this.state.password,
+    }
+    userActions.saveInterests(this.state.interests);
+    userActions.saveLocation(this.state.city);
+    userActions.signUpUser(user);
   }
   hasCorrectInformation(){
 
@@ -138,7 +147,7 @@ export default class Login extends Component {
     {
       if(this.hasCorrectInformation())
       {
-
+        this.signup();
       }
     }
   }

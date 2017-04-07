@@ -34,11 +34,17 @@ export default class EventCell extends Component {
     this.state = {
       favoriteColor: 'white',
     }
-    this.favoritesRef = firebase.database().ref("favorites/" + firebase.auth().currentUser.uid);
+    if(this.props.loggedIn)
+    {
+      this.favoritesRef = firebase.database().ref("favorites/" + firebase.auth().currentUser.uid);
+    }
   }
 
   componentWillMount() {
-    this.listenForItems(this.favoritesRef);
+    if(this.props.loggedIn)
+    {
+      this.listenForItems(this.favoritesRef);
+    }
   }
 
   listenForItems(favoritesRef) {
@@ -162,7 +168,7 @@ export default class EventCell extends Component {
       </TouchableHighlight>
     )
   }
-  render() {
+  renderView() {
     var dateNumber;
     var dateMonth;
     var dateYear;
@@ -191,6 +197,16 @@ export default class EventCell extends Component {
     return(
       Object.keys(this.props.eventInfo).length > 0 ? this.viewToRender() : <View/>
     )
+  }
+  render(){
+    if(this.props.loggedIn)
+    {
+      return this.renderView();
+    }
+    else
+    {
+      return <View/>
+    }
   }
 }
 
