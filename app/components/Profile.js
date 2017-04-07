@@ -31,7 +31,8 @@ import RNFetchBlob from 'react-native-fetch-blob';
 import { Actions } from 'react-native-router-flux';
 import settingsImage from '../images/settings.png'
 import closeImage from '../images/delete.png'
-import checkImage from '../images/check.png'
+import close from '../imgs/close.png'
+import checkImage from '../imgs/check@2x.png'
 import addImage from '../images/plus.png'
 import styleVariables from '../Utils/styleVariables'
 import LinearGradient from 'react-native-linear-gradient'
@@ -49,7 +50,7 @@ import postcardImage4 from '../images/postcard4.jpg'
 
 var {height, width} = Dimensions.get('window');
 
-const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
+const HEADER_HEIGHT = styleVariables.titleBarHeight;
 const TAB_HEIGHT = 50;
 const CARD_WIDTH = width;
 const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
@@ -105,6 +106,7 @@ export default class Profile extends Component {
       Image: this.props.user.Image,
       Email: this.props.user.Email,
       modalVisible: false,
+      settingsModal: false,
       selectedGender: this.props.user.Gender,
       selectedAge: this.props.user.Age,
       categories: [],
@@ -115,6 +117,8 @@ export default class Profile extends Component {
       currentIndex: 0,
       postcardSettingsOpen: false,
       postcards: this.props.postcards,
+      TagsVisible: false,
+      tags: [],
     }
   //  this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
@@ -124,7 +128,7 @@ export default class Profile extends Component {
 
   componentWillMount() {
     Actions.refresh({
-             renderRightButton: () => this.renderRightButton(),
+             //renderRightButton: () => this.renderRightButton(),
         })
   }
 
@@ -141,12 +145,12 @@ export default class Profile extends Component {
       this.setState({postcards:nextProps.postcards});
     }
   }
-  renderRightButton(){
-    return (
-      <ImageButton image={settingsImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
-      </ImageButton>
-    );
-  }
+  // renderRightButton(){
+  //   return (
+  //     <ImageButton image={settingsImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
+  //     </ImageButton>
+  //   );
+  // }
   onRightPress(){
     this.setModalVisible(true);
   }
@@ -164,6 +168,29 @@ export default class Profile extends Component {
 
   setModalVisible(visible) {
   this.setState({modalVisible: visible});
+}
+
+  resetSettingsValues() {
+    this.setState({
+      settingsModal: false,
+      Email: this.props.user.Email,
+
+    })
+  }
+
+  resetInfoValues() {
+    this.setState({
+      First_Name: this.props.user.First_Name,
+      Last_Name: this.props.user.Last_Name,
+      Phone: this.props.user.Phone,
+      Age: this.props.user.Age ? this.props.user.Age : '',
+      Gender: this.props.user.Gender,
+      modalVisible: false,
+    })
+  }
+
+  settingsVisible(visible) {
+    this.setState({settingsModal: visible});
 }
   closeModal(){
     this.setState({modalVisible: false});
@@ -191,16 +218,13 @@ renderImage(){
     else if (response.error) {
       console.log('ImagePicker Error: ', response.error);
     }else {
-      this.setState({
-        responseURI: response.uri,
-      })
+      uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg')
+      .then(url => this.setState({imageLocation: url, responseURI: url}));
     }
   })
 }
 
 _submitChanges(){
-  uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg')
-  .then(url => this.setState({imageLocation: url}));
   //var imageLocation = this.userImageRef + '/' + firebase.auth().currentUser.uid + '.jpg';
   this.userRef.update({
     "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
@@ -230,6 +254,59 @@ _submitChanges(){
         categories: categories,
       });
     });
+  }
+
+  renderSettingsModal()
+  {
+    return(
+      <Modal
+        animationType={'none'}
+        transparent={false}
+        visible = {this.state.settingsModal}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
+      >
+        <View style = {styles.container_settings}>
+          <View style = {styles.navigationBarStyle}>
+            <Text style = {styles.navigationBarTextStyle}>
+              Edit Profile
+            </Text>
+            <ImageButton image={close} style={{top:2}} onPress={() => this.resetSettingsValues()}>
+            </ImageButton>
+          </View>
+
+
+          <KeyboardAwareScrollView scrollEnabled = {true} style={{backgroundColor: 'white'}}>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+            <Text style = {styles.text_header}>Settings</Text>
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+              <View style={styles.settings_InputView}>
+              <Text style={styles.settings_Header}>Email</Text>
+                <View style = {styles.settings_InfoField}>
+                <TextInput
+                  style = {styles.TextInput}
+                  placeholder={this.props.user.Email}
+                  ref='Email'
+                  onChangeText={(Email) => this.setState({Email})}
+                  placeholderTextColor='black'
+                  underlineColorAndroid='transparent'
+                  keyboardType='email-address'>
+                </TextInput>
+                </View>
+            </View>
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+              </View>
+            </KeyboardAwareScrollView>
+
+            <View style= {{flex:1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 20}}>
+            <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._submitChanges()}>
+            </ImageButton>
+            </View>
+         </View>
+     </Modal>
+    )
   }
 
   renderModal()
@@ -263,27 +340,19 @@ _submitChanges(){
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
-            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => {this.setModalVisible(false), this.setState({ Image: this.props.user.Image })}}>
-              <Text style={{color:'#F97237',textAlign:'center'}}>Exit</Text>
-            </TouchableHighlight>
             <Text style = {styles.navigationBarTextStyle}>
               Edit Profile
             </Text>
-            <TouchableHighlight style={{flex:.2,marginTop:20,}} onPress={() => this._submitChanges()}>
-              <Text style={{color: '#F97237',textAlign:'center'}}>Save</Text>
-            </TouchableHighlight>
+            <ImageButton image={close} style={{top:2}} onPress={() => this.resetInfoValues()}>
+            </ImageButton>
           </View>
+
 
           <KeyboardAwareScrollView scrollEnabled = {true} style={{backgroundColor: 'white'}}>
 
-          <View style = {styles.settings_imageView}>
-               <Image source={{uri: this.state.responseURI }} style={styles.userImage}/>
-               <TouchableHighlight
-               onPress={()=> this.renderImage()}
-               underlayColor={'white'}>
-                 <Text style={styles.settings_imageText}>Change Photo</Text>
-               </TouchableHighlight>
-          </View>
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+            </View>
+          <Text style = {styles.text_header}>Basic Info</Text>
 
             <View style={styles.settings_InputView}>
             <Text style={styles.settings_Header}>First name</Text>
@@ -315,25 +384,6 @@ _submitChanges(){
                 underlineColorAndroid='transparent'>
               </TextInput>
               </View>
-            </View>
-
-            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
-              </View>
-
-            <View style={styles.settings_InputView}>
-            <Text style={styles.settings_Header}>Email</Text>
-              <View style = {styles.settings_InfoField}>
-              <TextInput
-                style = {styles.TextInput}
-                placeholder={this.props.user.Email}
-                ref='Email'
-                onChangeText={(Email) => this.setState({Email})}
-                placeholderTextColor='black'
-                underlineColorAndroid='transparent'
-                keyboardType='email-address'>
-              </TextInput>
-              </View>
-
             </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
@@ -399,149 +449,13 @@ _submitChanges(){
               </ModalPicker>
               </View>
             </View>
-
-
-
-{/*
-          <KeyboardAwareScrollView scrollEnabled={false}>
-
-          <View style={styles.settings_card}>
-            <View style = {styles.settings_imageView}>
-              <View style = {styles.settings_image}>
-                <Image source={{uri: this.state.responseURI }} style={styles.userImage}/>
-                <TouchableHighlight
-                 onPress={()=> this.renderImage()}
-                 underlayColor = '#dddddd'>
-                  <Text style={styles.settings_imageText}>Change Photo</Text>
-                </TouchableHighlight>
-              </View>
-            </View>
-
-            <View style={{flexDirection: 'row'}}>
-              <View style={styles.settings_NameView}>
-                <View style = {styles.settings_Name}>
-                  <Text style = {styles.settings_NameInput}>FIRST</Text>
-                </View>
-                <View style={styles.settings_FirstInput}>
-                <TextInput
-                  style = {styles.TextInput}
-                  placeholder={this.state.First_Name}
-                  ref='First_Name'
-                  onChangeText={(First_Name) => this.setState({First_Name})}
-                  placeholderTextColor='black'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-                </View>
-              </View>
-              <View style={styles.settings_NameView}>
-                <View style = {styles.settings_Name}>
-                  <Text style = {styles.settings_NameInput}>LAST</Text>
-                </View>
-                <View style={styles.settings_LastInput}>
-                <TextInput
-                  style = {styles.TextInput}
-                  ref='Last_Name'
-                  onChangeText={(Last_Name) => this.setState({Last_Name})}
-                  placeholder={this.state.Last_Name}
-                  placeholderTextColor='black'
-                  underlineColorAndroid='transparent'>
-                </TextInput>
-              </View>
-             </View>
-            </View>
-
-            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-            </View>
-
-            <View style={styles.settings_EmailView}>
-              <View style = {styles.settings_Name}>
-                <Text style = {styles.settings_NameInput}>EMAIL</Text>
-              </View>
-              <View style={styles.settings_EmailInput}>
-              <TextInput
-                style = {styles.TextInput}
-                onChangeText={(Email) => this.setState({Email})}
-                placeholder={this.props.user.Email}
-                ref='Email'
-                placeholderTextColor='black'
-                underlineColorAndroid='transparent'
-                keyboardType='email-address'
-                >
-              </TextInput>
-              </View>
-            </View>
-
-            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-            </View>
-
-            <View style={{flexDirection: 'row'}}>
-              <View style={styles.settings_PhoneView}>
-                <View style = {styles.settings_Name}>
-                  <Text style = {styles.settings_NameInput}>PHONE</Text>
-                </View>
-                <View style={styles.settings_FirstInput}>
-                <TextInput
-                  style = {styles.TextInput}
-                  ref='Phone'
-                  placeholder={this.state.Phone}
-                  placeholderTextColor='black'
-                  onChangeText={(Phone) => this.setState({Phone})}
-                  underlineColorAndroid='transparent'
-                  keyboardType='numeric'
-                  maxLength={10}
-                >
-                </TextInput>
-                </View>
-              </View>
-              <View style={styles.settings_AgeView}>
-                <View style = {styles.settings_Name}>
-                  <Text style = {styles.settings_NameInput}>AGE</Text>
-                </View>
-                <View style={styles.settings_LastInput}>
-                <ModalPicker
-                  selectStyle={{borderRadius:0, borderWidth: 0}}
-                  selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
-                  style ={{ borderRadius:0}}
-                  data={ageOptions}
-                  onChange={(age) => this.setState({selectedAge: age.label})}>
-
-                  <TextInput
-                    style={{padding:10, height:CARD_HEIGHT*.075}}
-                    editable={false}
-                    value = {this.state.selectedAge.toString()} />
-                </ModalPicker>
-              </View>
-             </View>
-            </View>
-
-            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-            </View>
-            <View style={styles.settings_NameView}>
-              <View style = {styles.settings_Name}>
-                <Text style = {styles.settings_NameInput}>GENDER</Text>
-              </View>
-              <View style={styles.settings_FirstInput}>
-              <ModalPicker
-                selectStyle={{borderRadius:0, borderWidth: 0}}
-                selectTextStyle={{fontSize: 15, fontFamily: 'Futura-Medium'}}
-                style ={{flex: 1, borderRadius:0}}
-                data={genderOptions}
-                initValue= {genderString}
-                onChange={(gender) => this.setState({selectedGender: gender.label})}>
-
-                <TextInput
-                  style={{padding:10, height:CARD_HEIGHT*.075}}
-                  editable={false}
-                  value = {this.state.selectedGender} />
-              </ModalPicker>
-              </View>
-            </View>
-          </View>
-
-          </KeyboardAwareScrollView>
-
-          */}
             </KeyboardAwareScrollView>
+
+            <View style= {{flex:1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 20}}>
+            <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._submitChanges()}>
+            </ImageButton>
+            </View>
+
          </View>
      </Modal>
     )
@@ -554,6 +468,54 @@ _submitChanges(){
       </View>
     </View>
   }
+
+  setTagsVisible(visible) {
+    this.setState({
+      TagsVisible: visible,
+    });
+  }
+  renderTagSelection(){
+    <Modal
+      animationType={'slide'}
+      transparent={false}
+      visible={this.state.TagsVisible}
+      onRequestClose={() => {alert("Modal can not be closed.")}}
+    >
+    <View style={{flex:1, flexDirection: 'column'}}>
+     <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
+       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
+         <View>
+         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
+         </ImageButton>
+         </View>
+       </View>
+     </View>
+
+       <View style = {styles.container_addEvent}>
+         <View style={styles.interestsHolder}>
+           {this.renderTags()}
+         </View>
+      </View>
+     </View>
+    </Modal>
+  }
+
+  renderTags(){
+    var tags = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
+    var tagsView = [];
+
+    for(var i = 0; i < tags.length; i++)
+    {
+      var tag = tags[i];
+      var backgroundColor = this.state.tags.indexOf(tag) == -1 ? styleVariables.greyColor: '#0B82CC';
+      tagsView.push(
+        <Button ref={tag} key={i} style={[styles.tagsCell, {backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this, tag)}>{tag}</Button>
+      );
+    }
+
+    return tagsView;
+  }
+
   renderInterests(){
     var interests = this.state.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
     var interestsViews = [];
@@ -820,8 +782,138 @@ _submitChanges(){
   }
   renderProfile() {
   return(
+    <View style = {{flex: 1}}>
+      <ScrollView scrollEnabled={true} style={styles.scrolling_profile}>
+        <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.05,}}/>
+          <View style={styles.container_image}>
+            <Image source={{uri: this.state.imageLocation }} style={styles.userImage}/>
+            <View style={styles.changePhoto}>
+              <TouchableHighlight
+              onPress={()=> this.renderImage()}
+              underlayColor={'white'}>
+                <Text style={styles.settings_imageText}>Change Photo</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+
+        <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.025}}/>
+
+        <View style={styles.container_info}>
+
+          <View style={{flexDirection: 'row', paddingLeft: 45, paddingRight: 35}}>
+          <View style={{flex: 1}}>
+          <Text style={styles.text_header}> Basic Info </Text>
+          </View>
+          <View>
+          <TouchableHighlight onPress={() => {this.setModalVisible(true)}}>
+            <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
+          </TouchableHighlight>
+          </View>
+          </View>
+
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.025}}/>
+
+          <View style={styles.infoBox}>
+            <View style={styles.innerBox}>
+              <Text style = {styles.infoText}>{this.state.First_Name}</Text>
+            </View>
+          </View>
+
+        <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+          <View style={styles.infoBox}>
+            <View style={styles.innerBox}>
+              <Text style = {styles.infoText}>{this.state.Last_Name}</Text>
+            </View>
+          </View>
+
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+            <View style={styles.infoBox}>
+              <View style={styles.innerBox}>
+                <Text style = {styles.infoText}>{this.state.Phone}</Text>
+              </View>
+            </View>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+              <View style={styles.infoBox}>
+                <View style={styles.innerBox}>
+                  <Text style = {styles.infoText}>{this.state.selectedAge}</Text>
+                </View>
+              </View>
+
+              <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                <View style={styles.infoBox}>
+                  <View style={styles.innerBox}>
+                    <Text style = {styles.infoText}>{this.state.Gender}</Text>
+                  </View>
+                </View>
+
+                <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                <View style={styles.container_info}>
+                  <View style={{flexDirection: 'row', paddingLeft: 45, paddingRight: 35}}>
+                    <View style={{flex: 1}}>
+                      <Text style={styles.text_header}> Settings </Text>
+                    </View>
+                    <View>
+                    <TouchableHighlight onPress={() => {this.settingsVisible(true)}}>
+                        <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
+                      </TouchableHighlight>
+                    </View>
+                  </View>
+                  <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                    <View style={styles.infoBox}>
+                      <View style={styles.innerBox}>
+                        <Text style = {styles.infoText}>{this.state.Email}</Text>
+                      </View>
+                    </View>
+
+                    <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                      <View style={styles.infoBox}>
+                        <View style={styles.innerBox}>
+                          <Text style = {styles.infoText}>Push Notifications</Text>
+                        </View>
+                      </View>
+
+                      <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                      <View style={styles.container_info}>
+                      <View style={{flexDirection: 'row', paddingLeft: 45, paddingRight: 35}}>
+                        <View style={{flex: 1}}>
+                          <Text style={styles.text_header}> Interests </Text>
+                        </View>
+                        <View>
+                {/*}        <TouchableHighlight onPress={() => {this.setTagsVisible(true)}}>
+                            <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
+                          </TouchableHighlight>
+                          */}
+                        </View>
+                      </View>
+
+                        <View style={styles.interestsHolder}>
+                          {this.renderInterests()}
+                        </View>
+                        </View>
+
+                      <View style={styles.container_info}>
+                          <Text style={styles.text_header}>Post Cards</Text>
+                        <View>
+                          {this.renderPostcards()}
+                        </View>
+                      </View>
+
+                </View>
+        </View>
+
+      </ScrollView>
+    {/*
     <View style = {styles.innerContainer}>
-    <View style= {styles.container_profile}>
+    <View style= {styles.ile}>
       <View style= {styles.container_upper}>
         <View style={styles.container_image}>
           <Image source={{uri: this.state.imageLocation }} style={styles.userImage}/>
@@ -850,6 +942,8 @@ _submitChanges(){
       </ScrollView>
     </View>
   </View>
+  */}
+  </View>
 )
   }
 
@@ -864,7 +958,7 @@ _submitChanges(){
   }
   renderLoggedIn()
   {
-    if(this.state.modalVisible === false && this.state.hasPostCardSelected === false)
+    if(this.state.modalVisible === false && this.state.settingsModal === false && this.state.hasPostCardSelected === false && this.state.TagsVisible === false)
     {
       return this.renderProfile();
     }
@@ -872,18 +966,23 @@ _submitChanges(){
     {
       return this.renderPostCardModal();
     }
-    else
+    else if(this.state.modalVisible === true)
     {
         return this.renderModal();
+    }else if(this.state.TagsVisible === true)
+    {
+        return this.renderTagSelection();
+    }else{
+      return this.renderSettingsModal();
     }
-  }
+    }
   render() {
     let viewToShow
     console.log("userref! " + this.userImageRef);
 
     viewToShow = (firebase.auth().currentUser.email != 'test@test.com') ? this.renderLoggedIn() : this.renderNotLoggedIn()
     return(
-       <View style={{flex:1}}>
+       <View style={styles.container_profile}>
         {viewToShow}
        </View>
      )
@@ -893,8 +992,6 @@ const styles = StyleSheet.create({
   creator_EventView: {
     width: width,
     height: CARD_HEIGHT *0.1,
-    borderWidth: 2,
-    borderColor: 'red',
 
   },
   creator_NameInput: {
@@ -904,8 +1001,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderBottomWidth:.5,
     borderBottomColor: '#d3d3d3',
-    borderWidth: 2,
-    borderColor: 'blue',
   },
   linearGradient: {
     flex:1,
@@ -927,6 +1022,11 @@ const styles = StyleSheet.create({
   scroll: {
     height:CARD_HEIGHT*.65,
   },
+  scrolling_profile: {
+    height: height - HEADER_HEIGHT - TAB_HEIGHT - 25,
+    width: CARD_WIDTH,
+    backgroundColor: '#E2E2E2',
+  },
   container: {
     top: Platform.OS == 'ios' ? 64:44,
     height: height - (Platform.OS == 'ios' ? 64:44) - 45,
@@ -947,17 +1047,46 @@ const styles = StyleSheet.create({
     width:CARD_WIDTH,
     height:CARD_HEIGHT+TAB_HEIGHT,
   },
+  container_Info: {
+    width: CARD_WIDTH,
+    height: CARD_HEIGHT
+  },
   container_image: {
     width: CARD_WIDTH,
+    height: CARD_HEIGHT* .15,
+    flexDirection: 'row',
+    paddingLeft: 25,
+    paddingRight: 25,
     alignItems: 'center',
   },
-  container_profile: {
-    top: HEADER_HEIGHT,
-    // borderWidth: 2,
-    // borderColor: 'red',
+  infoBox: {
     width: CARD_WIDTH,
-    //top: height*.6,
-    height: CARD_HEIGHT,
+    height: CARD_HEIGHT* .08,
+    paddingLeft: 45,
+    paddingRight:45,
+  },
+  infoText: {
+    padding: 10,
+    fontFamily: styleVariables.systemRegularFont,
+    color: styleVariables.greyColor,
+    fontSize: 16,
+  },
+  innerBox: {
+    flex: 1,
+    backgroundColor: 'white',
+    borderRadius: 7,
+  },
+  text_header: {
+    fontFamily: styleVariables.systemBoldFont,
+    color: '#F97237',
+    fontSize: 18,
+    textAlign: 'center',
+  },
+  container_profile: {
+    paddingTop: HEADER_HEIGHT,
+    paddingBottom: TAB_HEIGHT,
+    flex:1,
+    width: CARD_WIDTH,
   },
   container_upper: {
     flex:1,
@@ -976,6 +1105,16 @@ const styles = StyleSheet.create({
     flex:1,
     flexDirection: 'column',
   },
+  changePhoto: {
+    flex: 1,
+    height: CARD_HEIGHT* .15,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    paddingLeft: 10,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+
   backgroundImage: {
     position: 'absolute',
     width: CARD_WIDTH,
@@ -984,12 +1123,11 @@ const styles = StyleSheet.create({
     resizeMode: 'stretch', // or 'stretch'
   },
   userImage: {
-    width: 100,
-    //top: 20,
-    height: 100,
+    width: CARD_HEIGHT* .15,
+    height: CARD_HEIGHT* .15,
+
     //resizeMode: 'cover', // or 'stretch'
     //justifyContent: 'center',
-    borderRadius: 50,
   },
   profile_username: {
     // borderWidth: 2,
@@ -1046,6 +1184,8 @@ const styles = StyleSheet.create({
   navigationBarStyle: {
     height: HEADER_HEIGHT,
     width: width,
+    paddingRight: 10,
+    paddingLeft: 20,
     backgroundColor:'#0E476A',
     borderBottomWidth: 0,
     justifyContent: 'center',
@@ -1055,16 +1195,23 @@ const styles = StyleSheet.create({
   navigationBarTextStyle: {
     marginTop:20,
     flex:.6,
-    color:'#F97237',
+    color: 'white',
+    //color:'#F97237',
     fontSize:20,
     fontFamily:'Futura-Medium',
     textAlign:'center',
     lineHeight: HEADER_HEIGHT-21,
   },
+  saveInput: {
+    backgroundColor: '#3CD758',
+    height: 75,
+    width: 75,
+    borderRadius: height/2,
+  },
   settings_InputView: {
-    width: width-20,
+    width: width-40,
     height: CARD_HEIGHT *0.1,
-    marginLeft: 10,
+    marginLeft: 20,
     borderBottomWidth: .5,
     borderBottomColor: styleVariables.greyColor,
   },
@@ -1109,7 +1256,9 @@ const styles = StyleSheet.create({
     paddingRight: 3,
   },
   settings_imageText: {
-    width: 100,
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 18,
+
   },
   settings_NameView: {
     // borderBottomWidth: .75,
@@ -1197,7 +1346,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     flexWrap: 'wrap',
     flexDirection: 'row',
-    backgroundColor:'#FFFFFF',
+    backgroundColor:'#E2E2E2',
   },
   interestsCell: {
     margin: 8,

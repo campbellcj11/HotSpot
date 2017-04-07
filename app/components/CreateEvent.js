@@ -28,7 +28,9 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
-import closeImage from '../images/delete.png'
+import closeImage from '../imgs/close@3x.png'
+import checkImage from '../imgs/check@2x.png'
+import arrow_right from '../imgs/arrow-right@2x.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 import NativeMethodsMixin from 'NativeMethodsMixin'
@@ -41,7 +43,7 @@ import Swiper from 'react-native-swiper';
 import styleVariables from '../Utils/styleVariables'
 
 
-const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
+const HEADER_HEIGHT = styleVariables.titleBarHeight;
 const TAB_HEIGHT = 50;
 const CARD_WIDTH = width;
 const CARD_HEIGHT = height - HEADER_HEIGHT;
@@ -95,6 +97,7 @@ export default class CreateEvent extends Component {
       Event_Location: '',
       Longitude: '',
       Long_Description: '',
+      optionalVisible: false,
       Short_Description: '',
       Sort_Date: '',
       State: '',
@@ -104,7 +107,7 @@ export default class CreateEvent extends Component {
       Website : '',
       eventID: '',
       allowUpload: false,
-      responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756',
+      responseURI: '',
       currentDate: new Date(),
       TagsVisible: false,
       tags: [],
@@ -192,7 +195,8 @@ export default class CreateEvent extends Component {
         "Website" : this.state.Website,
       });
       this.setState({
-        responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756'
+        responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756',
+        optionalVisible: false,
       })
       this.props.close();
     }
@@ -254,6 +258,114 @@ export default class CreateEvent extends Component {
     return tagsView;
   }
 
+  setOptionalInfoVisible(visible) {
+    this.setState({
+      optionalVisible: visible,
+    });
+  }
+
+  renderOptionalInfo() {
+    var saveButtonText = 'Submit';
+    var changePhoto = 'Click here to add image';
+    var tagString = '';
+    var inputView = CARD_HEIGHT*.1;
+    var textView = CARD_HEIGHT*.075;
+    var dynamicTextHeight = this.state.textHeight;
+    var expandingView = dynamicTextHeight + (inputView - textView);
+
+
+    return (
+      <View style={{flex:1}}>
+  <KeyboardAwareScrollView>
+      <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+    </View>
+    <Text style = {styles.text_header}>Optional Info</Text>
+    <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
+      <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
+         <TextInput
+         style = {[styles.TextInput]}
+         placeholder = 'Long Description'
+         ref='long Description'
+         multiline={true}
+         onChangeText={(Long_Description) => this.setState({Long_Description})}
+         onContentSizeChange={(event) => {
+           this.setState({textHeight: event.nativeEvent.contentSize.height});
+         }}
+         placeholderTextColor={styleVariables.greyColor}
+         underlineColorAndroid='transparent'
+          >
+        </TextInput>
+      </View>
+    </View>
+
+        <View style={styles.creator_EventView}>
+            <View style={styles.creator_NameInput}>
+              <TextInput
+              style = {styles.TextInput}
+              placeholder = 'Website'
+              ref='website'
+              onChangeText={(Website) => this.setState({Website})}
+              placeholderTextColor={styleVariables.greyColor}
+              underlineColorAndroid='transparent'
+              >
+            </TextInput>
+          </View>
+        </View>
+
+          <View style={styles.creator_EventView}>
+            <View style={styles.creator_NameInput}>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder = 'Email Contact'
+                ref='contact'
+                onChangeText={(Email_Contact) => this.setState({Email_Contact})}
+                placeholderTextColor={styleVariables.greyColor}
+                underlineColorAndroid='transparent'
+              >
+              </TextInput>
+            </View>
+          </View>
+
+          <View style={styles.creator_EventView}>
+            <View style={styles.creator_NameInput}>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder = 'City'
+                ref='City'
+                onChangeText={(City) => this.setState({City})}
+                placeholderTextColor={styleVariables.greyColor}
+                underlineColorAndroid='transparent'
+              >
+              </TextInput>
+            </View>
+          </View>
+
+          <View style={styles.creator_EventView}>
+            <View style={styles.creator_NameInput}>
+              <TextInput
+                style = {styles.TextInput}
+                placeholder = 'State'
+                ref='State'
+                onChangeText={(State) => this.setState({State})}
+                placeholderTextColor={styleVariables.greyColor}
+                underlineColorAndroid='transparent'
+              >
+              </TextInput>
+            </View>
+          </View>
+          <View style = {{flex:1, alignItems: 'center'}}>
+          <ImageButton image={checkImage} style={styles.saveBasicInput}
+          onPress={() => Alert.alert('Almost There...', 'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
+                   {text: 'Create Event', onPress: () => this._submitEvent()},
+                 ])}>
+          </ImageButton>
+          </View>
+          </KeyboardAwareScrollView>
+</View>
+
+    )
+  }
+
   render() {
     var saveButtonText = 'Submit';
     var changePhoto = 'Click here to add image';
@@ -293,7 +405,7 @@ export default class CreateEvent extends Component {
      <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
          <View>
-         <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
+         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
          </ImageButton>
          </View>
        </View>
@@ -303,6 +415,28 @@ export default class CreateEvent extends Component {
          <View style={styles.interestsHolder}>
            {this.renderTags()}
          </View>
+      </View>
+     </View>
+    </Modal>
+
+    <Modal
+      animationType={'slide'}
+      transparent={false}
+      visible={this.state.optionalVisible}
+      onRequestClose={() => {alert("Modal can not be closed.")}}
+    >
+    <View style={{flex:1, flexDirection: 'column'}}>
+     <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
+       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
+         <View>
+         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({optionalVisible: false})}>
+         </ImageButton>
+         </View>
+       </View>
+     </View>
+
+       <View style = {styles.container_addEvent}>
+           {this.renderOptionalInfo()}
       </View>
      </View>
     </Modal>
@@ -330,23 +464,9 @@ export default class CreateEvent extends Component {
     </View>
 
   <KeyboardAwareScrollView>
-  <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
-    </View>
-  <View style={styles.eventImageView}>
-    <Image source={{uri: this.state.responseURI }} style={styles.eventImage}/>
-  </View>
-  <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-    </View>
-  <View style={styles.imageView}>
-  <Button
-    onPress={() => this.renderImage()}
-    style={styles.imageButton}
-    textStyle={styles.imageButtonText}>
-    {changePhoto}
-  </Button>
-  </View>
     <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
     </View>
+    <Text style = {styles.text_header}>Basic Info</Text>
     <View style={styles.creator_EventView}>
       <View style={styles.creator_NameInput}>
         <TextInput
@@ -360,20 +480,6 @@ export default class CreateEvent extends Component {
         </TextInput>
       </View>
     </View>
-
-      <View style={styles.creator_EventView}>
-        <View style={styles.creator_NameInput}>
-          <TextInput
-            style = {styles.TextInput}
-            placeholder = 'Address'
-            ref='address'
-            onChangeText={(Event_Address) => this.setState({Event_Address})}
-            placeholderTextColor= {styleVariables.greyColor}
-            underlineColorAndroid='transparent'
-          >
-          </TextInput>
-        </View>
-       </View>
 
        <View style = {styles.creator_DateTimeView}>
         <View style={styles.creator_DateInput}>
@@ -430,6 +536,20 @@ export default class CreateEvent extends Component {
         </View>
 
         <View style={styles.creator_EventView}>
+          <View style={styles.creator_NameInput}>
+            <TextInput
+              style = {styles.TextInput}
+              placeholder = 'Address'
+              ref='address'
+              onChangeText={(Event_Address) => this.setState({Event_Address})}
+              placeholderTextColor= {styleVariables.greyColor}
+              underlineColorAndroid='transparent'
+            >
+            </TextInput>
+          </View>
+         </View>
+
+        <View style={styles.creator_EventView}>
         <Button
           onPress={() => this.setState({TagsVisible: true})}
           style={styles.tagButton}
@@ -456,7 +576,7 @@ export default class CreateEvent extends Component {
           <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
               <TextInput
                 style = {styles.TextInput}
-                placeholder = 'Short Description'
+                placeholder = 'Short Description (<250 characters)'
                 multiline={true}
                 ref='Short Description'
                 onChangeText={(Short_Description) => this.setState({Short_Description})}
@@ -467,80 +587,24 @@ export default class CreateEvent extends Component {
             </View>
           </View>
 
-   <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
-     <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
-        <TextInput
-        style = {[styles.TextInput]}
-        placeholder = 'Long Description'
-        ref='long Description'
-        multiline={true}
-        onChangeText={(Long_Description) => this.setState({Long_Description})}
-        onContentSizeChange={(event) => {
-          this.setState({textHeight: event.nativeEvent.contentSize.height});
-        }}
-        placeholderTextColor={styleVariables.greyColor}
-        underlineColorAndroid='transparent'
-         >
-       </TextInput>
-     </View>
-   </View>
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+            </View>
+          <View style={styles.imageView}>
+          <Button
+            onPress={() => this.renderImage()}
+            style={styles.imageButton}
+            textStyle={styles.imageButtonText}>
+            {changePhoto}
+          </Button>
+          </View>
+          <View style={styles.eventImageView}>
+            <Image source={{uri: this.state.responseURI }} style={styles.eventImage}/>
+          </View>
 
-   <View style={styles.creator_EventView}>
-       <View style={styles.creator_NameInput}>
-         <TextInput
-         style = {styles.TextInput}
-         placeholder = 'Website'
-         ref='website'
-         onChangeText={(Website) => this.setState({Website})}
-         placeholderTextColor={styleVariables.greyColor}
-         underlineColorAndroid='transparent'
-         >
-       </TextInput>
-     </View>
-   </View>
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+            </View>
 
-     <View style={styles.creator_EventView}>
-       <View style={styles.creator_NameInput}>
-         <TextInput
-           style = {styles.TextInput}
-           placeholder = 'Email Contact'
-           ref='contact'
-           onChangeText={(Email_Contact) => this.setState({Email_Contact})}
-           placeholderTextColor={styleVariables.greyColor}
-           underlineColorAndroid='transparent'
-         >
-         </TextInput>
-       </View>
-     </View>
-
-     <View style={styles.creator_EventView}>
-       <View style={styles.creator_NameInput}>
-         <TextInput
-           style = {styles.TextInput}
-           placeholder = 'City'
-           ref='City'
-           onChangeText={(City) => this.setState({City})}
-           placeholderTextColor={styleVariables.greyColor}
-           underlineColorAndroid='transparent'
-         >
-         </TextInput>
-       </View>
-     </View>
-
-     <View style={styles.creator_EventView}>
-       <View style={styles.creator_NameInput}>
-         <TextInput
-           style = {styles.TextInput}
-           placeholder = 'State'
-           ref='State'
-           onChangeText={(State) => this.setState({State})}
-           placeholderTextColor={styleVariables.greyColor}
-           underlineColorAndroid='transparent'
-         >
-         </TextInput>
-       </View>
-     </View>
-    <Button
+  {/*  <Button
       onPress={() => Alert.alert('Almost There...', 'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
          {text: 'Create Event', onPress: () => this._submitEvent()},
        ])}
@@ -548,6 +612,11 @@ export default class CreateEvent extends Component {
       textStyle={styles.saveButtonText}>
       {saveButtonText}
     </Button>
+*/}
+  <View style={{flex:1, alignItems: 'center'}}>
+    <ImageButton image={arrow_right} style={styles.saveBasicInput}  onPress={() => this.setOptionalInfoVisible()}>
+    </ImageButton>
+    </View>
     <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
     </View>
 
@@ -577,8 +646,8 @@ const styles = StyleSheet.create({
 
     },
     creator_NameInput: {
-      marginLeft:10,
-      marginRight: 5,
+      marginLeft:20,
+      marginRight: 20,
       height: CARD_HEIGHT*.075,
       justifyContent: 'center',
       borderBottomWidth:.5,
@@ -656,6 +725,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'center',
     },
+    saveBasicInput: {
+      backgroundColor: '#3CD758',
+      height: 75,
+      width: 75,
+      borderRadius: height/2,
+    },
     saveButtonText: {
       color: 'white',
       fontSize: 20,
@@ -678,6 +753,12 @@ const styles = StyleSheet.create({
       fontSize: 15,
       textAlign: 'center',
       fontFamily: styleVariables.systemRegularFont,
+    },
+    text_header: {
+      fontFamily: styleVariables.systemBoldFont,
+      color: '#F97237',
+      fontSize: 18,
+      textAlign: 'center',
     },
     TextInput: {
         flex: 1,
