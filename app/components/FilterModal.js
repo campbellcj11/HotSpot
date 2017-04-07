@@ -294,8 +294,8 @@ export default class FilterModal extends Component {
       </View>
     )
   }
-  getPossibleLocation() {
-    var unfilteredList = ['Columbia','Atlantic City','New York City','Dallas','Houston','Miami','Atlanta'];
+  getPossibleLocations() {
+    var unfilteredList = eventActions.renderPossibleLocations();
     var filteredList = [];
     if(this.state.locationSearch == '')
     {
@@ -326,7 +326,7 @@ export default class FilterModal extends Component {
     this.setState({city:rowData});
   }
   renderLocation(){
-    var possibleLocations = this.getPossibleLocation();
+    var possibleLocations = this.getPossibleLocations();
 
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
     return(
