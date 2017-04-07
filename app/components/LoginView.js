@@ -23,6 +23,8 @@ var {height, width} = Dimensions.get('window');
 import styleVariables from '../Utils/styleVariables'
 import backArrow from '../imgs/arrow-left.png'
 import hsGraphic from '../imgs/HotSpot-Graphic.png'
+import SocialAuth from 'react-native-social-auth';
+import OAuthManager from 'react-native-oauth';
 
 import SignupView from './SignupView'
 
@@ -31,6 +33,8 @@ export default class Login extends Component {
     super(props)
     this.state = {
       signupIndex:0,
+      email: '',
+      password: '',
     }
   }
 
@@ -40,12 +44,60 @@ export default class Login extends Component {
   updateIndex(newIndex){
     this.setState({signupIndex:newIndex});
   }
+  login(){
+    var user = {'email': this.state.email,
+                'password' : this.state.password};
+
+    this.props.loginUser(user);
+  }
+  loginWithFacebook()
+  {
+      SocialAuth.setFacebookApp({id: '1738197196497592', name: 'projectnow'});
+      SocialAuth.getFacebookCredentials(["email", "public_profile"],
+      SocialAuth.facebookPermissionsType.read).then((credentials) => {
+      this.setState({
+        error: null,
+        credentials,
+      })
+      console.log(this.state.credentials);
+      this._initFacebookUser(credentials.accessToken)
+    })
+    .catch((error) => {
+      this.setState({
+        error,
+        credentials: null,
+      })
+    })
+  }
+
+  initFacebookUser(token)
+  {
+    var user;
+    console.log("Fetching data");
+    fetch('https://graph.facebook.com/v2.5/me?fields=email&access_token=' + token)
+    .then((response) => response.json())
+    .then((json) => {
+      // Some user object has been set up somewhere, build that user here
+      console.log(json);
+      user = {'email': json.email,
+              'password' : json.id};
+
+      this.props.loginUser(user);
+    })
+    .catch(() => {
+      console.log('ERROR GETTING DATA FROM FACEBOOK')
+    })
+    console.log(user);
+  }
+  resetPassword(){
+    this.props.resetPassword(this.state.email);
+  }
   goBack(){
     if(this.props.isSignUp)
     {
       if(this.state.signupIndex == 0){
         this.props.goBack();
-        this.refs.signupView.resetSignupState();
+        // this.refs.signupView.resetSignupState();
       }
       else{
         this.refs.signupView.goBack();
@@ -88,19 +140,19 @@ export default class Login extends Component {
         </TextInput>
       </View>
       <Button
-        onPress={() => this._resetPassword()}
+        onPress={() => this.resetPassword()}
         style={styles.forgotPasswordBlankButton}
         textStyle={styles.forgotPasswordText}>
         {forgotPasswordButtonText}
       </Button>
       <Button
-        onPress={() => this._login()}
+        onPress={() => this.login()}
         style={styles.loginButton}
         textStyle={styles.buttonText}>
         {loginButtonText}
       </Button>
       <Button
-        onPress={() => this._loginWithFacebook()}
+        onPress={() => this.loginWithFacebook()}
         style={styles.blankButton}
         textStyle={styles.buttonBlankText}>
         {loginWithFacebookButtonText}

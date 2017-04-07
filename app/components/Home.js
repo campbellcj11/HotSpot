@@ -28,14 +28,14 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
-import EventCell from './EventCell'
+import EventCell from '../containers/EventCell'
 import CreateEvent from './CreateEvent'
 import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
 import Moment from 'moment';
-import LandingPage from './LandingPage'
+import LandingPage from '../containers/LandingPage'
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -613,91 +613,6 @@ export default class Home extends Component {
     // })
     // return (Arr)
   }
-  renderModal(){
-    var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
-    var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
-    var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
-    var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
-    var loginWithFacebookButtonText = this.state.isSignUp ? 'Signup with Facebook' : 'Login with Facebook';
-    var loginWithTwitterButtonText = this.state.isSignUp ? 'Signup with Twitter' : 'Login with Twitter';
-    var loginWithGoogleButtonText = this.state.isSignUp ? 'Signup with Google' : 'Login with Google';
-
-    return (
-      <Modal
-          animationType={'none'}
-          transparent={false}
-          visible={!this.props.loggedIn}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-      >
-        <View style={{flexDirection:'row'}}>
-        <View style={styles.modalBackground}>
-          <Image source={titleImage} style={styles.titleImage}/>
-          <View style={styles.userNameView}>
-            <TextInput style={styles.userNameTextInput}
-              ref='email'
-              onChangeText={(email) => this.setState({email})}
-              placeholder='Email'
-              placeholderTextColor='#C6E1E2'
-              underlineColorAndroid='transparent'>
-            </TextInput>
-          </View>
-
-          <View style={styles.passwordView}>
-            <TextInput style={styles.userNameTextInput}
-              secureTextEntry={!this.state.isSignUp}
-              ref='password'
-              onChangeText={(password) => this.setState({password})}
-              placeholder='Password'
-              placeholderTextColor='#C6E1E2'
-              underlineColorAndroid='transparent'>
-            </TextInput>
-          </View>
-          <Button
-            onPress={() => this._resetPassword()}
-            style={styles.forgotPasswordBlankButton}
-            textStyle={styles.forgotPasswordText}>
-            {forgotPasswordButtonText}
-          </Button>
-          <Button
-            onPress={() => this._login()}
-            style={styles.loginButton}
-            textStyle={styles.buttonText}>
-            {loginButtonText}
-          </Button>
-          <Button
-            onPress={() => this._loginWithFacebook()}
-            style={styles.facebookLogin}
-            textStyle={styles.facebookLoginText}>
-            {loginWithFacebookButtonText}
-          </Button>
-          {
-            Platform.OS == 'ios' ?
-            <View/>
-            :
-            <Button
-              onPress={() => this._loginWithGoogle()}
-              style={styles.googleLogin}
-              textStyle={styles.googleLoginText}>
-              {loginWithGoogleButtonText}
-            </Button>
-          }
-          <Button
-            onPress={() => this._loginWithoutAccount()}
-            style={styles.loginBlankButton}
-            textStyle={styles.buttonBlankText}>
-            {loginWithoutAccountButtonText}
-          </Button>
-          <Button
-            onPress={() => this._openSignupPage()}
-            style={styles.signupBlankButton}
-            textStyle={styles.buttonBlankText}>
-            {signUpButtonText}
-          </Button>
-        </View>
-        </View>
-      </Modal>
-    )
-  }
   renderView() {
 
     return (
@@ -710,7 +625,7 @@ export default class Home extends Component {
             animationType='fade'
             transparent={false}
             visible={this.state.hasCurrentSelection}
-            onRequestClose={() => {alert("Modal can not be closed.")}}
+            onRequestClose={() => this._closeSelection()}
           >
               <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
           </Modal>

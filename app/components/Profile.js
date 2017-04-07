@@ -150,6 +150,10 @@ export default class Profile extends Component {
   onRightPress(){
     this.setModalVisible(true);
   }
+  logout(){
+    Actions.tab1();
+    this.props.logoutUser();
+  }
   getRef() {
     return firebase.database().ref();
   }
@@ -828,6 +832,7 @@ _submitChanges(){
         <View>
           <Text style={styles.userLocation}>{this.props.location}</Text>
         </View>
+        <Button style={{marginLeft:32,marginRight:32}} textStyle={{color:'white',textAlign:'center'}} onPress={() => this.logout()}>Sign out</Button>
        </View>
       <ScrollView style={styles.container_lower}>
         <View style={styles.profile_interestHeader}>
@@ -852,7 +857,8 @@ _submitChanges(){
   {
     return (
       <View style={styles.container}>
-        <Text style={{textAlign:'center',fontFamily:'Futura-Medium',fontSize:15,flex:1}}> Login or Signup to view profile </Text>
+        <Text style={{textAlign:'center',fontFamily:styleVariables.systemFont,fontSize:15,flex:1}}> Login or Signup to view profile </Text>
+        <Button onPress={() => this.logout()}>Sign in/up</Button>
       </View>
     );
   }
