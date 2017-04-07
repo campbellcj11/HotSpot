@@ -19,7 +19,7 @@ import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import * as firebase from 'firebase';
 var {height, width} = Dimensions.get('window');
-import EventCell from './EventCell'
+import EventCell from '../containers/EventCell'
 import styleVariables from '../Utils/styleVariables'
 
 

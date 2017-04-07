@@ -32,7 +32,7 @@ import { Actions } from 'react-native-router-flux';
 import settingsImage from '../images/settings.png'
 import closeImage from '../images/delete.png'
 import close from '../imgs/close.png'
-import checkImage from '../imgs/check@2x.png'
+import checkImage from '../imgs/check.png'
 import addImage from '../images/plus.png'
 import styleVariables from '../Utils/styleVariables'
 import LinearGradient from 'react-native-linear-gradient'
@@ -45,8 +45,9 @@ import postcardImage2 from '../images/postcard2.jpg'
 import postcardImage2_1 from '../images/postcard2_1.jpg'
 import postcardImage2_2 from '../images/postcard2_2.jpg'
 import postcardImage2_3 from '../images/postcard2_3.jpg'
-import postcardImage3 from '../images/postcard3.jpg'
 import postcardImage4 from '../images/postcard4.jpg'
+
+import PostcardView from './PostcardView'
 
 var {height, width} = Dimensions.get('window');
 
@@ -260,10 +261,10 @@ _submitChanges(){
   {
     return(
       <Modal
-        animationType={'none'}
+        animationType={'slide'}
         transparent={false}
         visible = {this.state.settingsModal}
-        onRequestClose={() => {alert("Modal can not be closed.")}}
+        onRequestClose={() => this.resetSettingsValues()}
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
@@ -333,10 +334,10 @@ _submitChanges(){
 
     return(
       <Modal
-        animationType={'none'}
+        animationType={'slide'}
         transparent={false}
         visible = {this.state.modalVisible}
-        onRequestClose={() => {alert("Modal can not be closed.")}}
+        onRequestClose={() => this.resetInfoValues()}
       >
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
@@ -475,13 +476,14 @@ _submitChanges(){
     });
   }
   renderTagSelection(){
+    console.warn('Render Tag Selection');
     <Modal
       animationType={'slide'}
       transparent={false}
       visible={this.state.TagsVisible}
-      onRequestClose={() => {alert("Modal can not be closed.")}}
+      onRequestClose={() => {this.setState({TagsVisible: false})}}
     >
-    <View style={{flex:1, flexDirection: 'column'}}>
+    <View style={{flex:1,backgroundColor:'red', flexDirection: 'column'}}>
      <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
          <View>
@@ -499,7 +501,21 @@ _submitChanges(){
      </View>
     </Modal>
   }
-
+  buttonPressed(tag){
+    if(this.state.interests.indexOf(sentInterest) == -1)
+    {
+      var interests = this.state.interests;
+      interests.push(sentInterest);
+      this.setState({interests:interests});
+    }
+    else
+    {
+      var interests = this.state.interests;
+      var index = interests.indexOf(sentInterest);
+      interests.splice(index,1);
+      this.setState({interests:interests});
+    }
+  }
   renderTags(){
     var tags = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
     var tagsView = [];
@@ -517,19 +533,26 @@ _submitChanges(){
   }
 
   renderInterests(){
-    var interests = this.state.interests;//['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
-    var interestsViews = [];
+    interests = this.state.interests;
 
-    for(var i=0;i<interests.length;i++)
+    if(interests.length > 0)
     {
-      var interest = interests[i];
-      // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
-      interestsViews.push(
-          <Button ref={interest} key={i} style={[styles.interestsCell,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{interest}</Button>
-      );
-    }
+      var interestsViews = [];
 
-    return interestsViews;
+      for (i in interests){
+        var interest = i;
+        var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
+        // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+        interestsViews.push(
+            <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText}>{interest}</Button>
+        );
+      }
+
+      return interestsViews;
+    }
+    else{
+      return <Text style={{flex:1,marginVertical:8,fontFamily:styleVariables.systemFont,textAlign:'center'}}>No interests selected</Text>
+    }
   }
   openPostCard(sentPostCardInfo){
     this.setState({hasPostCardSelected:true,selectedPostCardInfo:sentPostCardInfo});
@@ -540,12 +563,6 @@ _submitChanges(){
         this.props.savePostcards(this.state.postcards);
         this.setState({selectedPostCardInfo:{}})
     })
-  }
-  openPostCardSettings(){
-    this.setState({postcardSettingsOpen:true});
-  }
-  closePostCardSettings(){
-    this.setState({postcardSettingsOpen:false});
   }
   openImagePicker(){
     PostCardImagePicker.openPicker({
@@ -609,78 +626,14 @@ _submitChanges(){
     }
 
     return (
-      <View style={{backgroundColor:'white'}}>
+      <View>
         {postCardViews}
       </View>
     )
   }
-  renderPostCardPage1(){
-    return(
-      <View key={-1} style={{flex:1}}>
-        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
-          <Image style={{flex:1}} source={this.state.selectedPostCardInfo.cardImage} resizeMode={'cover'}/>
-        </View>
-        <LinearGradient
-          start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
-          locations={[0,1]}
-          colors={[this.state.selectedPostCardInfo.color, '#FFFFFF00']}
-          style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
-        />
-        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}}>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
-            <ImageButton image={settingsImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.openPostCardSettings()}>
-            </ImageButton>
-          </View>
-          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}>{this.state.selectedPostCardInfo.name}</Text>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
-            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCard()}>
-            </ImageButton>
-          </View>
-        </View>
-        <View style={{position:'absolute',left:-4,bottom:48,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
-          <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:18,color:this.state.selectedPostCardInfo.color}}>{Moment(this.state.selectedPostCardInfo.date).format('MMM DD, YYYY')}</Text>
-        </View>
-      </View>
-    )
-  }
-  renderPostCardViewWithImage(index,sentImage){
-    return(
-      <View key={index} style={{flex:1}}>
-        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
-          <Image style={{flex:1}} source={sentImage} resizeMode={'cover'}/>
-        </View>
-        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}}>
-          <View style={{flex:.15}}/>
-          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}></Text>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
-            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCard()}>
-            </ImageButton>
-          </View>
-        </View>
-      </View>
-    )
-  }
-  _onMomentumScrollEnd(e, state, context) {
-    // console.warn(context.state.index)
-    this.setState({currentIndex: context.state.index});
-  }
   renderPostCardModal(){
-    var viewToShow = <View/>
-    if(this.state.postcardSettingsOpen)
-    {
-      viewToShow = this.renderPostCardSettings();
-    }
-    else {
-      viewToShow = this.renderPostCard();
-    }
     return (
-      <Modal
-        animationType={'fade'}
-        transparent={false}
-        visible = {this.state.hasPostCardSelected}
-      >
-        {viewToShow}
-      </Modal>
+      <PostcardView postcardInfo={this.state.selectedPostCardInfo}/>
     )
   }
   startDelete(){
@@ -704,85 +657,9 @@ _submitChanges(){
     postCardInfo.userImages = newImages;
     this.setState({selectedPostCardInfo:postCardInfo});
   }
-  renderPostCardSettings(){
-    // this.numbers = [0,1,2,3,4,5,6,7,8,9,10,11]
-    var userImages = this.state.selectedPostCardInfo.userImages;
-    return(
-      <View style={{flex:1,paddingTop:20}}>
-        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
-          <Image style={{flex:1}} source={this.state.selectedPostCardInfo.cardImage} resizeMode={'cover'}/>
-        </View>
-        <LinearGradient
-          start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
-          locations={[0,1]}
-          colors={[this.state.selectedPostCardInfo.color, '#FFFFFF00']}
-          style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
-        />
-        <View style={{flex:.1,flexDirection:'row',justifyContent:'space-between',alignItems:'center',marginHorizontal:8}}>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
-            <ImageButton image={addImage} style={{marginLeft:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.openImagePicker()}>
-            </ImageButton>
-          </View>
-          <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}>{this.state.selectedPostCardInfo.name}</Text>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
-            <ImageButton image={closeImage} style={{marginRight:8,width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.selectedPostCardInfo.color}} imageStyle={{width:8,height:8,tintColor:'white'}} onPress={() => this.closePostCardSettings()}>
-            </ImageButton>
-          </View>
-        </View>
-        <SortableGrid
-          style={{flex:.9}}
-          blockTransitionDuration      = { 400 }
-          activeBlockCenteringDuration = { 200 }
-          itemsPerRow                  = { 3 }
-          dragActivationTreshold       = { 200 }
-          onDragRelease                = { (itemOrder) => this.reorderImages(itemOrder) }
-          onDragStart                  = { ()          => console.log("Some block is being dragged now!") }
-          onDeleteItem                 = { (item)      => console.log("Item was deleted:", item) }
-          ref={'SortableGrid'}
-        >
-          {
-            userImages.map( (image, index) =>
-              <View
-                ref={ 'itemref_' + index }
-                onTap={ this.startDelete.bind(this) }
-                key={ index }
-                style={{flex:1, margin: 8, borderRadius: 4,justifyContent: 'center', alignItems: 'center', backgroundColor:'#FFFFFF60'}}
-              >
-                <Image style={{width:88,height:88}} source={image} resizeMode={'contain'}/>
-              </View>
-            )
-          }
-        </SortableGrid>
-      </View>
-    )
-  }
-  renderPostCard(){
-    var postCardPages = [this.renderPostCardPage1()];
-    for(var i=0; i < this.state.selectedPostCardInfo.userImages.length; i++)
-    {
-        var postCardImage = this.state.selectedPostCardInfo.userImages[i];
-        postCardPages.push(this.renderPostCardViewWithImage(i,postCardImage));
-    }
-    var numberOfPages = postCardPages.length - 1;
-    var barChangePerPage = width / numberOfPages;
-    // console.warn(postCardPages.length);
-    return(
-      <View>
-        <Swiper
-          loop={false}
-          onMomentumScrollEnd ={this._onMomentumScrollEnd.bind(this)}
-          showsPagination={false}
-        >
-          {postCardPages}
-        </Swiper>
-        <View style={{position:'absolute',bottom:20,height:4,left:0,right:0,backgroundColor:'#FFFFFF60'}}></View>
-        <View style={{position:'absolute',bottom:20,height:4,left:0,width:barChangePerPage*this.state.currentIndex,backgroundColor:'#FFFFFF'}}></View>
-      </View>
-    )
-  }
   renderProfile() {
   return(
-    <View style = {{flex: 1}}>
+    <View style = {{flex: 1,backgroundColor:'#E2E2E2'}}>
       <ScrollView scrollEnabled={true} style={styles.scrolling_profile}>
         <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.05,}}/>
           <View style={styles.container_image}>
@@ -872,27 +749,18 @@ _submitChanges(){
                       </View>
                     </View>
 
-                    <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
-
-                      <View style={styles.infoBox}>
-                        <View style={styles.innerBox}>
-                          <Text style = {styles.infoText}>Push Notifications</Text>
-                        </View>
-                      </View>
-
                       <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
 
                       <View style={styles.container_info}>
                       <View style={{flexDirection: 'row', paddingLeft: 45, paddingRight: 35}}>
                         <View style={{flex: 1}}>
-                          <Text style={styles.text_header}> Interests </Text>
+                          <Text style={styles.text_header}>Interests</Text>
                         </View>
-                        <View>
-                {/*}        <TouchableHighlight onPress={() => {this.setTagsVisible(true)}}>
+                        {/*<View>
+                         <TouchableHighlight onPress={() => {this.setTagsVisible(true)}}>
                             <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
                           </TouchableHighlight>
-                          */}
-                        </View>
+                        </View>*/}
                       </View>
 
                         <View style={styles.interestsHolder}>
@@ -950,9 +818,8 @@ _submitChanges(){
   renderNotLoggedIn()
   {
     return (
-      <View style={styles.container}>
-        <Text style={{textAlign:'center',fontFamily:styleVariables.systemFont,fontSize:15,flex:1}}> Login or Signup to view profile </Text>
-        <Button onPress={() => this.logout()}>Sign in/up</Button>
+      <View style={{flex:1,}}>
+        <Button style={{backgroundColor:'#F97237',borderWidth:1,borderColor:'#EE6436',margin:16,borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemFont,fontSize:16,color:'white'}} onPress={() => this.logout()}> Sign in or Sign up to view profile </Button>
       </View>
     );
   }
@@ -975,7 +842,7 @@ _submitChanges(){
     }else{
       return this.renderSettingsModal();
     }
-    }
+  }
   render() {
     let viewToShow
     console.log("userref! " + this.userImageRef);
@@ -1062,14 +929,16 @@ const styles = StyleSheet.create({
   infoBox: {
     width: CARD_WIDTH,
     height: CARD_HEIGHT* .08,
-    paddingLeft: 45,
-    paddingRight:45,
+    paddingLeft: 50,
+    paddingRight:50,
+    backgroundColor:'transparent',
   },
   infoText: {
     padding: 10,
     fontFamily: styleVariables.systemRegularFont,
     color: styleVariables.greyColor,
     fontSize: 16,
+    backgroundColor:'transparent',
   },
   innerBox: {
     flex: 1,
@@ -1342,18 +1211,35 @@ const styles = StyleSheet.create({
   },
   interestsHolder: {
     paddingLeft: 16,
-    paddingLeft: 16,
+    paddingRight: 16,
     marginBottom: 8,
     flexWrap: 'wrap',
     flexDirection: 'row',
     backgroundColor:'#E2E2E2',
   },
-  interestsCell: {
-    margin: 8,
+  interestCell:{
+    margin:8,
+    borderWidth:1,
+    borderColor:'#848484',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
   },
-  interestsCellText: {
+  selectedCell:{
+    marginHorizontal: 7,
+    marginVertical:8,
+    borderWidth:2,
+    borderColor:'#0B82CC',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  interestCellText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 18,
+    color: '#848484',
+  },
+  selectedCellText:{
     fontFamily: styleVariables.systemBoldFont,
-    fontSize: 14,
-    color: 'white',
+    fontSize: 17,
+    color: '#0B82CC',
   },
 })
