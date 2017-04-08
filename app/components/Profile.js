@@ -38,6 +38,8 @@ import LinearGradient from 'react-native-linear-gradient'
 import Moment from 'moment'
 import Swiper from 'react-native-swiper';
 import SortableGrid from 'react-native-sortable-grid';
+var eventActions = require("../actions/eventActions.js");
+
 
 import postcardImage1 from '../images/postcard1.png'
 import postcardImage2 from '../images/postcard2.jpg'
@@ -473,33 +475,33 @@ _submitChanges(){
       TagsVisible: visible,
     });
   }
-  renderTagSelection(){
-    console.warn('Render Tag Selection');
-    <Modal
-      animationType={'slide'}
-      transparent={false}
-      visible={this.state.TagsVisible}
-      onRequestClose={() => {this.setState({TagsVisible: false})}}
-    >
-    <View style={{flex:1,backgroundColor:'red', flexDirection: 'column'}}>
-     <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-         <View>
-         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
-         </ImageButton>
-         </View>
-       </View>
-     </View>
+  // renderTagSelection(){
+  //   <Modal
+  //     animationType={'slide'}
+  //     transparent={false}
+  //     visible={this.state.TagsVisible}
+  //     onRequestClose={() => {alert("Modal can not be closed.")}}
+  //   >
+  //   <View style={{flex:1, flexDirection: 'column'}}>
+  //    <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
+  //      <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
+  //        <View>
+  //        <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
+  //        </ImageButton>
+  //        </View>
+  //      </View>
+  //    </View>
+  //
+  //      <View style = {styles.container_profile}>
+  //        <View style={styles.interestsHolder}>
+  //          {/*this.renderTags()*/}
+  //        </View>
+  //     </View>
+  //    </View>
+  //   </Modal>
+  // }
 
-       <View style = {styles.container_addEvent}>
-         <View style={styles.interestsHolder}>
-           {this.renderTags()}
-         </View>
-      </View>
-     </View>
-    </Modal>
-  }
-  buttonPressed(tag){
+  buttonPressed(sentInterest){
     if(this.state.interests.indexOf(sentInterest) == -1)
     {
       var interests = this.state.interests;
@@ -515,19 +517,20 @@ _submitChanges(){
     }
   }
   renderTags(){
-    var tags = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
-    var tagsView = [];
+    // Call to database to populate the possible tags
+    interests = eventActions.renderPossibleInterests();
 
-    for(var i = 0; i < tags.length; i++)
-    {
-      var tag = tags[i];
-      var backgroundColor = this.state.tags.indexOf(tag) == -1 ? styleVariables.greyColor: '#0B82CC';
-      tagsView.push(
-        <Button ref={tag} key={i} style={[styles.tagsCell, {backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this, tag)}>{tag}</Button>
+    var interestsViews = [];
+    for (i in interests){
+      var interest = i;
+      var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
+      // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      interestsViews.push(
+          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
       );
     }
 
-    return tagsView;
+    return interestsViews;
   }
 
   renderInterests(){
@@ -717,11 +720,12 @@ _submitChanges(){
                         <View style={{flex: 1}}>
                           <Text style={styles.text_header}>Interests</Text>
                         </View>
-                        {/*<View>
-                         <TouchableHighlight onPress={() => {this.setTagsVisible(true)}}>
+                        <View>
+                        <TouchableHighlight onPress={() => {this.setState({TagsVisible: true})}}>
                             <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
                           </TouchableHighlight>
-                        </View>*/}
+
+                        </View>
                       </View>
 
                         <View style={styles.interestsHolder}>
@@ -797,11 +801,34 @@ _submitChanges(){
     else if(this.state.modalVisible === true)
     {
         return this.renderModal();
-    }else if(this.state.TagsVisible === true)
-    {
-        return this.renderTagSelection();
-    }else{
+    }else if(this.state.settingsModal === true){
       return this.renderSettingsModal();
+    }else
+    {
+      return(
+      <Modal
+        animationType={'none'}
+        transparent={false}
+        visible = {this.state.TagsVisible}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
+      >
+       <View style = {styles.container_settings}>
+         <View style = {styles.navigationBarStyle}>
+           <Text style = {styles.navigationBarTextStyle}>
+             Edit Interests
+           </Text>
+           <ImageButton image={checkImage} style={{top:2}} onPress={() => this.setState({TagsVisible: false})}>
+           </ImageButton>
+         </View>
+
+         <View style = {styles.container_addEvent}>
+           <View style={styles.interestsView}>
+             {this.renderTags()}
+           </View>
+        </View>
+       </View>
+      </Modal>
+    )
     }
   }
   render() {
@@ -924,6 +951,11 @@ const styles = StyleSheet.create({
     flex:1,
     width: CARD_WIDTH,
   },
+  container_addEvent: {
+      width: CARD_WIDTH,
+      height: CARD_HEIGHT,
+      backgroundColor: 'white',
+    },
   container_upper: {
     flex:1,
     // borderWidth: 2,
@@ -965,6 +997,13 @@ const styles = StyleSheet.create({
     //resizeMode: 'cover', // or 'stretch'
     //justifyContent: 'center',
   },
+  interestsView: {
+    flex:1,
+    marginLeft: 16,
+    marginRight: 16,
+    flexWrap: 'wrap',
+    flexDirection: 'row',
+  },
   profile_username: {
     // borderWidth: 2,
     // borderColor: 'pink',
@@ -977,6 +1016,18 @@ const styles = StyleSheet.create({
   },
   picker: {
     width: 100
+  },
+  interestCell:{
+    margin:8,
+    borderWidth:1,
+    borderColor:'#848484',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  interestCellText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 18,
+    color: '#848484',
   },
   userLocation: {
     // borderWidth: 2,
@@ -1016,6 +1067,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
 
+  },
+  selectedCell:{
+    marginHorizontal: 7,
+    marginVertical:8,
+    borderWidth:2,
+    borderColor:'#0B82CC',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  selectedCellText:{
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 17,
+    color: '#0B82CC',
   },
   navigationBarStyle: {
     height: HEADER_HEIGHT,
@@ -1209,4 +1273,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#0B82CC',
   },
+  tagsCell: {
+    margin: 8,
+  }
 })
