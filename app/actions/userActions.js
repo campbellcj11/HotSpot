@@ -77,7 +77,9 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
-  return { type: SIGN_UP, currentUser: user };
+  offline.save('user', user);
+  offline.save('isLoggedIn', true);
+  return { type: SIGN_UP, currentUser: user};
 }
 
 export function stateResetPassword() {
