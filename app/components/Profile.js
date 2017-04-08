@@ -156,6 +156,7 @@ export default class Profile extends Component {
     this.setModalVisible(true);
   }
   logout(){
+    this.settingsVisible(false);
     Actions.tab1();
     this.props.logoutUser();
   }
@@ -277,15 +278,14 @@ _submitChanges(){
 
 
           <KeyboardAwareScrollView scrollEnabled = {true} style={{backgroundColor: 'white'}}>
-
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
-              </View>
+            </View>
             <Text style = {styles.text_header}>Settings</Text>
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
-              </View>
-              <View style={styles.settings_InputView}>
+            </View>
+            <View style={styles.settings_InputView}>
               <Text style={styles.settings_Header}>Email</Text>
-                <View style = {styles.settings_InfoField}>
+              <View style = {styles.settings_InfoField}>
                 <TextInput
                   style = {styles.TextInput}
                   placeholder={this.props.user.Email}
@@ -295,15 +295,14 @@ _submitChanges(){
                   underlineColorAndroid='transparent'
                   keyboardType='email-address'>
                 </TextInput>
-                </View>
-            </View>
-            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
+            </View>
+            <Button style={{marginHorizontal:32,marginVertical:32,height:44,backgroundColor:'#F97237',borderWidth: 1,borderColor: '#EE6436',borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemBoldFont,fontSize:16,color:'white'}} onPress={() => this.logout()}>Logout</Button>
             </KeyboardAwareScrollView>
 
             <View style= {{flex:1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 20}}>
-            <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._submitChanges()}>
-            </ImageButton>
+              <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._submitChanges()}>
+              </ImageButton>
             </View>
          </View>
      </Modal>
@@ -847,12 +846,18 @@ _submitChanges(){
     let viewToShow
     console.log("userref! " + this.userImageRef);
 
-    viewToShow = (firebase.auth().currentUser.email != 'test@test.com') ? this.renderLoggedIn() : this.renderNotLoggedIn()
-    return(
-       <View style={styles.container_profile}>
-        {viewToShow}
-       </View>
-     )
+    if(this.props.loggedIn)
+    {
+      viewToShow = (firebase.auth().currentUser.email != 'test@test.com') ? this.renderLoggedIn() : this.renderNotLoggedIn()
+      return(
+         <View style={styles.container_profile}>
+          {viewToShow}
+         </View>
+       )
+    }
+    else {
+      return <View/>
+    }
   }
 }
 const styles = StyleSheet.create({

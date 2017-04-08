@@ -245,12 +245,6 @@ export function logoutUser(){
       .then(currentUser => {
         dispatch(stateLogOut());
       })
-      .catch(error => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Logout for ' + user.email, error.message);
-      });
   };
 }
 

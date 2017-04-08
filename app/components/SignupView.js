@@ -39,7 +39,7 @@ import DropDown, {
 var userActions = require("../actions/userActions.js");
 var eventActions = require("../actions/eventActions.js");
 
-export default class Login extends Component {
+export default class SignupView extends Component {
   constructor(props) {
     super(props)
     this.state = {
