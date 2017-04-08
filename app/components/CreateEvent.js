@@ -92,7 +92,7 @@ export default class CreateEvent extends Component {
       Email_Contact: '',
       Event_Name: '',
       Event_Type: '',
-      imageLocation:'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756',
+      imageLocation:'',
       Latitude: '',
       Event_Location: '',
       Longitude: '',
@@ -145,18 +145,23 @@ export default class CreateEvent extends Component {
     var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
     var unixTime = new Date(mergeDateAndTime).getTime();
     if(
+      this.mergeDateAndTime != '' &&
       this.state.Event_Address != '' &&
       this.state.City != '' &&
       this.state.Event_Name != '' &&
-      this.state.Long_Description != '' &&
+      //this.state.Venue != '' &&
+      //this.state.Long_Description != '' &&
       this.state.Short_Description != '' &&
-      this.state.State != ''
+      this.state.State != '' &&
+      this.state.tags.length != 0
     )
     {
-      return true;
+      this.setOptionalInfoVisible(true);
+      //return true;
     }
     else {
-      return false;
+      Alert.alert('Please fill out all of the information.');
+      //return false;
     }
   }
   _submitEvent(userRef){
@@ -195,7 +200,7 @@ export default class CreateEvent extends Component {
         "Website" : this.state.Website,
       });
       this.setState({
-        responseURI: 'https://firebasestorage.googleapis.com/v0/b/projectnow-964ba.appspot.com/o/EventImages%2Fdefault.jpeg?alt=media&token=92477a25-408a-4edd-957e-4d6e3a469756',
+        responseURI: '',
         optionalVisible: false,
       })
       this.props.close();
@@ -280,24 +285,21 @@ export default class CreateEvent extends Component {
       <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
     </View>
     <Text style = {styles.text_header}>Optional Info</Text>
-    <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
-      <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
-         <TextInput
-         style = {[styles.TextInput]}
-         placeholder = 'Long Description'
-         ref='long Description'
-         multiline={true}
-         onChangeText={(Long_Description) => this.setState({Long_Description})}
-         onContentSizeChange={(event) => {
-           this.setState({textHeight: event.nativeEvent.contentSize.height});
-         }}
-         placeholderTextColor={styleVariables.greyColor}
-         underlineColorAndroid='transparent'
-          >
+
+
+    <View style={styles.creator_EventView}>
+      <View style={styles.creator_NameInput}>
+        <TextInput
+          style = {styles.TextInput}
+          placeholder = 'Venue'
+          ref='Location'
+          onChangeText={(Event_Location) => this.setState({Event_Location})}
+          placeholderTextColor={styleVariables.greyColor}
+          underlineColorAndroid='transparent'
+        >
         </TextInput>
       </View>
     </View>
-
         <View style={styles.creator_EventView}>
             <View style={styles.creator_NameInput}>
               <TextInput
@@ -326,33 +328,24 @@ export default class CreateEvent extends Component {
             </View>
           </View>
 
-          <View style={styles.creator_EventView}>
-            <View style={styles.creator_NameInput}>
-              <TextInput
-                style = {styles.TextInput}
-                placeholder = 'City'
-                ref='City'
-                onChangeText={(City) => this.setState({City})}
-                placeholderTextColor={styleVariables.greyColor}
-                underlineColorAndroid='transparent'
-              >
+          <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
+            <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
+               <TextInput
+               style = {[styles.TextInput]}
+               placeholder = 'Long Description'
+               ref='long Description'
+               multiline={true}
+               onChangeText={(Long_Description) => this.setState({Long_Description})}
+               onContentSizeChange={(event) => {
+                 this.setState({textHeight: event.nativeEvent.contentSize.height});
+               }}
+               placeholderTextColor={styleVariables.greyColor}
+               underlineColorAndroid='transparent'
+                >
               </TextInput>
             </View>
           </View>
 
-          <View style={styles.creator_EventView}>
-            <View style={styles.creator_NameInput}>
-              <TextInput
-                style = {styles.TextInput}
-                placeholder = 'State'
-                ref='State'
-                onChangeText={(State) => this.setState({State})}
-                placeholderTextColor={styleVariables.greyColor}
-                underlineColorAndroid='transparent'
-              >
-              </TextInput>
-            </View>
-          </View>
           <View style = {{flex:1, alignItems: 'center'}}>
           <ImageButton image={checkImage} style={styles.saveBasicInput}
           onPress={() => Alert.alert('Almost There...', 'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
@@ -549,6 +542,34 @@ export default class CreateEvent extends Component {
           </View>
          </View>
 
+         <View style={styles.creator_EventView}>
+           <View style={styles.creator_NameInput}>
+             <TextInput
+               style = {styles.TextInput}
+               placeholder = 'City'
+               ref='City'
+               onChangeText={(City) => this.setState({City})}
+               placeholderTextColor={styleVariables.greyColor}
+               underlineColorAndroid='transparent'
+             >
+             </TextInput>
+           </View>
+         </View>
+
+         <View style={styles.creator_EventView}>
+           <View style={styles.creator_NameInput}>
+             <TextInput
+               style = {styles.TextInput}
+               placeholder = 'State'
+               ref='State'
+               onChangeText={(State) => this.setState({State})}
+               placeholderTextColor={styleVariables.greyColor}
+               underlineColorAndroid='transparent'
+             >
+             </TextInput>
+           </View>
+         </View>
+
         <View style={styles.creator_EventView}>
         <Button
           onPress={() => this.setState({TagsVisible: true})}
@@ -556,20 +577,6 @@ export default class CreateEvent extends Component {
           textStyle={styles.TagButtonText}>
           {tagString}
         </Button>
-        </View>
-
-        <View style={styles.creator_EventView}>
-          <View style={styles.creator_NameInput}>
-            <TextInput
-              style = {styles.TextInput}
-              placeholder = 'Venue'
-              ref='Location'
-              onChangeText={(Event_Location) => this.setState({Event_Location})}
-              placeholderTextColor={styleVariables.greyColor}
-              underlineColorAndroid='transparent'
-            >
-            </TextInput>
-          </View>
         </View>
 
         <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
@@ -614,7 +621,7 @@ export default class CreateEvent extends Component {
     </Button>
 */}
   <View style={{flex:1, alignItems: 'center'}}>
-    <ImageButton image={arrow_right} style={styles.saveBasicInput}  onPress={() => this.setOptionalInfoVisible()}>
+    <ImageButton image={arrow_right} style={styles.saveBasicInput}  onPress={() => this.checkComplete()}>
     </ImageButton>
     </View>
     <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
