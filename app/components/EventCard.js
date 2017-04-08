@@ -187,12 +187,20 @@ export default class EventCard extends Component {
     }
     else
     {
+      // Alert.alert(
+      //   'Save a postcard',
+      //   'Postcards will be saved to your profile where you can view, edit, and share.',
+      //   [
+      //     {text: 'Save', onPress: () => this.savePostCard()},
+      //     {text: 'Save and do not show again', onPress: () => this.savePostCard(true)},
+      //     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
+      //   ],
+      // )
       Alert.alert(
         'Save a postcard',
         'Postcards will be saved to your profile where you can view, edit, and share.',
         [
           {text: 'Save', onPress: () => this.savePostCard()},
-          {text: 'Save and do not show again', onPress: () => this.savePostCard(true)},
           {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
         ],
       )

@@ -26,7 +26,6 @@ import ModalPicker from 'react-native-modal-picker'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import ImagePicker from 'react-native-image-picker';
-import PostCardImagePicker from 'react-native-image-crop-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 import { Actions } from 'react-native-router-flux';
 import settingsImage from '../images/settings.png'
@@ -563,29 +562,6 @@ _submitChanges(){
         this.setState({selectedPostCardInfo:{}})
     })
   }
-  openImagePicker(){
-    PostCardImagePicker.openPicker({
-      multiple: true
-    }).then(images => {
-      console.log(images);
-      var imagePaths = [];
-      var postCardInfo = this.state.selectedPostCardInfo;
-      var userImages = postCardInfo.userImages;
-      for(var i=0; i < images.length; i++)
-      {
-        var imagePath = images[i].path;
-        var imagePathObject = {uri : imagePath};
-        console.log(imagePath);
-        imagePaths.push(imagePath);
-        userImages.push(imagePathObject);
-      }
-
-      postCardInfo.userImages = userImages;
-      console.log(userImages);
-      console.log(imagePaths);
-      this.setState({selectedPostCardInfo:postCardInfo});
-    });
-  }
   renderPostcards(){
     var maxViews = 5;
 
@@ -632,29 +608,15 @@ _submitChanges(){
   }
   renderPostCardModal(){
     return (
-      <PostcardView postcardInfo={this.state.selectedPostCardInfo}/>
+      <Modal
+        animationType={'fade'}
+        transparent={false}
+        visible = {true}
+        onLayout={() => {console.warn(10);}}
+      >
+        <PostcardView postcardInfo={this.state.selectedPostCardInfo} closePostCard={() => this.closePostCard()}/>
+      </Modal>
     )
-  }
-  startDelete(){
-    console.warn(
-      this.refs.SortableGrid.toggleDeleteMode()
-    )
-  }
-  reorderImages(sentItemOrder){
-    // console.log("Drag was released, the blocks are in the following order: ", sentItemOrder.itemOrder)
-    var newImages = [];
-    for(var i=0;i<sentItemOrder.itemOrder.length;i++)
-    {
-      var imageOrderData = sentItemOrder.itemOrder[i];
-      var key = imageOrderData.key;
-      var order = imageOrderData.order;
-      var image = this.state.selectedPostCardInfo.userImages[key];
-      newImages.push(image);
-    }
-    // console.log('New Images: ', newImages);
-    var postCardInfo = this.state.selectedPostCardInfo;
-    postCardInfo.userImages = newImages;
-    this.setState({selectedPostCardInfo:postCardInfo});
   }
   renderProfile() {
   return(
