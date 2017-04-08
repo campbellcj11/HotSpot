@@ -91,9 +91,9 @@ export default class PostcardView extends Component {
     });
   }
   startDelete(){
-    console.warn(
-      this.refs.SortableGrid.toggleDeleteMode()
-    )
+    // console.warn(
+    //   this.refs.SortableGrid.toggleDeleteMode()
+    // )
   }
   reorderImages(sentItemOrder){
     // console.log("Drag was released, the blocks are in the following order: ", sentItemOrder.itemOrder)
@@ -164,23 +164,22 @@ export default class PostcardView extends Component {
     )
   }
   renderPostCardPage1(){
-    console.warn('render page 1');
-    console.warn(this.state.postcardInfo.name);
+    // console.warn('render page 1');
+    // console.warn(this.state.postcardInfo.name);
     return(
       <View key={-1} style={{flex:1}}>
-        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}} onLayout={() => {console.warn(1);}}>
-          <Image style={{flex:1}} source={this.state.postcardInfo.cardImage} resizeMode={'cover'} onLayout={() => {console.warn(2);}}/>
+        <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+          <Image style={{flex:1}} source={this.state.postcardInfo.cardImage} resizeMode={'cover'}/>
         </View>
         <LinearGradient
           start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
           locations={[0,1]}
           colors={[this.state.postcardInfo.color, '#FFFFFF00']}
           style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
-          onLayout={() => {console.warn(3);}}
         />
-        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}} onLayout={() => {console.warn(4);}}>
-          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}} onLayout={() => {console.warn(5);}}>
-            <ImageButton image={settingsImage} style={{width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.postcardInfo.color}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.openPostCardSettings()} onLayout={() => {console.warn(6);}}/>
+        <View style={{flexDirection:'row',marginTop:20+32,alignItems:'center'}}>
+          <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
+            <ImageButton image={settingsImage} style={{width:24,height:24,borderWidth:1,borderColor:'white',borderRadius:16,backgroundColor:this.state.postcardInfo.color}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.openPostCardSettings()}/>
           </View>
           <Text style={{flex:.7,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white',textAlign:'center'}}>{this.state.postcardInfo.name}</Text>
           <View style={{flex:.15,justifyContent:'center',alignItems:'center'}}>
@@ -188,8 +187,8 @@ export default class PostcardView extends Component {
             </ImageButton>
           </View>
         </View>
-        <View onLayout={() => {console.warn(8);}} style={{position:'absolute',left:-4,bottom:48,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
-          <Text onLayout={() => {console.warn(9);}} style={{fontFamily:styleVariables.systemBoldFont,fontSize:18,color:this.state.postcardInfo.color}}>{Moment(this.state.postcardInfo.date).format('MMM DD, YYYY')}</Text>
+        <View style={{position:'absolute',left:-4,bottom:48,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
+          <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:18,color:this.state.postcardInfo.color}}>{Moment(this.state.postcardInfo.date).format('MMM DD, YYYY')}</Text>
         </View>
       </View>
     )
@@ -212,7 +211,7 @@ export default class PostcardView extends Component {
     )
   }
   renderPostCard(){
-    console.warn('render postcard');
+    // console.warn('render postcard');
     var postCardPages = [this.renderPostCardPage1()];
     if(this.state.postcardInfo.userImages.length > 0)
     {
@@ -228,8 +227,8 @@ export default class PostcardView extends Component {
     {
       barChangePerPage = width / numberOfPages;
     }
-    console.warn(barChangePerPage);
-    console.warn('CI: ',this.state.currentIndex);
+    // console.warn(barChangePerPage);
+    // console.warn('CI: ',this.state.currentIndex);
     // console.warn(postCardPages.length);
     return(
       <View>
@@ -240,9 +239,6 @@ export default class PostcardView extends Component {
           onMomentumScrollEnd ={this._onMomentumScrollEnd.bind(this)}
           showsPagination={false}
           showsButtons={true}
-          onLayout={() => {
-            console.warn('Layout');
-          }}
         >
           {postCardPages}
         </Swiper>
@@ -252,7 +248,7 @@ export default class PostcardView extends Component {
     )
   }
   render() {
-    console.warn('render');
+    // console.warn('render');
     var viewToShow = <View/>
     if(this.state.postcardSettingsOpen)
     {
