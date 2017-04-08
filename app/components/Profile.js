@@ -208,7 +208,7 @@ export default class Profile extends Component {
   }
   renderLeftButton(){
     return(
-      <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this._submitChanges.bind(this)}>
+      <ImageButton image={closeImage} style={{top:8,width:32,height:32}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this._submitChanges.bind(this)}>
       </ImageButton>
     )
   }
@@ -273,7 +273,7 @@ _submitChanges(){
             <Text style = {styles.navigationBarTextStyle}>
               Edit Profile
             </Text>
-            <ImageButton image={close} style={{top:2}} onPress={() => this.resetSettingsValues()}>
+            <ImageButton image={close} style={{top:8}} onPress={() => this.resetSettingsValues()}>
             </ImageButton>
           </View>
 
@@ -344,7 +344,7 @@ _submitChanges(){
             <Text style = {styles.navigationBarTextStyle}>
               Edit Profile
             </Text>
-            <ImageButton image={close} style={{top:2}} onPress={() => this.resetInfoValues()}>
+            <ImageButton image={close} style={{top:8}} onPress={() => this.resetInfoValues()}>
             </ImageButton>
           </View>
 
@@ -822,7 +822,7 @@ _submitChanges(){
            <Text style = {styles.navigationBarTextStyle}>
              Edit Interests
            </Text>
-           <ImageButton image={checkImage} style={{top:2}} onPress={() => this.setState({TagsVisible: false})}>
+           <ImageButton image={checkImage} style={{top:8}} onPress={() => this.setState({TagsVisible: false})}>
            </ImageButton>
          </View>
 

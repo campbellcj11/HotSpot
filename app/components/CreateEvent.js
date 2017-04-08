@@ -28,9 +28,9 @@ import passwordImage from '../images/key.png'
 import logoutImage from '../images/arrows.png'
 import searchImage from '../images/magnifying-glass.png'
 import plusImage from '../images/plus.png'
-import closeImage from '../imgs/close@3x.png'
-import checkImage from '../imgs/check@2x.png'
-import arrow_right from '../imgs/arrow-right@2x.png'
+import closeImage from '../imgs/close.png'
+import checkImage from '../imgs/check.png'
+import arrow_right from '../imgs/arrow-right.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 import NativeMethodsMixin from 'NativeMethodsMixin'
@@ -398,7 +398,7 @@ export default class CreateEvent extends Component {
      <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
          <View>
-         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
+         <ImageButton image={closeImage} style={{left:4,top:8,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
          </ImageButton>
          </View>
        </View>
@@ -422,7 +422,7 @@ export default class CreateEvent extends Component {
      <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
        <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
          <View>
-         <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({optionalVisible: false})}>
+         <ImageButton image={closeImage} style={{left:4,top:8,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.setState({optionalVisible: false})}>
          </ImageButton>
          </View>
        </View>
@@ -451,7 +451,7 @@ export default class CreateEvent extends Component {
   <View style={{flex: 1}}>
     <View style={{height: Platform.OS == 'ios' ? 64 : 44}}>
       <View style={{ backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-        <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.props.close()}>
+        <ImageButton image={closeImage} style={{left:4,top:28,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.props.close()}>
         </ImageButton>
       </View>
     </View>
