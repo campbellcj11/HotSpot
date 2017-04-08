@@ -573,41 +573,47 @@ _submitChanges(){
 
     var postCards = this.state.postcards || [];
 
-    for(var i=0;i<postCards.length;i++)
+    if(postCards.length > 0)
     {
-      var postCard = postCards[i];
-      var postCardColor = postCard.color;//'#0B82CC' '#0E476A' '#F06D37'
-      // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
-      //<Button ref={postCard} key={i} style={[styles.postCard,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{postCard.name}</Button>
-      // postCardViews.push(
-      //     <FaderView key={i}/>
-      // );
-      postCardViews.push(
-        <TouchableHighlight key={i} style={{width:width,height:90,justifyContent:'center',marginBottom:8}} onPress={this.openPostCard.bind(this,postCard)}>
-        <View style={{flex:1}}>
-          <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
-            <Image style={{flex:1}} source={postCard.cardImage} resizeMode={'cover'}/>
+      for(var i=0;i<postCards.length;i++)
+      {
+        var postCard = postCards[i];
+        var postCardColor = postCard.color;//'#0B82CC' '#0E476A' '#F06D37'
+        // var backgroundColor = this.props.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+        //<Button ref={postCard} key={i} style={[styles.postCard,{backgroundColor:'#0B82CC'}]} textStyle={styles.interestsCellText}>{postCard.name}</Button>
+        // postCardViews.push(
+        //     <FaderView key={i}/>
+        // );
+        postCardViews.push(
+          <TouchableHighlight key={i} style={{width:width,height:90,justifyContent:'center',marginBottom:8}} onPress={this.openPostCard.bind(this,postCard)}>
+          <View style={{flex:1}}>
+            <View style={{position:'absolute',left:0,right:0,top:0,bottom:0}}>
+              <Image style={{flex:1}} source={postCard.cardImage} resizeMode={'cover'}/>
+            </View>
+            <LinearGradient
+              start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
+              locations={[0,1]}
+              colors={[postCardColor, '#FFFFFF00']}
+              style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
+            />
+            <Text style={{position:'absolute',left:8,top:8,right:8,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white'}}>{postCard.name}</Text>
+            <View style={{position:'absolute',left:-4,bottom:8,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
+              <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:14,color:postCardColor}}>{Moment(postCard.date).format('MMM DD, YYYY')}</Text>
+            </View>
           </View>
-          <LinearGradient
-            start={{x: 0.0, y: 0.5}} end={{x: 1.0, y: 0.5}}
-            locations={[0,1]}
-            colors={[postCardColor, '#FFFFFF00']}
-            style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
-          />
-          <Text style={{position:'absolute',left:8,top:8,right:8,backgroundColor:'transparent',fontFamily:styleVariables.systemBoldFont,fontSize:24,color:'white'}}>{postCard.name}</Text>
-          <View style={{position:'absolute',left:-4,bottom:8,paddingLeft:12,paddingRight:8,borderRadius:4,backgroundColor:'#FFFFFF60'}}>
-            <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize:14,color:postCardColor}}>{Moment(postCard.date).format('MMM DD, YYYY')}</Text>
-          </View>
+          </TouchableHighlight>
+        )
+      }
+
+      return (
+        <View>
+          {postCardViews}
         </View>
-        </TouchableHighlight>
       )
     }
-
-    return (
-      <View>
-        {postCardViews}
-      </View>
-    )
+    else {
+      return <Text style={{flex:1,marginVertical:8,fontFamily:styleVariables.systemFont,textAlign:'center'}}>No interests selected</Text>
+    }
   }
   renderPostCardModal(){
     return (
