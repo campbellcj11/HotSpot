@@ -35,6 +35,8 @@ export default class Login extends Component {
       signupIndex:0,
       email: '',
       password: '',
+      credentials: null,
+      error: '',
     }
   }
 
@@ -60,7 +62,7 @@ export default class Login extends Component {
         credentials,
       })
       console.log(this.state.credentials);
-      this._initFacebookUser(credentials.accessToken)
+      this._initFacebookUser(this.state.credentials.accessToken)
     })
     .catch((error) => {
       this.setState({
@@ -70,15 +72,14 @@ export default class Login extends Component {
     })
   }
 
-  initFacebookUser(token)
+  _initFacebookUser(token)
   {
     var user;
     console.log("Fetching data");
-    fetch('https://graph.facebook.com/v2.5/me?fields=email&access_token=' + token)
+    fetch('https://graph.facebook.com/v2.6/me?fields=first_name,last_name,picture,email,locale,timezone,gender&access_token=' + token)
     .then((response) => response.json())
     .then((json) => {
       // Some user object has been set up somewhere, build that user here
-      console.log(json);
       user = {'email': json.email,
               'password' : json.id};
 
@@ -153,8 +154,8 @@ export default class Login extends Component {
       </Button>
       <Button
         onPress={() => this.loginWithFacebook()}
-        style={styles.blankButton}
-        textStyle={styles.buttonBlankText}>
+        style={styles.facebookLogin}
+        textStyle={styles.facebookLoginText}>
         {loginWithFacebookButtonText}
       </Button>
         </View>
@@ -264,6 +265,25 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textAlign: 'center',
     fontFamily: styleVariables.systemFont,
+  },
+  facebookLogin: {
+    marginTop: 5,
+    backgroundColor: '#3B5998',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#3B5998',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  facebookLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
   },
   buttonBlankText: {
     color: 'white',
