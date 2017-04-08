@@ -286,12 +286,12 @@ export default class Home extends Component {
     {
       date = new Date();
     }
-    console.warn('AAA: ',date);
+    // console.warn('AAA: ',date);
     // console.log('AAA: ',date);
     // var timeUTC = date.getTime();
     var timeUTC = Moment.utc(date).valueOf();
     var items = [];
-    console.warn("TIME UTC: ", timeUTC);
+    // console.warn("TIME UTC: ", timeUTC);
     // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
     if(date)
     {

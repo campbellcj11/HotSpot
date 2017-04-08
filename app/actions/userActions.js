@@ -77,7 +77,9 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
-  return { type: SIGN_UP, currentUser: user };
+  offline.save('user', user);
+  offline.save('isLoggedIn', true);
+  return { type: SIGN_UP, currentUser: user};
 }
 
 export function stateResetPassword() {
@@ -245,12 +247,6 @@ export function logoutUser(){
       .then(currentUser => {
         dispatch(stateLogOut());
       })
-      .catch(error => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Logout for ' + user.email, error.message);
-      });
   };
 }
 

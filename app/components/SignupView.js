@@ -39,7 +39,7 @@ import DropDown, {
 var userActions = require("../actions/userActions.js");
 var eventActions = require("../actions/eventActions.js");
 
-export default class Login extends Component {
+export default class SignupView extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -320,9 +320,8 @@ export default class Login extends Component {
       </View>
     )
   }
-  getPossibleLocation() {
-    var unfilteredList = ['Columbia','Atlantic City','New York City','Dallas','Houston','Miami','Atlanta'];
-    var filteredList = [];
+  getPossibleLocations() {
+    var unfilteredList = eventActions.renderPossibleLocations();    var filteredList = [];
     if(this.state.locationSearch == '')
     {
       filteredList = unfilteredList;
@@ -352,7 +351,7 @@ export default class Login extends Component {
     this.setState({city:rowData});
   }
   renderLocationPage(){
-    var possibleLocations = this.getPossibleLocation();
+    var possibleLocations = this.getPossibleLocations();
 
     var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
     return(

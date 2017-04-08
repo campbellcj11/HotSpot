@@ -28,7 +28,7 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
-import EventCell from './EventCell'
+import EventCell from '../containers/EventCell'
 import Swiper from 'react-native-swiper';
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
