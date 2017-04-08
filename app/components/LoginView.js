@@ -154,8 +154,8 @@ export default class Login extends Component {
       </Button>
       <Button
         onPress={() => this.loginWithFacebook()}
-        style={styles.facebookLogin}
-        textStyle={styles.facebookLoginText}>
+        style={styles.blankButton}
+        textStyle={styles.buttonBlankText}>
         {loginWithFacebookButtonText}
       </Button>
         </View>
