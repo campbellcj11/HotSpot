@@ -539,9 +539,8 @@ _submitChanges(){
     if(interests.length > 0)
     {
       var interestsViews = [];
-
-      for (i in interests){
-        var interest = i;
+      for (var i=0;i<interests.length;i++){
+        var interest = interests[i];
         var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
         // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
         interestsViews.push(
