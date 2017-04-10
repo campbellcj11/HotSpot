@@ -85,7 +85,10 @@ def enableProguardInReleaseBuilds = false
 android {
     compileSdkVersion 23
     buildToolsVersion '25.0.0'
-
+    lintOptions {
+          checkReleaseBuilds false
+          abortOnError false
+    }
     defaultConfig {
         applicationId "com.projectnow"
         minSdkVersion 16
@@ -101,7 +104,7 @@ android {
         release {
             storeFile file("my-app-key.keystore")
             storePassword "Cover2cover"
-            keyAlias "my-key-alias"
+            keyAlias "my-app-alias"
             keyPassword "Cover2cover"
         }
     }
@@ -115,6 +118,7 @@ android {
     }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
