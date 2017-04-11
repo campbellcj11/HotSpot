@@ -27,6 +27,7 @@ import ImageButton from './ImageButton'
 import BlankButton from './BlankButton'
 import { Actions } from 'react-native-router-flux';
 import MapView from 'react-native-maps';
+import RNCalendarEvents from 'react-native-calendar-events'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import HTMLView from 'react-native-htmlview'
 import styleVariables from '../Utils/styleVariables'
@@ -130,34 +131,71 @@ export default class EventCard extends Component {
   }
   openCalendar()
   {
-    if(Platform.OS === 'ios')
-    {
-      const referenceDate = Moment.utc('2001-01-01');
-      const secondsSinceRefDate = (this.props.currentSelection.Date - referenceDate)/1000;
-      Linking.openURL('calshow:' + secondsSinceRefDate);
-    }
-    else if(Platform.OS === 'android')
-    {
-      const msSinceEpoch = this.props.currentSelection.Date.valueOf(); // milliseconds since epoch
-      Linking.openURL('content://com.android.calendar/time/' + msSinceEpoch);
-    }
+    let current = this.props.currentSelection
+    // make sure calendar access permission has been granted
+    RNCalendarEvents.authorizationStatus()
+      .then(status => {
+        if (status != 'authorized') {
+          RNCalendarEvents.authorizeEventStore()
+            .then(status => {
+              if (status != 'authorized') {
+                console.warn('Calendar authorization failed')
+                return
+              }
+              this.openCalendar()
+            })
+            .catch(() => {
+              console.warn('Calendar authorization failed.')
+            })
+          return
+        } 
+        let options = {
+          startDate: (new Date(+current.Date)).toISOString(),
+          endDate: (new Date(+current.Date + 3600000)).toISOString(),
+          notes: current.Short_Description,
+          description: current.Short_Description,
+          location: current.Address
+        }
+        // add event
+        RNCalendarEvents.saveEvent(current.Event_Name, options)
+          .then(id => {
+            console.warn('Added event, id: ' + id)
+            if(Platform.OS === 'ios') {
+              const referenceDate = Moment.utc('2001-01-01');
+              const secondsSinceRefDate = (current.Date - referenceDate)/1000;
+              Linking.openURL('calshow:' + secondsSinceRefDate);
+            } else {
+              const msSinceEpoch = this.props.currentSelection.Date.valueOf(); // milliseconds since epoch
+              Linking.openURL('content://com.android.calendar/time/' + msSinceEpoch);
+            }
+          })
+          .catch(error => {
+            Alert.alert('Error', 'Failed to add event to calendar.')
+            console.warn(error)
+          })
+      })
+      .catch(() => {
+        // alert about lack of permission
+        Alert.alert('Not allowed', 'You must allow HotSpot to access your calendar.')
+      })
   }
   callPhone()
   {
-    Linking.openURL('tel:6097427325');
+    if (this.props.currentSelection.Phone_Contact) {
+      Linking.openURL('tel:' + this.props.currentSelection.Phone_Contact)
+    } else {
+      Alert.alert('Unavailable', 'There is no phone contact specified for this event.')
+    }
   }
   emailShare()
   {
     Mailer.mail({
-      subject: 'I would like to know more about '+ this.props.currentSelection.Event_Name,
-      recipients: [this.props.currentSelection.Event_Contact],
-      body: '',
+      subject: 'HotSpot: ' + this.props.currentSelection.Event_Name,
+      recipients: [this.props.currentSelection.Email_Contact],
+      body: 'I would like to know more about your event ' + this.props.currentSelection.Event_Name
     }, (error, event) => {
         if(error) {
-          if(Platform.OS === 'ios')
-          {
-            AlertIOS.alert('Error', 'Could not send mail.');
-          }
+          Alert.alert('Error', 'Could not send mail')
         }
     });
   }
@@ -168,11 +206,18 @@ export default class EventCard extends Component {
   }
   openShare()
   {
-    let shareOptions = {
-          message: 'I found ' + this.props.currentSelection.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ this.props.currentSelection.Key + '&l=' + this.props.location,
-    };
+    let current = this.props.currentSelection
+    /*let imageFileType = current.Image.substr(current.Image.lastIndexOf('.'))
+    imageFileType = imageFileType.substr(0, imageFileType.indexOf('?'))*/
+    fetch(current.Image)
+      .then(response => {
+        let shareOptions = {
+          message: 'I found ' + current.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location
+        };
 
-    Share.open(shareOptions);
+        Share.open(shareOptions);
+      })
+    
   }
   openPostcard(){
     if(this.state.postcardSaved)
@@ -187,15 +232,6 @@ export default class EventCard extends Component {
     }
     else
     {
-      // Alert.alert(
-      //   'Save a postcard',
-      //   'Postcards will be saved to your profile where you can view, edit, and share.',
-      //   [
-      //     {text: 'Save', onPress: () => this.savePostCard()},
-      //     {text: 'Save and do not show again', onPress: () => this.savePostCard(true)},
-      //     {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-      //   ],
-      // )
       Alert.alert(
         'Save a postcard',
         'Postcards will be saved to your profile where you can view, edit, and share.',

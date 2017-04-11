@@ -6,6 +6,7 @@ import android.util.Log;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.imagepicker.ImagePickerPackage;
 import com.facebook.react.ReactApplication;
+import com.calendarevents.CalendarEventsPackage;
 import com.reactnative.ivpusic.imagepicker.PickerPackage;
 import cl.json.RNSharePackage;
 import com.airbnb.android.react.maps.MapsPackage;
@@ -35,6 +36,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
             new MainReactPackage(),
+            new CalendarEventsPackage(),
             new PickerPackage(),
             new RNSharePackage(),
             new MapsPackage(),
