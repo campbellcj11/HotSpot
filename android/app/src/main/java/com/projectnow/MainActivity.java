@@ -1,8 +1,8 @@
 package com.projectnow;
 
+import com.calendarevents.CalendarEventsPackage;
 import com.facebook.react.ReactActivity;
 import cl.json.RNSharePackage;
-import com.chirag.RNMail.RNMail;
 import com.chirag.RNMail.*;
 
 public class MainActivity extends ReactActivity {
@@ -14,5 +14,11 @@ public class MainActivity extends ReactActivity {
     @Override
     protected String getMainComponentName() {
         return "ProjectNow";
+    }
+	
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        CalendarEventsPackage.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }

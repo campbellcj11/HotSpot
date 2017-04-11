@@ -57,6 +57,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>HotSpot would like to access your calendar</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Take a photo for us</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
