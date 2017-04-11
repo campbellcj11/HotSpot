@@ -78,7 +78,7 @@ export default class SignupView extends Component {
     }
     userActions.saveInterests(this.state.interests);
     userActions.saveLocation(this.state.city);
-    userActions.signUpUser(user);
+    this.props.signUpUser(user);
   }
   hasCorrectInformation(){
 

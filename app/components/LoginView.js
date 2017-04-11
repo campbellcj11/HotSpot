@@ -26,7 +26,7 @@ import hsGraphic from '../imgs/HotSpot-Graphic.png'
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
 
-import SignupView from './SignupView'
+import SignupView from '../containers/SignupView'
 
 export default class Login extends Component {
   constructor(props) {
