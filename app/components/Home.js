@@ -318,7 +318,7 @@ export default class Home extends Component {
                   if(isNaN(endDate))
                   {
                     endDate = new Date();
-                    endDate.setDate(date.getDate() + 365);
+                    endDate.setDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
                   }
                   // console.warn('tag in interests');
                   // console.warn(this.state.endDate);
