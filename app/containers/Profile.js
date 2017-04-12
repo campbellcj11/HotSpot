@@ -7,7 +7,7 @@ function mapStateToProps(state) {
   return {
     loggedIn: state.user.loggedIn,
     user: state.user.user,
-    location: state.user.city,
+    city: state.user.city,
     interests: state.user.interests,
     postcards: state.user.postcards,
   }

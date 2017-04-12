@@ -39,7 +39,7 @@ import Moment from 'moment'
 import Swiper from 'react-native-swiper';
 import SortableGrid from 'react-native-sortable-grid';
 var eventActions = require("../actions/eventActions.js");
-
+var userActions = require("../actions/userActions.js");
 
 import postcardImage1 from '../images/postcard1.png'
 import postcardImage2 from '../images/postcard2.jpg'
@@ -107,6 +107,8 @@ export default class Profile extends Component {
       imageLocation: this.props.user.Image,
       Image: this.props.user.Image,
       Email: this.props.user.Email,
+      city: this.props.city,
+      locationSearch: '',
       modalVisible: false,
       settingsModal: false,
       selectedGender: this.props.user.Gender,
@@ -146,6 +148,12 @@ export default class Profile extends Component {
     {
       this.setState({postcards:nextProps.postcards});
     }
+    if(nextProps.city != this.props.location)
+    {
+      this.setState({
+        city: nextProps.city,
+      })
+    }
   }
   // renderRightButton(){
   //   return (
@@ -177,6 +185,7 @@ export default class Profile extends Component {
     this.setState({
       settingsModal: false,
       Email: this.props.user.Email,
+      city: this.props.city,
 
     })
   }
@@ -221,8 +230,8 @@ renderImage(){
     else if (response.error) {
       console.log('ImagePicker Error: ', response.error);
     }else {
-      uploadImage(this.state.responseURI, firebase.auth().currentUser.uid + '.jpg')
-      .then(url => this.setState({imageLocation: url, responseURI: url}));
+      uploadImage(response.uri, firebase.auth().currentUser.uid + '.jpg')
+      .then(url => this.setState({imageLocation: url, responseURI: response.uri}));
     }
   })
 }
@@ -235,10 +244,31 @@ _submitChanges(){
     "Age": typeof(this.state.selectedAge) != "undefined" ? this.state.selectedAge : "",
     "Image": typeof(this.state.imageLocation) != "undefined" ? this.state.imageLocation : "",
     "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender : "",
-    "Email": typeof(this.state.Email) != "undefined" ? this.state.Email : "",
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
   this.setModalVisible(false);
+}
+
+_saveSettings(){
+  var test = this.state.Email;
+  if(!test.includes('@'))
+  {
+    Alert.alert('Please enter valid email address.');
+
+  }
+  else
+  {
+  this.userRef.update({
+    "Email": typeof(this.state.Email) != "undefined" ? this.state.Email : "",
+  })
+  this.props.saveLocation(this.state.city);
+  this.settingsVisible(false);
+  }
+}
+
+saveInterests(){
+  this.props.saveInterests(this.state.interests);
+  this.setState({TagsVisible: false});
 }
 
   renderCategories(){
@@ -288,7 +318,7 @@ _submitChanges(){
               <Text style={styles.settings_Header}>Email</Text>
               <View style = {styles.settings_InfoField}>
                 <TextInput
-                  style = {styles.TextInput}
+                  style = {styles.FieldInput}
                   placeholder={this.props.user.Email}
                   ref='Email'
                   onChangeText={(Email) => this.setState({Email})}
@@ -298,16 +328,87 @@ _submitChanges(){
                 </TextInput>
               </View>
             </View>
-            <Button style={{marginHorizontal:32,marginVertical:32,height:44,backgroundColor:'#F97237',borderWidth: 1,borderColor: '#EE6436',borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemBoldFont,fontSize:16,color:'white'}} onPress={() => this.logout()}>Logout</Button>
-            </KeyboardAwareScrollView>
+
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
+            </View>
+            <View>
+              <View style={{marginLeft: 20}}>
+              <Text style={styles.settings_Header}>Location</Text>
+              </View>
+              {this.renderLocation()}
+              {/*<View style={{flexDirection:'row',marginLeft:16,marginRight:16}}>
+                <TextInput
+                  style={styles.locationInput}
+                  placeholder={'City'}
+                  value={this.state.city}
+                  onChangeText={(text) => this.setCity(text)}
+                  underlineColorAndroid='transparent'
+                />
+                <Button onPress={() => this.getLocation()}>Locate Me</Button>
+              </View>*/}
+            </View>
 
             <View style= {{flex:1, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 20}}>
-              <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._submitChanges()}>
+              <ImageButton image={checkImage} style={styles.saveInput}  onPress={() => this._saveSettings()}>
               </ImageButton>
             </View>
+
+            <Button style={{marginHorizontal:32,marginVertical:32,height:44,backgroundColor:'#F97237',borderWidth: 1,borderColor: '#EE6436',borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemBoldFont,fontSize:16,color:'white'}} onPress={() => this.logout()}>Logout</Button>
+
+            </KeyboardAwareScrollView>
+
          </View>
      </Modal>
     )
+  }
+
+  renderLocation(){
+    var possibleLocations = this.getPossibleLocations();
+
+    var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
+    return(
+      <View style={{flex:1}}>
+        <View style={styles.TextInputHolder}>
+          <TextInput style={styles.textInput}
+            ref='locationSearch'
+            onChangeText={(locationSearch) => this.setState({locationSearch})}
+            placeholder='Search Location'
+            placeholderTextColor='#DCE3E3'
+            underlineColorAndroid='transparent'>
+          </TextInput>
+        </View>
+        <View style={{height:height*.4}}>
+          <ListView
+            style={styles.locationList}
+            dataSource={ds.cloneWithRows(possibleLocations)}
+            renderRow= {this.renderLocationRow.bind(this)}
+            enableEmptySections={true}>
+          </ListView>
+
+        </View>
+      </View>
+    )
+  }
+
+  getPossibleLocations() {
+    var unfilteredList = eventActions.renderPossibleLocations();
+    var filteredList = [];
+    if(this.state.locationSearch == '')
+    {
+      filteredList = unfilteredList;
+    }
+    else
+    {
+      for(var i=0;i<unfilteredList.length;i++)
+      {
+        var item = unfilteredList[i];
+        if(item.indexOf(this.state.locationSearch) != -1)
+        {
+          filteredList.push(item);
+        }
+      }
+    }
+    return filteredList;
   }
 
   renderModal()
@@ -360,7 +461,7 @@ _submitChanges(){
 
               <View style = {styles.settings_InfoField}>
               <TextInput
-                style = {styles.TextInput}
+                style = {styles.FieldInput}
                 placeholder={this.state.First_Name}
                 ref='First_Name'
                 onChangeText={(First_Name) => this.setState({First_Name})}
@@ -377,7 +478,7 @@ _submitChanges(){
             <Text style={styles.settings_Header}>Last name</Text>
               <View style = {styles.settings_InfoField}>
               <TextInput
-                style = {styles.TextInput}
+                style = {styles.FieldInput}
                 placeholder={this.state.Last_Name}
                 ref='Last_Name'
                 onChangeText={(Last_Name) => this.setState({Last_Name})}
@@ -394,7 +495,7 @@ _submitChanges(){
             <Text style={styles.settings_Header}>Phone number</Text>
               <View style = {styles.settings_InfoField}>
               <TextInput
-                style = {styles.TextInput}
+                style = {styles.FieldInput}
                 ref='Phone'
                 placeholder={this.state.Phone.toString()}
                 placeholderTextColor='black'
@@ -468,6 +569,19 @@ _submitChanges(){
         <Text style={{color:'#F97237'}}>{rowData.Category_Name}</Text>
       </View>
     </View>
+  }
+
+  renderLocationRow(rowData){
+    var isSelected = this.state.city == rowData ? true : false;
+    return(
+      <TouchableHighlight underlayColor={'#FFFFFF'} style={isSelected ? styles.selectedLocationCell : styles.locationCell} onPress = {this.pressRow.bind(this,rowData)}>
+        <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData}</Text>
+      </TouchableHighlight>
+    )
+  }
+
+  pressRow(rowData){
+    this.setState({city:rowData});
   }
 
   setTagsVisible(visible) {
@@ -651,7 +765,7 @@ _submitChanges(){
           <Text style={styles.text_header}> Basic Info </Text>
           </View>
           <View>
-          <TouchableHighlight onPress={() => {this.setModalVisible(true)}}>
+          <TouchableHighlight onPress={() => {this.setModalVisible(true)}} underlayColor={'transparent'}>
             <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
           </TouchableHighlight>
           </View>
@@ -705,7 +819,7 @@ _submitChanges(){
                       <Text style={styles.text_header}> Settings </Text>
                     </View>
                     <View>
-                    <TouchableHighlight onPress={() => {this.settingsVisible(true)}}>
+                    <TouchableHighlight onPress={() => {this.settingsVisible(true)}}  underlayColor={'transparent'}>
                         <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
                       </TouchableHighlight>
                     </View>
@@ -718,6 +832,14 @@ _submitChanges(){
                       </View>
                     </View>
 
+                    <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
+
+                    <View style={styles.infoBox}>
+                      <View style={styles.innerBox}>
+                        <Text style = {styles.infoText}>{this.state.city}</Text>
+                      </View>
+                    </View>
+
                       <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.015,}}/>
 
                       <View style={styles.container_info}>
@@ -726,7 +848,7 @@ _submitChanges(){
                           <Text style={styles.text_header}>Interests</Text>
                         </View>
                         <View>
-                        <TouchableHighlight onPress={() => {this.setState({TagsVisible: true})}}>
+                        <TouchableHighlight onPress={() => {this.setState({TagsVisible: true})}}  underlayColor={'transparent'}>
                             <Text style={{color:'#0B82CC',textAlign:'center'}}>Edit</Text>
                           </TouchableHighlight>
 
@@ -822,7 +944,7 @@ _submitChanges(){
            <Text style = {styles.navigationBarTextStyle}>
              Edit Interests
            </Text>
-           <ImageButton image={checkImage} style={{top:8}} onPress={() => this.setState({TagsVisible: false})}>
+           <ImageButton image={checkImage} style={{top:8}} onPress={() => this.saveInterests()}>
            </ImageButton>
          </View>
 
@@ -987,7 +1109,16 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
-
+  filterTypeTitle: {
+    fontFamily: styleVariables.systemBoldFont,
+    fontSize: 24,
+    color: '#F97237',
+    marginLeft: 16,
+    marginRight: 16,
+    marginBottom: 8,
+    marginTop:8,
+    textAlign:'center',
+  },
   backgroundImage: {
     position: 'absolute',
     width: CARD_WIDTH,
@@ -1001,6 +1132,11 @@ const styles = StyleSheet.create({
 
     //resizeMode: 'cover', // or 'stretch'
     //justifyContent: 'center',
+  },
+  locationList:{
+    marginLeft:32,
+    marginRight: 32,
+    marginBottom: 16,
   },
   interestsView: {
     flex:1,
@@ -1124,11 +1260,63 @@ const styles = StyleSheet.create({
     height: CARD_HEIGHT*.075,
     justifyContent: 'center',
   },
-  TextInput: {
+  locationCellText:{
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    color: '#848484',
+  },
+  selectedLocationCellText:{
+    fontFamily:styleVariables.systemBoldFont,
+    fontSize:16,
+    color:'#0B82CC',
+  },
+  locationCell:{
+    marginHorizontal:8,
+    marginVertical:4,
+    paddingLeft:8,
+    height:32,
+    borderWidth:1,
+    backgroundColor:'#FFFFFF',
+    borderColor:'#848484',
+    justifyContent:'center',
+    borderRadius:4,
+  },
+  selectedLocationCell:{
+    marginHorizontal:8,
+    marginVertical:4,
+    paddingLeft:8,
+    height:32,
+    borderWidth:2,
+    backgroundColor:'#FFFFFF',
+    borderColor:'#0B82CC',
+    justifyContent:'center',
+    borderRadius:4,
+  },
+  FieldInput: {
       flex: 1,
       fontSize: 14,
       fontFamily: styleVariables.systemRegularFont,
-
+  },
+  textInput:{
+    flex: 1,
+    height: 44,
+    backgroundColor: 'transparent',
+    color:'black',
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    padding: 2,
+    paddingLeft: 16,
+    borderWidth: 1,
+    borderColor: '#848484',
+    borderRadius:4,
+  },
+  TextInputHolder:{
+    backgroundColor:'#FFFFFF',
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
+    flexDirection: 'row',
+    marginBottom: 16,
   },
   settings_Header: {
     fontFamily: styleVariables.systemRegularFont,
