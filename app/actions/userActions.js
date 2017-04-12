@@ -252,16 +252,22 @@ export function logoutUser(){
 
 export function signUpUser(user) {
   console.log('Signing up user');
-  console.log("USER!: " + user);
+  for (items in user)
+  {
+      console.log(items);
+  }
   return (dispatch) => {
     dispatch(signingUp());
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
           email: user.email,
-          //TODO: need to implement first Name and last name fields on sign up.
-          //firstName: 'Conor',
-          //lastName: 'Campbell',
+          First_Name: user.first,
+          Last_Name: user.last,
+          Phone: user.phoneNumber,
+          dob: user.dob,
+          city: user.city,
+          interests: user.interests,
           registeredUser: true,
           adminUser: false,
           lastLogin : firebase.database.ServerValue.TIMESTAMP

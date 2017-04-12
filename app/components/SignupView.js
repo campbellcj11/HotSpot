@@ -75,6 +75,12 @@ export default class SignupView extends Component {
     user = {
       email: this.state.email,
       password: this.state.password,
+      first: this.state.firstName,
+      last: this.state.lastName,
+      dob: this.state.dob,
+      interests: this.state.interests,
+      phoneNumber: this.state.phoneNumber,
+      city: this.state.city
     }
     userActions.saveInterests(this.state.interests);
     userActions.saveLocation(this.state.city);
