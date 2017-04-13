@@ -103,13 +103,13 @@ export default class PostcardView extends Component {
       var imageOrderData = sentItemOrder.itemOrder[i];
       var key = imageOrderData.key;
       var order = imageOrderData.order;
-      var image = this.state.selectedPostCardInfo.userImages[key];
+      var image = this.state.postcardInfo.userImages[key];
       newImages.push(image);
     }
     // console.log('New Images: ', newImages);
-    var postCardInfo = this.state.selectedPostCardInfo;
+    var postCardInfo = this.state.postcardInfo;
     postCardInfo.userImages = newImages;
-    this.setState({selectedPostCardInfo:postCardInfo});
+    this.setState({postcardInfo:postCardInfo});
   }
   renderPostCardSettings(){
     // this.numbers = [0,1,2,3,4,5,6,7,8,9,10,11]
