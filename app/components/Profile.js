@@ -640,7 +640,7 @@ saveInterests(){
       var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
       // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
       interestsViews.push(
-          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
+          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest.toUpperCase()}</Button>
       );
     }
 
@@ -658,7 +658,7 @@ saveInterests(){
         var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
         // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
         interestsViews.push(
-            <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText}>{interest}</Button>
+            <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText}>{interest.toUpperCase()}</Button>
         );
       }
 
@@ -725,7 +725,7 @@ saveInterests(){
       )
     }
     else {
-      return <Text style={{flex:1,marginVertical:8,fontFamily:styleVariables.systemFont,textAlign:'center'}}>No interests selected</Text>
+      return <Text style={{flex:1,marginVertical:8,fontFamily:styleVariables.systemFont,textAlign:'center'}}>No postcards selected</Text>
     }
   }
   renderPostCardModal(){
@@ -937,7 +937,7 @@ saveInterests(){
         animationType={'none'}
         transparent={false}
         visible = {this.state.TagsVisible}
-        onRequestClose={() => {alert("Modal can not be closed.")}}
+        onRequestClose={() => {this.setState({TagsVisible:false})}}
       >
        <View style = {styles.container_settings}>
          <View style = {styles.navigationBarStyle}>

@@ -41,6 +41,7 @@ import EventPage from './EventPage'
 import TagSelection from './TagSelection'
 import Swiper from 'react-native-swiper';
 import styleVariables from '../Utils/styleVariables'
+var eventActions = require("../actions/eventActions.js");
 
 
 const HEADER_HEIGHT = styleVariables.titleBarHeight;
@@ -256,7 +257,7 @@ export default class CreateEvent extends Component {
       var tag = tags[i];
       var backgroundColor = this.state.tags.indexOf(tag) == -1 ? styleVariables.greyColor: '#0B82CC';
       tagsView.push(
-        <Button ref={tag} key={i} style={[styles.tagsCell, {backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this, tag)}>{tag}</Button>
+        <Button ref={tag} key={i} style={[styles.tagsCell, {backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this, tag)}>{tag.toUpperCase()}</Button>
       );
     }
 

@@ -44,7 +44,7 @@ export default class FilterModal extends Component {
       city: this.props.city ? this.props.city : '',
       startDate: this.props.startDate ? startDateToBe : new Date(),
       endDate: this.props.startDate ? this.props.endDate : new Date(),
-      dateFilterIndex: 3,
+      dateFilterIndex: 4,
       locationSearch: '',
     };
   }
@@ -169,7 +169,7 @@ export default class FilterModal extends Component {
   }
   dateFilterButtonPressed(sentIndex){
     this.setState({dateFilterIndex:sentIndex});
-    if(sentIndex == 0)
+    if(sentIndex == 0) //Today
     {
       var today = new Date();
       var tomorrow = new Date();
@@ -177,7 +177,7 @@ export default class FilterModal extends Component {
 
       this.setState({startDate: Moment(today),endDate: Moment(tomorrow)})
     }
-    else if(sentIndex == 1)
+    else if(sentIndex == 1) //Tomorrow
     {
       var tomorrow = new Date();
       tomorrow = tomorrow.setDate(tomorrow.getDate() + 1);
@@ -186,7 +186,16 @@ export default class FilterModal extends Component {
 
       this.setState({startDate: Moment(tomorrow),endDate: Moment(dayAfterTomorrow)})
     }
-    else if(sentIndex == 2)
+    else if(sentIndex == 2) //Week
+    {
+      var today = new Date();
+      var endOfWeek = new Date();
+      endOfWeek = endOfWeek.setDate(endOfWeek.getDate() + 7);
+      // console.warn(Moment(monday));
+
+      this.setState({startDate: Moment(today),endDate: Moment(endOfWeek)})
+    }
+    else if(sentIndex == 3) //Weekend
     {
       var tagetStartDay = 6; //Saturday
       var targetEndDay = 1; //Monday
@@ -216,19 +225,16 @@ export default class FilterModal extends Component {
       var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
       // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
       interestsViews.push(
-          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest}</Button>
+          <Button ref={interest} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,interest)}>{interest.toUpperCase()}</Button>
       );
     }
 
     return interestsViews;
   }
   renderDateFilter(){
-    var presetFilters = ['Today','Tomorrow','Weekend','Custom'];
+    var presetFilters = ['Today','Tomorrow','Week','Weekend','Custom'];
 
     var presetFiltersViews = [];
-
-    var startDateString = '8/29/95';
-    var endDateString = '8/31/95';
 
     for(var i=0;i<presetFilters.length;i++)
     {
@@ -456,12 +462,12 @@ var styles = StyleSheet.create({
   },
   interestCellText:{
     fontFamily: styleVariables.systemFont,
-    fontSize: 18,
+    fontSize: 16,
     color: '#848484',
   },
   selectedCellText:{
     fontFamily: styleVariables.systemBoldFont,
-    fontSize: 17,
+    fontSize: 15,
     color: '#0B82CC',
   },
   datesHolder: {
@@ -492,7 +498,7 @@ var styles = StyleSheet.create({
   },
   selectedDateCellText: {
     fontFamily: styleVariables.systemBoldFont,
-    fontSize: 14,
+    fontSize: 13,
     color: '#0B82CC',
   },
   textInputHolder:{
@@ -550,7 +556,7 @@ var styles = StyleSheet.create({
   },
   selectedLocationCellText:{
     fontFamily:styleVariables.systemBoldFont,
-    fontSize:16,
+    fontSize:15,
     color:'#0B82CC',
   },
 });

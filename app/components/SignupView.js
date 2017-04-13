@@ -312,7 +312,7 @@ export default class SignupView extends Component {
         var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
         // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
         interestsViews.push(
-            <Button ref={interest} underlayColor={'#0D5480'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest}</Button>
+            <Button ref={interest} underlayColor={'#0D5480'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest.toUpperCase()}</Button>
         );
     }
     return(
