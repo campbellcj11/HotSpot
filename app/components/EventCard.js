@@ -28,6 +28,7 @@ import BlankButton from './BlankButton'
 import { Actions } from 'react-native-router-flux';
 import MapView from 'react-native-maps';
 import RNCalendarEvents from 'react-native-calendar-events'
+import RNFetchBlob from 'react-native-fetch-blob'
 import ParallaxScrollView from 'react-native-parallax-scroll-view';
 import HTMLView from 'react-native-htmlview'
 import styleVariables from '../Utils/styleVariables'
@@ -116,6 +117,7 @@ export default class EventCard extends Component {
   componentWillMount() {
 
   }
+
   openURL()
   {
     var uriString = '';
@@ -129,6 +131,7 @@ export default class EventCard extends Component {
     }
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
+
   openCalendar()
   {
     let current = this.props.currentSelection
@@ -150,7 +153,7 @@ export default class EventCard extends Component {
           return
         } 
         let options = {
-          startDate: (new Date(+current.Date)).toISOString(),
+          startDate: (new Date(+current.Date)).toISOString(), // + is quick cast to Number
           endDate: (new Date(+current.Date + 3600000)).toISOString(),
           notes: current.Short_Description,
           description: current.Short_Description,
@@ -160,9 +163,10 @@ export default class EventCard extends Component {
         RNCalendarEvents.saveEvent(current.Event_Name, options)
           .then(id => {
             console.warn('Added event, id: ' + id)
+            // open calendar
             if(Platform.OS === 'ios') {
               const referenceDate = Moment.utc('2001-01-01');
-              const secondsSinceRefDate = (current.Date - referenceDate)/1000;
+              const secondsSinceRefDate = (+current.Date - referenceDate)/1000;
               Linking.openURL('calshow:' + secondsSinceRefDate);
             } else {
               const msSinceEpoch = this.props.currentSelection.Date.valueOf(); // milliseconds since epoch
@@ -179,6 +183,7 @@ export default class EventCard extends Component {
         Alert.alert('Not allowed', 'You must allow HotSpot to access your calendar.')
       })
   }
+
   callPhone()
   {
     if (this.props.currentSelection.Phone_Contact) {
@@ -187,6 +192,7 @@ export default class EventCard extends Component {
       Alert.alert('Unavailable', 'There is no phone contact specified for this event.')
     }
   }
+
   emailShare()
   {
     Mailer.mail({
@@ -199,27 +205,52 @@ export default class EventCard extends Component {
         }
     });
   }
+
   openMap()
   {
     var uriString = 'http://maps.apple.com/?address=' + this.props.currentSelection.Address;
     Linking.openURL(uriString).catch(err => console.error('An error occurred', err))
   }
+
   openShare()
   {
     let current = this.props.currentSelection
-    /*let imageFileType = current.Image.substr(current.Image.lastIndexOf('.'))
-    imageFileType = imageFileType.substr(0, imageFileType.indexOf('?'))*/
-    fetch(current.Image)
-      .then(response => {
-        let shareOptions = {
-          message: 'I found ' + current.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location
-        };
-
-        Share.open(shareOptions);
+    let imagePath = null
+    console.log('Image URL: ' + current.Image)
+    let fileType = current.Image.substr(current.Image.lastIndexOf('.') + 1)
+    fileType = fileType.substr(0, fileType.indexOf('?'))
+    console.log('Parsed file type: ' + fileType)
+    RNFetchBlob
+      .config({
+        fileCache: true
       })
-    
+      .fetch('GET', current.Image)
+      // store image locally
+      .then(resp => {
+          imagePath = resp.path()
+          return resp.readFile('base64')
+      })
+      // share using base64 encoded version
+      .then(base64Data => {
+          // set header info for base64 image
+          let imageUrl = 'data:image/' + fileType + ';base64,' + base64Data
+          // share externally
+          Share.shareSingle({
+            title: current.Event_Name + ' on HotSpot',
+            subject: current.Event_Name + ' on HotSpot',
+            message: 'I found ' + current.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location,
+            url: imageUrl,
+            type: 'image/' + fileType
+          })
+          // remove the file from storage
+          if (imagePath) {
+            return RNFetchBlob.fs.unlink(imagePath)
+          }
+      })
   }
-  openPostcard(){
+
+  openPostcard()
+  {
     if(this.state.postcardSaved)
     {
       Alert.alert(
@@ -242,6 +273,7 @@ export default class EventCard extends Component {
       )
     }
   }
+
   savePostCard(shouldNotShowAgain){
     if(shouldNotShowAgain)
     {
