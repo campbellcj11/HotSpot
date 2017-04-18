@@ -30,12 +30,9 @@ import Swiper from 'react-native-swiper'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-datepicker'
 import Autocomplete from 'react-native-autocomplete-input'
-<<<<<<< HEAD
 import ModalPicker from 'react-native-modal-picker'
-=======
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
->>>>>>> 5bce491ca36bbb0d0c38d2509f35f5507e637bb3
 import DropDown, {
   Select,
   Option,
