@@ -30,6 +30,8 @@ import Swiper from 'react-native-swiper'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-datepicker'
 import Autocomplete from 'react-native-autocomplete-input'
+import SocialAuth from 'react-native-social-auth';
+import OAuthManager from 'react-native-oauth';
 import DropDown, {
   Select,
   Option,
@@ -177,7 +179,59 @@ export default class SignupView extends Component {
       this.setState({interests:interests});
     }
   }
+  signUpWithFacebook()
+  {
+      SocialAuth.setFacebookApp({id: '1738197196497592', name: 'projectnow'});
+      SocialAuth.getFacebookCredentials(["email", "public_profile"],
+      SocialAuth.facebookPermissionsType.read).then((credentials) => {
+      this.setState({
+        error: null,
+        credentials,
+      })
+      console.log(this.state.credentials);
+      this._initFacebookUser(this.state.credentials.accessToken)
+    })
+    .catch((error) => {
+      this.setState({
+        error,
+        credentials: null,
+      })
+    })
+  }
+
+  _initFacebookUser(token)
+  {
+    var user;
+    console.log("Fetching data");
+    fetch('https://graph.facebook.com/v2.6/me?fields=first_name,last_name,picture,email,locale,timezone,gender&access_token=' + token)
+    .then((response) => response.json())
+    .then((json) => {
+      // Some user object has been set up somewhere, build that user here
+      this.setState({
+        email:  json.email,
+        password: json.id,
+        firstName:  json.first_name,
+        lastName:  json.last_name,
+        gender: json.gender,
+      });
+      console.log(this.state.email);
+      console.log(this.state.password);
+      console.log(this.state.firstName);
+      console.log(this.state.lastName);
+      console.log(this.state.gender);
+    })
+    .catch(() => {
+      console.log('ERROR GETTING DATA FROM FACEBOOK')
+    })
+    //this.state.index = this.state.index+1;
+
+      this.setState({index: this.state.index+2},function(){
+      this.refs.swiper.scrollBy(2,true);
+      this.props.updateIndex(this.state.index);
+    })
+  }
   renderLoginInfoPage(){
+    var loginWithFacebookButtonText ='Signup with Facebook';
     return(
       <View key={0} style={{flex:1}}>
         <KeyboardAwareScrollView>
@@ -218,6 +272,14 @@ export default class SignupView extends Component {
               onSubmitEditing={() => this.goForward()}>
             </TextInput>
           </View>
+        <View>
+          <Button
+            onPress={() => this.signUpWithFacebook()}
+            style={styles.blankButton}
+            textStyle={styles.buttonBlankText}>
+            {loginWithFacebookButtonText}
+          </Button>
+        </View>
         </KeyboardAwareScrollView>
       </View>
     )
@@ -421,6 +483,17 @@ const styles = StyleSheet.create({
     bottom:32,
     justifyContent:'center',
     alignItems:'center',
+  },
+  buttonBlankText: {
+    color: 'white',
+    fontSize: 18,
+    textAlign: 'center',
+    fontFamily: styleVariables.systemFont,
+  },
+  blankButton:{
+    marginLeft:32,
+    marginRight:32,
+    marginTop:8,
   },
   bottomButton:{
     width:44,
