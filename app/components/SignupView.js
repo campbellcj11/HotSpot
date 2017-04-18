@@ -30,11 +30,17 @@ import Swiper from 'react-native-swiper'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-datepicker'
 import Autocomplete from 'react-native-autocomplete-input'
+import ModalPicker from 'react-native-modal-picker'
 import DropDown, {
   Select,
   Option,
   OptionList,
 } from 'react-native-selectme';
+
+const HEADER_HEIGHT = styleVariables.titleBarHeight;
+const TAB_HEIGHT = 50;
+const CARD_WIDTH = width;
+const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
 
 var userActions = require("../actions/userActions.js");
 var eventActions = require("../actions/eventActions.js");
@@ -55,6 +61,7 @@ export default class SignupView extends Component {
       interests: [],
       city: '',
       locationSearch: '',
+      gender: '',
     }
   }
 
@@ -80,7 +87,8 @@ export default class SignupView extends Component {
       dob: this.state.dob,
       interests: this.state.interests,
       phoneNumber: this.state.phoneNumber,
-      city: this.state.city
+      city: this.state.city,
+      gender: this.state.gender
     }
     userActions.saveInterests(this.state.interests);
     userActions.saveLocation(this.state.city);
@@ -253,7 +261,35 @@ export default class SignupView extends Component {
       </View>
     )
   }
+
+  modalStyle()
+  {
+      if (this.state.gender == '')
+      {
+          return {
+              color:'#DCE3E3',
+              fontFamily: styleVariables.systemFont,
+              fontSize: 16,
+              padding: 2,
+              paddingTop: 8,
+          }
+      }
+      else
+      {
+          return {
+              color:'white',
+              fontFamily: styleVariables.systemFont,
+              fontSize: 16,
+              padding: 2,
+              paddingTop: 8,
+          }
+      }
+  }
+
   renderOptionalInfoPage(){
+    const genderOptions = [{key: "Male", label: "Male"},
+                           {key: "Female", label: "Female"},
+                           {key: "Other", label: "Other"}];
     return(
       <View key={2} style={{flex:1}}>
         <KeyboardAwareScrollView>
@@ -298,6 +334,19 @@ export default class SignupView extends Component {
               }}
               onDateChange={(dob) => {this.setState({dob: dob})}}
             />
+          </View>
+          <View style = {styles.textInputHolder}>
+              <ModalPicker style = {styles.modalPicker}
+                selectStyle={{borderRadius:0, borderWidth: 0}}
+                selectTextStyle= {styles.modalText}
+                data={genderOptions}
+                initValue="Select something yummy!"
+                onChange={(gender) => this.setState({gender: gender.label})}>
+
+                <Text style = {this.modalStyle()}>
+                    {this.state.gender.toString() != '' ? this.state.gender.toString() : 'Gender'}
+                </Text>
+              </ModalPicker>
           </View>
         </KeyboardAwareScrollView>
       </View>
@@ -475,6 +524,29 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     borderWidth: 2,
     borderColor: '#414E5E',
+  },
+  modalPicker:{
+    flex: 1,
+    height: 44,
+    backgroundColor: 'transparent',
+    padding: 2,
+    paddingLeft: 16,
+    borderWidth: 2,
+    borderColor: '#414E5E',
+  },
+  modalText:{
+    color:'white',
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    padding: 2,
+    paddingTop: 8,
+  },
+  noGenderText:{
+    color:'#DCE3E3',
+    fontFamily: styleVariables.systemFont,
+    fontSize: 16,
+    padding: 2,
+    paddingTop: 8,
   },
   datePicker:{
     flex: 1,

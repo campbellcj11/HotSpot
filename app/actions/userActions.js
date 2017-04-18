@@ -270,7 +270,8 @@ export function signUpUser(user) {
           interests: user.interests,
           registeredUser: true,
           adminUser: false,
-          lastLogin : firebase.database.ServerValue.TIMESTAMP
+          lastLogin : firebase.database.ServerValue.TIMESTAMP,
+          gender: user.gender
         });
 
         var metricQuery = database.ref("metrics/");
