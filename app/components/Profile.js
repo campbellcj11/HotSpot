@@ -39,6 +39,7 @@ import Moment from 'moment'
 import Swiper from 'react-native-swiper';
 import SortableGrid from 'react-native-sortable-grid';
 import DatePicker from 'react-native-datepicker'
+import profileIcon from '../imgs/profile.png'
 var eventActions = require("../actions/eventActions.js");
 var userActions = require("../actions/userActions.js");
 
@@ -124,6 +125,7 @@ export default class Profile extends Component {
       postcards: this.props.postcards,
       TagsVisible: false,
       tags: [],
+      userImageLocation: this.props.user.Image,
     }
   //  this.currentUserID = firebase.auth().currentUser.uid;
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
@@ -232,6 +234,7 @@ renderImage(){
     else if (response.error) {
       console.log('ImagePicker Error: ', response.error);
     }else {
+      this.setState({userImageLocation: response.uri});
       uploadImage(response.uri, firebase.auth().currentUser.uid + '.jpg')
       .then(url => this.saveImage(url));
     }
@@ -799,7 +802,7 @@ saveInterests(){
       <ScrollView scrollEnabled={true} style={styles.scrolling_profile}>
         <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.05,}}/>
           <View style={styles.container_image}>
-            <Image source={{uri: this.state.imageLocation }} style={styles.userImage}/>
+            <Image source={{uri: this.state.userImageLocation }} style={styles.userImage}/>
             <View style={styles.changePhoto}>
               <TouchableHighlight
               onPress={()=> this.renderImage()}
