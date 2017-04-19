@@ -25,6 +25,7 @@ import styleVariables from '../Utils/styleVariables'
 import backArrow from '../imgs/arrow-left.png'
 import hsGraphic from '../imgs/HotSpot-Graphic.png'
 import forwardArrow from '../imgs/arrow-right.png'
+import profileIcon from '../imgs/profile.png'
 import check from '../imgs/check.png'
 import Swiper from 'react-native-swiper'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -33,19 +34,21 @@ import Autocomplete from 'react-native-autocomplete-input'
 import ModalPicker from 'react-native-modal-picker'
 import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
+import ImagePicker from 'react-native-image-picker';
+import RNFetchBlob from 'react-native-fetch-blob';
 import DropDown, {
   Select,
   Option,
   OptionList,
 } from 'react-native-selectme';
 
-const HEADER_HEIGHT = styleVariables.titleBarHeight;
-const TAB_HEIGHT = 50;
-const CARD_WIDTH = width;
-const CARD_HEIGHT = height - HEADER_HEIGHT - TAB_HEIGHT;
-
 var userActions = require("../actions/userActions.js");
 var eventActions = require("../actions/eventActions.js");
+
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
 
 export default class SignupView extends Component {
   constructor(props) {
@@ -64,6 +67,7 @@ export default class SignupView extends Component {
       city: '',
       locationSearch: '',
       gender: '',
+      imageUrl: '',
     }
   }
 
@@ -94,7 +98,7 @@ export default class SignupView extends Component {
     }
     userActions.saveInterests(this.state.interests);
     userActions.saveLocation(this.state.city);
-    this.props.signUpUser(user);
+    this.props.signUpUser(user, this.state.responseURI);
   }
   hasCorrectInformation(){
 
@@ -238,6 +242,29 @@ export default class SignupView extends Component {
       this.props.updateIndex(this.state.index);
     })
   }
+
+  uploadPhoto()
+  {
+      //here we should upload a photo
+
+  }
+
+  renderImage(){
+    ImagePicker.showImagePicker((response) => {
+      if(response.didCancel) {
+        console.log('User cancelled image picker');
+      }
+      else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      }else {
+        console.log("URI: " + response.uri);
+        this.setState({responseURI: response.uri});
+        // this.uploadImage(response.uri, 'tempImage' + '.jpg')
+        // .then(url => this.setState({imageLocation: url}));
+      }
+    })
+  }
+
   renderLoginInfoPage(){
     var loginWithFacebookButtonText ='Signup with Facebook';
     return(
@@ -357,6 +384,22 @@ export default class SignupView extends Component {
         <KeyboardAwareScrollView>
           <Text style={styles.pageTitle}>Optional Info</Text>
           <Text style={styles.pageSubTitle}>Optional Information helps us personalize your experience</Text>
+          <TouchableHighlight style={styles.imageTouch} onPress = {()=> this.renderImage()}>
+            <View style={styles.imageUploadHolder}>
+              {
+                (this.state.responseURI)  ?
+                  <Image source= {{uri: this.state.responseURI}} style={{width:80,height:80,resizeMode:'contain', alignSelf:'center'}}/>
+                :
+                  <Image source={profileIcon} style={{width:44,height:44,resizeMode:'contain', alignSelf:'center', marginTop:10}}/>
+              }
+              {
+                  (this.state.responseURI) ?
+                    <View/>
+                  :
+                    <Text style={styles.imageText}> Image </Text>
+              }
+            </View>
+          </TouchableHighlight>
           <View style={styles.textInputHolder}>
             <TextInput style={styles.textInput}
               ref='phone'
@@ -585,6 +628,30 @@ const styles = StyleSheet.create({
     marginRight: 32,
     flexDirection: 'row',
     marginBottom: 16,
+  },
+  imageUploadHolder:{
+    height: 88,
+    width: 88,
+    backgroundColor:'#0D5480',
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  imageTouch:{
+      height:88,
+      width: 88,
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      borderColor: '#414E5E',
+      alignSelf:'center',
+      marginBottom: 16,
+  },
+  imageText:{
+      fontFamily: styleVariables.systemFont,
+      fontSize: 16,
+      color:'white',
+      padding: 2,
   },
   textInput:{
     flex: 1,

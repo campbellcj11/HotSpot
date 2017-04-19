@@ -27,6 +27,12 @@ export const SAVE_START_DATE = 'SAVE_START_DATE';
 export const SAVE_END_DATE = 'SAVE_END_DATE';
 export const SAVE_POSTCARDS = 'SAVE_POSTCARDS';
 
+import RNFetchBlob from 'react-native-fetch-blob';
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
+
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
   apiKey: "AIzaSyBc6_49WEUZLKCBoR8FFIHAfVjrZasdHlc",
@@ -250,29 +256,30 @@ export function logoutUser(){
   };
 }
 
-export function signUpUser(user) {
+export function signUpUser(user, imageUri) {
   console.log('Signing up user');
-  for (items in user)
-  {
-      console.log(items);
-  }
   return (dispatch) => {
     dispatch(signingUp());
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          email: user.email,
+          Email: user.email,
           First_Name: user.first,
           Last_Name: user.last,
           Phone: user.phoneNumber,
-          dob: user.dob,
-          city: user.city,
-          interests: user.interests,
-          registeredUser: true,
-          adminUser: false,
-          lastLogin : firebase.database.ServerValue.TIMESTAMP,
-          gender: user.gender
+          DOB: user.dob,
+          City: user.city,
+          Interests: user.interests,
+          RegisteredUser: true,
+          AdminUser: false,
+          Last_Login : firebase.database.ServerValue.TIMESTAMP,
+          Gender: user.gender,
+          Image: ''
         });
+
+        //check for uploaded image
+        console.log("SIGNUP URI: " + imageUri);
+        uploadImage(imageUri, 'tempImage.jpg');
 
         var metricQuery = database.ref("metrics/");
         metricQuery.push({
@@ -291,6 +298,36 @@ export function signUpUser(user) {
         Alert.alert('Invalid Signup for ' + user.email, error.message);
       });
   };
+}
+
+export function uploadImage(uri, imageName, mime = 'image/jpg')
+{
+    return new Promise((resolve, reject) => {
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+        let uploadBlob = null
+        const imageRef = firebase.storage().ref('UserImages').child(imageName)
+
+        fs.readFile(uploadUri, 'base64')
+        .then((data) => {
+          return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+          uploadBlob = blob;
+          return imageRef.put(blob, { contentType: mime });
+        })
+        .then(() => {
+          uploadBlob.close()
+          return imageRef.getDownloadURL();
+        })
+        .then((url) => {
+          console.log("URL: " + url);
+          resolve(url)
+        })
+        .catch((error) => {
+          console.log("error!" + error);
+          reject(error)
+        })
+    })
 }
 
 export function resetPassword(email) {
