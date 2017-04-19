@@ -784,9 +784,9 @@ saveInterests(){
     )
   }
   renderProfile() {
-    var first = this.props.user.Phone.substring(0,3);
-    var second = this.props.user.Phone.substring(3,6);
-    var third = this.props.user.Phone.substring(6,11);
+    var first = this.state.Phone.substring(0,3);
+    var second = this.state.Phone.substring(3,6);
+    var third = this.state.Phone.substring(6,11);
     var phoneString = first + '-' + second + '-' + third;
 
   return(
