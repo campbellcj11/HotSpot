@@ -432,7 +432,7 @@ export default class EventCard extends Component {
             <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
             <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
             {
-              (firebase.auth().currentUser.email != 'test@test.com')  ?
+              (this.props.isLoggedIn && firebase.auth().currentUser.email != 'test@test.com')  ?
                 <ImageButton style={{flex:.25}} image={postcardImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:this.state.postcardSaved ? styleVariables.greyColor:'#0B82CC'}} onPress={this.openPostcard.bind(this)} />
               :
                 <View/>
