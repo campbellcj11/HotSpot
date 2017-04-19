@@ -783,10 +783,16 @@ saveInterests(){
     )
   }
   renderProfile() {
-    var first = this.state.Phone.substring(0,3);
-    var second = this.state.Phone.substring(3,6);
-    var third = this.state.Phone.substring(6,11);
-    var phoneString = first + '-' + second + '-' + third;
+    if (this.state.Phone && this.state.Phone.length == 11) {
+      let first = this.state.Phone.substring(0,3);
+      let second = this.state.Phone.substring(3,6);
+      let third = this.state.Phone.substring(6,11);
+      var phoneString = first + '-' + second + '-' + third;
+    } else if (this.state.Phone) {
+      var phoneString = this.state.Phone
+    } else {
+      var phoneString = ''
+    }
 
   return(
     <View style = {{flex: 1,backgroundColor:'#E2E2E2'}}>
