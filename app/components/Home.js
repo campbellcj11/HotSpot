@@ -39,6 +39,8 @@ import SocialAuth from 'react-native-social-auth';
 import OAuthManager from 'react-native-oauth';
 import Moment from 'moment';
 import LandingPage from '../containers/LandingPage'
+import styleVariables from '../Utils/styleVariables'
+
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -302,10 +304,8 @@ export default class Home extends Component {
     // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
     if(date)
     {
-      console.warn('Has a start date');
       if(this.state.city)
       {
-        console.warn('Has city')
         var ref = this.getRef().child('events/' + this.state.city);
         ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
           snap.forEach((child) => {
@@ -679,7 +679,7 @@ export default class Home extends Component {
           />
           <View>
             <View style={styles.container}>
-              <Button style={{}} textStyle={{color:'#0B82CC'}} onPress={() => this.setState({filterOpen:true})}>Please select a city</Button>
+              <Button style={{backgroundColor:'#F97237',borderWidth:1,borderColor:'#EE6436',margin:16,borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemFont,fontSize:16,color:'white'}} onPress={() => this.setState({filterOpen:true, hasCity:true})}>Please Select a Location</Button>
             </View>
           </View>
           <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
