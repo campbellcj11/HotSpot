@@ -278,8 +278,13 @@ export function signUpUser(user, imageUri) {
         });
 
         //check for uploaded image
-        console.log("SIGNUP URI: " + imageUri);
-        uploadImage(imageUri, 'tempImage.jpg');
+        uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
+        .then(url => {
+            console.log("SIGNUP URL: " + url);
+            database.ref('users/' + firebase.auth().currentUser.uid).update({
+              Image: url
+            });
+        });
 
         var metricQuery = database.ref("metrics/");
         metricQuery.push({
