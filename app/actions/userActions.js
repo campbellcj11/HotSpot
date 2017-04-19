@@ -261,17 +261,17 @@ export function signUpUser(user) {
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          email: user.email,
+          Email: user.email,
           First_Name: user.first,
           Last_Name: user.last,
           Phone: user.phoneNumber,
-          dob: user.dob,
-          city: user.city,
-          interests: user.interests,
-          registeredUser: true,
-          adminUser: false,
-          lastLogin : firebase.database.ServerValue.TIMESTAMP,
-          gender: user.gender
+          DOB: user.dob,
+          City: user.city,
+          Interests: user.interests,
+          RegisteredUser: true,
+          AdminUser: false,
+          LastLogin : firebase.database.ServerValue.TIMESTAMP,
+          Gender: user.gender
         });
 
         var metricQuery = database.ref("metrics/");

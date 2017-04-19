@@ -38,6 +38,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import Moment from 'moment'
 import Swiper from 'react-native-swiper';
 import SortableGrid from 'react-native-sortable-grid';
+import DatePicker from 'react-native-datepicker'
 var eventActions = require("../actions/eventActions.js");
 var userActions = require("../actions/userActions.js");
 
@@ -108,6 +109,7 @@ export default class Profile extends Component {
       Image: this.props.user.Image,
       Email: this.props.user.Email,
       city: this.props.city,
+      dob: this.props.user.DOB ? this.props.user.DOB : '',
       locationSearch: '',
       modalVisible: false,
       settingsModal: false,
@@ -128,6 +130,7 @@ export default class Profile extends Component {
     this.userRef = this.getRef().child('users/' + firebase.auth().currentUser.uid);
     this.userImageRef = this.getStorageRef().child('UserImages');
     this.categoriesRef = this.getRef().child('categories/'+firebase.auth().currentUser.uid);
+    //this.props.loadUserData();
   }
 
   componentWillMount() {
@@ -231,9 +234,14 @@ renderImage(){
       console.log('ImagePicker Error: ', response.error);
     }else {
       uploadImage(response.uri, firebase.auth().currentUser.uid + '.jpg')
-      .then(url => this.setState({imageLocation: url, responseURI: response.uri}));
+      .then(url => this.saveImage(url));
     }
   })
+}
+
+saveImage(url){
+  this.userRef.update({ "Image": typeof(url) != "undefined" ? url : "", })
+  this.setState({imageLocation: url});
 }
 
 _submitChanges(){
@@ -241,8 +249,7 @@ _submitChanges(){
   this.userRef.update({
     "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
     "Last_Name": typeof(this.state.Last_Name) != "undefined" ? this.state.Last_Name : "",
-    "Age": typeof(this.state.selectedAge) != "undefined" ? this.state.selectedAge : "",
-    "Image": typeof(this.state.imageLocation) != "undefined" ? this.state.imageLocation : "",
+    "DOB": typeof(this.state.dob) != "undefined" ? this.state.dob : "",
     "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender : "",
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
@@ -415,6 +422,8 @@ saveInterests(){
   {
     var ageString = this.props.user.Age;
      var genderString = this.props.user.Gender;
+     var DOBString = this.props.user.DOB ? this.props.user.DOB : 'Date of Birth';
+     var phoneString = this.props.user.Phone ? this.props.user.Phone.toString() : '';
     const genderOptions = [
       {key: 0, label: 'Male'},
       {key: 1, label: 'Female'},
@@ -497,7 +506,7 @@ saveInterests(){
               <TextInput
                 style = {styles.FieldInput}
                 ref='Phone'
-                placeholder={this.state.Phone.toString()}
+                placeholder={phoneString}
                 placeholderTextColor='black'
                 onChangeText={(Phone) => this.setState({Phone})}
                 underlineColorAndroid='transparent'
@@ -509,25 +518,59 @@ saveInterests(){
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
-
-            <View style={styles.settings_InputView}>
-            <Text style={styles.settings_Header}>Age</Text>
-              <View style = {styles.settings_InfoField}>
-              <ModalPicker
-                selectStyle={{borderRadius:0, borderWidth: 0}}
-                selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
-                style ={{ borderRadius:0}}
-                data={ageOptions}
-                onChange={(age) => this.setState({selectedAge: age.label})}>
-
-                <Text
-                  style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color:'black'}}
-                >
-                {this.state.selectedAge.toString()}
-                  </Text>
-              </ModalPicker>
-              </View>
-            </View>
+{
+            // <View style={styles.settings_InputView}>
+            // <Text style={styles.settings_Header}>Age</Text>
+            //   <View style = {styles.settings_InfoField}>
+            //   <ModalPicker
+            //     selectStyle={{borderRadius:0, borderWidth: 0}}
+            //     selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
+            //     style ={{ borderRadius:0}}
+            //     data={ageOptions}
+            //     onChange={(age) => this.setState({selectedAge: age.label})}>
+            //
+            //     <Text
+            //       style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color:'black'}}
+            //     >
+            //     {this.state.selectedAge.toString()}
+            //       </Text>
+            //   </ModalPicker>
+            //   </View>
+            // </View>
+          }
+          <View style={styles.settings_InputView}>
+          <Text style={styles.settings_Header}>DOB</Text>
+            <View style = {styles.settings_InfoField}>
+          <DatePicker
+            ref='DOB'
+            style={styles.datePicker}
+            date={this.state.dob}
+            mode="date"
+            placeholder= {DOBString}
+            format="MMMM DD, YYYY"
+            showIcon={false}
+            confirmBtnText="Confirm"
+            cancelBtnText="Cancel"
+            customStyles={{
+              placeholderText: {
+                color:'black',
+                fontFamily: styleVariables.systemRegularFont,
+                fontSize: 14,
+              },
+              dateText:{
+                color: 'black',
+                fontFamily: styleVariables.systemRegularFont,
+                fontSize: 14,
+              },
+              dateInput: {
+                borderWidth: 0,
+                alignItems: 'flex-start',
+              }
+            }}
+            onDateChange={(dob) => {this.setState({dob: dob})}}
+          />
+          </View>
+          </View>
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
             </View>
@@ -741,6 +784,11 @@ saveInterests(){
     )
   }
   renderProfile() {
+    var first = this.props.user.Phone.substring(0,3);
+    var second = this.props.user.Phone.substring(3,6);
+    var third = this.props.user.Phone.substring(6,11);
+    var phoneString = first + '-' + second + '-' + third;
+
   return(
     <View style = {{flex: 1,backgroundColor:'#E2E2E2'}}>
       <ScrollView scrollEnabled={true} style={styles.scrolling_profile}>
@@ -791,7 +839,7 @@ saveInterests(){
 
             <View style={styles.infoBox}>
               <View style={styles.innerBox}>
-                <Text style = {styles.infoText}>{this.state.Phone}</Text>
+                <Text style = {styles.infoText}>{phoneString}</Text>
               </View>
             </View>
 
@@ -799,7 +847,7 @@ saveInterests(){
 
               <View style={styles.infoBox}>
                 <View style={styles.innerBox}>
-                  <Text style = {styles.infoText}>{this.state.selectedAge}</Text>
+                  <Text style = {styles.infoText}>{this.state.dob}</Text>
                 </View>
               </View>
 
@@ -1015,6 +1063,13 @@ const styles = StyleSheet.create({
     width: CARD_WIDTH,
     backgroundColor: '#E2E2E2',
   },
+  datePicker:{
+    flex: 1,
+    height: 44,
+    backgroundColor: 'transparent',
+    padding: 2,
+    //paddingLeft: 16,
+  },
   container: {
     top: Platform.OS == 'ios' ? 64:44,
     height: height - (Platform.OS == 'ios' ? 64:44) - 45,
@@ -1065,6 +1120,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     borderRadius: 7,
+    justifyContent: 'center',
   },
   text_header: {
     fontFamily: styleVariables.systemBoldFont,
@@ -1085,8 +1141,7 @@ const styles = StyleSheet.create({
     },
   container_upper: {
     flex:1,
-    // borderWidth: 2,
-    // borderColor: 'blue',
+
     backgroundColor: '#0E476A',
   },
   container_lower: {
