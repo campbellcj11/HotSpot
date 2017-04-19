@@ -67,6 +67,7 @@ export default class Home extends Component {
       endDate: this.props.endDate,
       loading: true,
       spinValue: new Animated.Value(0),
+      isFirstTime: true,
     }
     this.currentIndex = 0;
 
@@ -300,9 +301,10 @@ export default class Home extends Component {
     // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
     if(date)
     {
-      // console.warn('Has a start date');
+      console.warn('Has a start date');
       if(this.state.city)
       {
+        console.warn('Has city')
         var ref = this.getRef().child('events/' + this.state.city);
         ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
           snap.forEach((child) => {
@@ -351,7 +353,7 @@ export default class Home extends Component {
                     }
                   }
                 }
-                // console.log('ITLs: ',items.length);
+                console.log('ITLs: ',items.length);
                 // console.log('ITs: ',items);
                 clearTimeout(this.loadTimeout);
                 this.loadTimeout = setTimeout(() => {this.setState({items: items,loading:false}), 250});
@@ -360,9 +362,30 @@ export default class Home extends Component {
           });
         });
       }
+      else {
+        if(this.state.isFirstTime)
+        {
+          this.setState({isFirstTime:false});
+        }
+        else {
+          console.warn('Does not have a city');
+          this.setState({loading:false,hasCity:false});
+        }
+      }
     }
   }
-
+  tellUserToGetACity(){
+    if(this.state.loading)
+    {
+      Alert.alert(
+        'Please select a city','',
+        [
+          {text: 'Ok', onPress: () => {this.setState({loading:false,filterOpen:true})}},
+        ],
+        { cancelable: false }
+      )
+    }
+  }
   _login(){
     var user = {'email': this.state.email,
                 'password' : this.state.password};
@@ -739,6 +762,7 @@ export default class Home extends Component {
         }
       ).start()
     });
+    // setTimeout(() => {this.setState({items: items,loading:false}), 250});
     // Second interpolate beginning and end values (in this case 0 and 1)
     const color = this.state.spinValue.interpolate({
       inputRange: [0, 2, 4, 6, 8, 10,],
