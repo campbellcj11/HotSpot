@@ -235,12 +235,16 @@ export default class EventCard extends Component {
           // set header info for base64 image
           let imageUrl = 'data:image/' + fileType + ';base64,' + base64Data
           // share externally
-          Share.shareSingle({
+          Share.open({
             title: current.Event_Name + ' on HotSpot',
             subject: current.Event_Name + ' on HotSpot',
             message: 'I found ' + current.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location,
             url: imageUrl,
             type: 'image/' + fileType
+          })
+          .catch(err => {
+            console.log('RNShare promise rejected:')
+            console.log(err)
           })
           // remove the file from storage
           if (imagePath) {
@@ -432,7 +436,7 @@ export default class EventCard extends Component {
             <ImageButton style={{flex:.25}} image={emailImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={() => this.emailShare()}/>
             <ImageButton style={{flex:.25}} image={Platform.OS == 'ios' ? linkImage:connectImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:'#0B82CC'}} onPress={this.openShare.bind(this)} />
             {
-              (firebase.auth().currentUser.email != 'test@test.com')  ?
+              (firebase.auth().currentUser && firebase.auth().currentUser.email != 'test@test.com')  ?
                 <ImageButton style={{flex:.25}} image={postcardImage} imageStyle={{width:24,height:24,resizeMode:'cover',tintColor:this.state.postcardSaved ? styleVariables.greyColor:'#0B82CC'}} onPress={this.openPostcard.bind(this)} />
               :
                 <View/>

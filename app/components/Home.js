@@ -14,6 +14,9 @@ import {
   StatusBar,
   ScrollView,
   Platform,
+  InteractionManager,
+  Animated,
+  Easing,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
@@ -62,6 +65,8 @@ export default class Home extends Component {
       city: this.props.city,
       startDate: this.props.startDate ? this.props.startDate : new Date(),
       endDate: this.props.endDate,
+      loading: true,
+      spinValue: new Animated.Value(0),
     }
     this.currentIndex = 0;
 
@@ -349,7 +354,7 @@ export default class Home extends Component {
                 // console.log('ITLs: ',items.length);
                 // console.log('ITs: ',items);
                 clearTimeout(this.loadTimeout);
-                this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
+                this.loadTimeout = setTimeout(() => {this.setState({items: items,loading:false}), 250});
               }
             });
           });
@@ -723,11 +728,39 @@ export default class Home extends Component {
         </LandingPage>
     )
   }
+  renderLoadingView(){
+    InteractionManager.runAfterInteractions(() => {
+      Animated.timing(
+          this.state.spinValue,
+        {
+          toValue: 10,
+          duration: 6000,
+          easing: Easing.linear
+        }
+      ).start()
+    });
+    // Second interpolate beginning and end values (in this case 0 and 1)
+    const color = this.state.spinValue.interpolate({
+      inputRange: [0, 2, 4, 6, 8, 10,],
+      outputRange: ['#E2E2E2','#000000','#E2E2E2','#000000','#E2E2E2','#000000']
+    })
+    return(
+      <View style={{flex:1,paddingTop:64,alignItems:'center',justifyContent:'center',backgroundColor:'#E2E2E2'}}>
+        <Animated.Text style={{color: color}}>Loading</Animated.Text>
+      </View>
+    )
+  }
   render(){
 
     if(this.props.loggedIn && this.props.user != {})
     {
-      return this.renderView();
+      if(this.state.loading)
+      {
+        return this.renderLoadingView();
+      }
+      else {
+        return this.renderView();
+      }
     }
     else
     {

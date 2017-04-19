@@ -88,6 +88,8 @@ export default class CreateEvent extends Component {
     this.state = {
       Address : '',
       City: '',
+      _city: '',
+      locationSearch: '',
       County: '',
       Event_Date: '',
       Email_Contact: '',
@@ -111,6 +113,7 @@ export default class CreateEvent extends Component {
       responseURI: '',
       currentDate: new Date(),
       TagsVisible: false,
+      citiesVisible: false,
       tags: [],
       textHeight: CARD_HEIGHT*.075,
     }
@@ -148,7 +151,7 @@ export default class CreateEvent extends Component {
     if(
       this.mergeDateAndTime != '' &&
       this.state.Event_Address != '' &&
-      this.state.City != '' &&
+      this.state._city != '' &&
       this.state.Event_Name != '' &&
       //this.state.Venue != '' &&
       //this.state.Long_Description != '' &&
@@ -166,28 +169,33 @@ export default class CreateEvent extends Component {
     }
   }
   _submitEvent(userRef){
-    var isComplete = this.checkComplete();
-    if(isComplete)
-    {
+    //var isComplete = this.checkComplete();
+    // if(isComplete)
+    // {
       var newEventKey = this.eventQueue.push().key;
-
-      uploadImage(this.state.responseURI, newEventKey+'.jpg')
-      .then(url => this.setState({imageLocation: url}))
-      .catch((error) => {
-      reject(error)
-    });
       //var imageLocation = this.eventImageRef + '/'+newEventKey + '.jpg';
       var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
       var unixTime = new Date(mergeDateAndTime).getTime();
+
+      uploadImage(this.state.responseURI, newEventKey+'.jpg')
+          .then(url => firebase.database().ref('approvalQueue/'+newEventKey).update({
+            "Image": url,
+          })
+          )
+      //  .then(url => this.setState({imageLocation: url}))
+        .catch((error) => {
+        reject(error)
+           });
+
       firebase.database().ref('approvalQueue/'+newEventKey).update({
         "Address" : this.state.Event_Address,
-        "City": this.state.City,
+        "City": this.state._city,
         "County": this.state.County,
         "Date": unixTime,
         "Email_Contact": this.state.Email_Contact,
         "Event_Name" : this.state.Event_Name,
         "Event_Type": this.state.Event_Type,
-        "Image": this.state.imageLocation,
+        //"Image": this.state.imageLocation,
         "Latitude": this.state.Latitude,
         "Location": this.state.Event_Location,
         "Longitude": this.state.Longitude,
@@ -199,18 +207,33 @@ export default class CreateEvent extends Component {
         "Tags": this.state.tags,
         "Ticket_URI": this.state.Ticket_URI,
         "Website" : this.state.Website,
-      });
+      })
+
       this.setState({
         responseURI: '',
         optionalVisible: false,
+        _city: '',
+        Event_Name: '',
+        Event_Address: '',
+        Email_Contact: '',
+        Event_Location: '',
+        Long_Description: '',
+        Short_Description: '',
+        State: '',
+        tags: '',
+        Website: '',
+        Time: '',
+        Event_Date: '',
       })
       this.props.close();
+
     }
-    else
-    {
-      Alert.alert('Please fill out all of the information.');
-    }
-  }
+
+  //   else
+  //   {
+  //     Alert.alert('Please fill out all of the information.');
+  //   }
+  // }
 
   setEventVisible(visible){
     this.setState({
@@ -249,19 +272,20 @@ export default class CreateEvent extends Component {
   }
 
   renderTags(){
-    var tags = ['Nightlife','Entertainment','Music','Food_Tasting','Family','Theater','Dining','Dance','Art','Fundraiser','Comedy','Festival','Sports','Class','Lecture','Fitness','Meetup','Workshop',];
-    var tagsView = [];
+    // Call to database to populate the possible tags
+    tags = eventActions.renderPossibleInterests();
 
-    for(var i = 0; i < tags.length; i++)
-    {
-      var tag = tags[i];
-      var backgroundColor = this.state.tags.indexOf(tag) == -1 ? styleVariables.greyColor: '#0B82CC';
-      tagsView.push(
-        <Button ref={tag} key={i} style={[styles.tagsCell, {backgroundColor:backgroundColor}]} textStyle={styles.interestsCellText} onPress={this.buttonPressed.bind(this, tag)}>{tag.toUpperCase()}</Button>
+    var interestsViews = [];
+    for (i in tags){
+      var tag = i;
+      var isSelected = this.state.tags.indexOf(tag) == -1 ? false : true;
+      // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+      interestsViews.push(
+          <Button ref={tag} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,tag)}>{tag.toUpperCase()}</Button>
       );
     }
 
-    return tagsView;
+    return interestsViews;
   }
 
   setOptionalInfoVisible(visible) {
@@ -360,24 +384,93 @@ export default class CreateEvent extends Component {
     )
   }
 
+  renderLocation(){
+    var possibleLocations = this.getPossibleLocations();
+
+    var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
+    return(
+      <View style={{flex:1}}>
+        <View style={styles.TextInputHolder}>
+          <TextInput style={styles.cityInput}
+            ref='locationSearch'
+            onChangeText={(locationSearch) => this.setState({locationSearch})}
+            placeholder='Search Location'
+            placeholderTextColor='#DCE3E3'
+            underlineColorAndroid='transparent'>
+          </TextInput>
+        </View>
+        <View style={{height:height*.4}}>
+          <ListView
+            style={styles.locationList}
+            dataSource={ds.cloneWithRows(possibleLocations)}
+            renderRow= {this.renderLocationRow.bind(this)}
+            enableEmptySections={true}>
+          </ListView>
+
+        </View>
+      </View>
+    )
+  }
+
+  getPossibleLocations() {
+    var unfilteredList = eventActions.renderPossibleLocations();
+    var filteredList = [];
+    if(this.state.locationSearch == '')
+    {
+      filteredList = unfilteredList;
+    }
+    else
+    {
+      for(var i=0;i<unfilteredList.length;i++)
+      {
+        var item = unfilteredList[i];
+        if(item.indexOf(this.state.locationSearch) != -1)
+        {
+          filteredList.push(item);
+        }
+      }
+    }
+    return filteredList;
+  }
+
+  renderLocationRow(rowData){
+    var isSelected = this.state._city == rowData ? true : false;
+    return(
+      <TouchableHighlight underlayColor={'#FFFFFF'} style={isSelected ? styles.selectedLocationCell : styles.locationCell} onPress = {this.pressRow.bind(this,rowData)}>
+        <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData}</Text>
+      </TouchableHighlight>
+    )
+  }
+
+  pressRow(rowData){
+    this.setState({_city:rowData});
+  }
+
+
   render() {
     var saveButtonText = 'Submit';
     var changePhoto = 'Click here to add image';
     var tagString = '';
+    var cityString = '';
     var inputView = CARD_HEIGHT*.1;
     var textView = CARD_HEIGHT*.075;
     var dynamicTextHeight = this.state.textHeight;
     var expandingView = dynamicTextHeight + (inputView - textView);
-    console.log("outer!"+ inputView);
-    console.log("inner!"+ textView);
-    console.log("state!"+ dynamicTextHeight);
-    console.log("see!"+ expandingView);
+    var citySelected = this.state._city === '' ? false : true;
+    var tagSelected = this.state.tags.length === 0 ? false : true;
     if(this.state.tags.length === 0)
     {
       tagString = 'Tags';
     }
     else {
       tagString = this.state.tags.join(', ');
+    }
+    if(this.state._city === '')
+    {
+      cityString = 'City';
+    }
+    else {
+      cityString = this.state._city;
     }
 
     return(
@@ -392,18 +485,40 @@ export default class CreateEvent extends Component {
     <Modal
       animationType={'slide'}
       transparent={false}
+      visible={this.state.citiesVisible}
+      onRequestClose={() => {alert("Modal can not be closed.")}}
+    >
+     <View style = {styles.container_settings}>
+       <View style = {styles.navigationBarStyle}>
+         <Text style = {styles.navigationBarTextStyle}>
+           Select City
+         </Text>
+         <ImageButton image={checkImage} style={{top:8}} onPress={() => this.setState({citiesVisible: false})}>
+         </ImageButton>
+       </View>
+
+       <View style = {styles.container_addEvent}>
+         <View style={styles.interestsHolder}>
+           {this.renderLocation()}
+         </View>
+      </View>
+     </View>
+    </Modal>
+
+    <Modal
+      animationType={'slide'}
+      transparent={false}
       visible={this.state.TagsVisible}
       onRequestClose={() => {alert("Modal can not be closed.")}}
     >
-    <View style={{flex:1, flexDirection: 'column'}}>
-     <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-         <View>
-         <ImageButton image={closeImage} style={{left:4,top:8,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
+     <View style = {styles.container_settings}>
+       <View style = {styles.navigationBarStyle}>
+         <Text style = {styles.navigationBarTextStyle}>
+           Select Tags
+         </Text>
+         <ImageButton image={closeImage} style={{top:8}} onPress={() => this.setState({TagsVisible: false})}>
          </ImageButton>
-         </View>
        </View>
-     </View>
 
        <View style = {styles.container_addEvent}>
          <View style={styles.interestsHolder}>
@@ -449,13 +564,15 @@ export default class CreateEvent extends Component {
 
      </View>
      */}
-  <View style={{flex: 1}}>
-    <View style={{height: Platform.OS == 'ios' ? 64 : 44}}>
-      <View style={{ backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-        <ImageButton image={closeImage} style={{left:4,top:28,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.props.close()}>
-        </ImageButton>
-      </View>
-    </View>
+
+     <View style = {styles.container_settings}>
+       <View style = {styles.navigationBarStyle}>
+         <Text style = {styles.navigationBarTextStyle}>
+           Create Event
+         </Text>
+         <ImageButton image={closeImage} style={{top:8}} onPress={() => this.props.close()}>
+         </ImageButton>
+       </View>
 
   <KeyboardAwareScrollView>
     <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
@@ -543,7 +660,7 @@ export default class CreateEvent extends Component {
           </View>
          </View>
 
-         <View style={styles.creator_EventView}>
+  {/*       <View style={styles.creator_EventView}>
            <View style={styles.creator_NameInput}>
              <TextInput
                style = {styles.TextInput}
@@ -556,6 +673,19 @@ export default class CreateEvent extends Component {
              </TextInput>
            </View>
          </View>
+*/}
+
+<View style={styles.creator_EventView}>
+  <View style={styles.creator_NameInput}>
+
+<Button
+  onPress={() => this.setState({citiesVisible: true})}
+  style={styles.tagButton}
+  textStyle={citySelected ? styles.TagButtonSelected : styles.TagButtonText}>
+  {cityString}
+</Button>
+</View>
+</View>
 
          <View style={styles.creator_EventView}>
            <View style={styles.creator_NameInput}>
@@ -572,12 +702,15 @@ export default class CreateEvent extends Component {
          </View>
 
         <View style={styles.creator_EventView}>
+        <View style={styles.creator_NameInput}>
+
         <Button
           onPress={() => this.setState({TagsVisible: true})}
           style={styles.tagButton}
-          textStyle={styles.TagButtonText}>
+          textStyle={tagSelected ? styles.TagButtonSelected : styles.TagButtonText}>
           {tagString}
         </Button>
+        </View>
         </View>
 
         <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
@@ -642,6 +775,11 @@ const styles = StyleSheet.create({
       height: CARD_HEIGHT,
       backgroundColor: 'white',
     },
+    container_settings: {
+      backgroundColor: 'white',
+      flex:1,
+      flexDirection: 'column',
+    },
     creator_DateTimeView: {
       width: width,
       height: CARD_HEIGHT *0.1,
@@ -663,6 +801,7 @@ const styles = StyleSheet.create({
     },
     creator_DateInput: {
       flex:1,
+      marginLeft: 10,
       justifyContent: 'center',
       height: CARD_HEIGHT*.075,
     },
@@ -688,6 +827,11 @@ const styles = StyleSheet.create({
       width: width,
       paddingLeft: 10,
       paddingRight: 10,
+    },
+    locationList:{
+      marginLeft:32,
+      marginRight: 32,
+      marginBottom: 16,
     },
     imageView: {
       alignItems: 'center',
@@ -719,10 +863,51 @@ const styles = StyleSheet.create({
       flexWrap: 'wrap',
       flexDirection: 'row',
     },
-    interestsCellText: {
-      fontFamily: styleVariables.systemBoldFont,
-      fontSize: 14,
+    interestCell:{
+      margin:8,
+      borderWidth:1,
+      borderColor:'#848484',
+      backgroundColor:'#FFFFFF',
+      borderRadius:4,
+    },
+    navigationBarStyle: {
+      height: HEADER_HEIGHT,
+      width: width,
+      paddingRight: 10,
+      paddingLeft: 20,
+      backgroundColor:'#0E476A',
+      borderBottomWidth: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+    navigationBarTextStyle: {
+      marginTop:20,
+      flex:.6,
       color: 'white',
+      //color:'#F97237',
+      fontSize:20,
+      fontFamily:'Futura-Medium',
+      textAlign:'center',
+      lineHeight: HEADER_HEIGHT-21,
+    },
+    selectedCell:{
+      marginHorizontal: 7,
+      marginVertical:8,
+      borderWidth:2,
+      borderColor:'#0B82CC',
+      backgroundColor:'#FFFFFF',
+      borderRadius:4,
+    },
+    interestCellText:{
+      fontFamily: styleVariables.systemFont,
+      fontSize: 16,
+      color: '#848484',
+    },
+    selectedCellText:{
+      fontFamily: styleVariables.systemBoldFont,
+      fontSize: 15,
+      color: '#0B82CC',
     },
     saveButton: {
       backgroundColor: '#F97237',
@@ -747,8 +932,8 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent',
     },
     tagButton: {
-      marginLeft:10,
-      marginRight: 10,
+      //marginLeft:10,
+      //marginRight: 10,
       height: CARD_HEIGHT*.075,
       justifyContent: 'center',
       alignItems: 'flex-start',
@@ -758,6 +943,12 @@ const styles = StyleSheet.create({
     },
     TagButtonText: {
       color: styleVariables.greyColor,
+      fontSize: 15,
+      textAlign: 'center',
+      fontFamily: styleVariables.systemRegularFont,
+    },
+    TagButtonSelected: {
+      color: 'black',
       fontSize: 15,
       textAlign: 'center',
       fontFamily: styleVariables.systemRegularFont,
@@ -774,6 +965,59 @@ const styles = StyleSheet.create({
         fontFamily: styleVariables.systemRegularFont,
         borderBottomWidth:.5,
         borderBottomColor:'#f2f2f2',
+    },
+    TextInputHolder:{
+      backgroundColor:'#FFFFFF',
+      height: 44,
+      marginLeft:32,
+      marginRight: 32,
+      flexDirection: 'row',
+      marginBottom: 16,
+    },
+    cityInput:{
+      flex: 1,
+      height: 44,
+      backgroundColor: 'transparent',
+      color:'black',
+      fontFamily: styleVariables.systemFont,
+      fontSize: 16,
+      padding: 2,
+      paddingLeft: 16,
+      borderWidth: 1,
+      borderColor: '#848484',
+      borderRadius:4,
+    },
+    locationCellText:{
+      fontFamily: styleVariables.systemFont,
+      fontSize: 16,
+      color: '#848484',
+    },
+    selectedLocationCellText:{
+      fontFamily:styleVariables.systemBoldFont,
+      fontSize:16,
+      color:'#0B82CC',
+    },
+    locationCell:{
+      marginHorizontal:8,
+      marginVertical:4,
+      paddingLeft:8,
+      height:32,
+      borderWidth:1,
+      backgroundColor:'#FFFFFF',
+      borderColor:'#848484',
+      justifyContent:'center',
+      borderRadius:4,
+    },
+    selectedLocationCell:{
+      marginHorizontal:8,
+      marginVertical:4,
+      paddingLeft:8,
+      height:32,
+      borderWidth:2,
+      backgroundColor:'#FFFFFF',
+      borderColor:'#0B82CC',
+      justifyContent:'center',
+      borderRadius:4,
     },
     tagsCell: {
       margin: 8,
