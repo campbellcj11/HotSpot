@@ -586,7 +586,7 @@ saveInterests(){
                 style ={{flex: 1, borderRadius:0}}
                 data={genderOptions}
                 initValue= {genderString}
-                onChange={(Gender) => this.setState({Gender: gender.label})}>
+                onChange={(Gender) => this.setState({Gender: Gender.label})}>
 
                 <Text
                   style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color: 'black'}}
