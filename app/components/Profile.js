@@ -783,7 +783,7 @@ saveInterests(){
     )
   }
   renderProfile() {
-    if (this.state.Phone && this.state.Phone.length == 11) {
+    if (this.state.Phone && this.state.Phone.length > 9) {
       let first = this.state.Phone.substring(0,3);
       let second = this.state.Phone.substring(3,6);
       let third = this.state.Phone.substring(6,11);
