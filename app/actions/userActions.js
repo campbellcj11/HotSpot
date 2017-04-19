@@ -105,6 +105,14 @@ function userDataLoaded(user) {
   }
 }
 
+export function saveUserData(user){
+  offline.save('user', user);
+  return {
+    type: LOG_IN,
+    currentUser: user,
+  }
+}
+
 export function loadLoggedInData(){
   return dispatch => { offline.get('isLoggedIn').then((isLoggedIn) => {
     dispatch(loggedInLoaded(isLoggedIn || false))

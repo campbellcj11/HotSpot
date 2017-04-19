@@ -255,9 +255,33 @@ _submitChanges(){
     "Gender": typeof(this.state.Gender) != "undefined" ? this.state.Gender : "",
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
+  var user = this.setupUser();
+  console.log('BBBBBB: ',user);
+  this.props.saveUserData(user);
   this.setModalVisible(false);
 }
-
+setupUser(){
+  console.log('AAAAAA: ', this.props.user);
+  return{
+    Admin: this.props.user.Admin,
+    DOB: this.state.dob,
+    Email: this.props.user.Email,
+    First_Name: this.state.First_Name,
+    Gender: this.state.Gender,
+    Image: this.props.user.Image,
+    Last_Login: this.props.user.Last_Login,
+    Last_Name: this.state.Last_Name,
+    Phone: this.state.Phone,
+    Registered: this.props.user.Registered,
+  }
+  // return {
+  //   First_Name:
+  //   Last_Name:
+  //   DOB:
+  //   Gender:
+  //   Phone:
+  // }
+}
 _saveSettings(){
   var test = this.state.Email;
   if(!test.includes('@'))
