@@ -88,9 +88,11 @@ export default class Home extends Component {
       this.listenForItems();
     }
     // this.getLocation();
+    Actions.refresh({title: this.props.city})
   }
 
   componentWillMount() {
+    console.warn(this.props.city);
     Actions.refresh({
              renderRightButton: () => this.renderRightButton(),
              renderLeftButton: () => this.renderLeftButton(),
@@ -108,6 +110,7 @@ export default class Home extends Component {
     }
     if(nextProps.city != this.props.city)
     {
+      Actions.refresh({title: nextProps.city})
       this.setState({
         city: nextProps.city,
       },function(){
