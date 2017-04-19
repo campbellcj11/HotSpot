@@ -113,7 +113,6 @@ export default class Profile extends Component {
       locationSearch: '',
       modalVisible: false,
       settingsModal: false,
-      selectedGender: this.props.user.Gender,
       selectedAge: this.props.user.Age,
       categories: [],
       dataSource: ds,
@@ -250,7 +249,7 @@ _submitChanges(){
     "First_Name": typeof(this.state.First_Name) != "undefined" ? this.state.First_Name : "",
     "Last_Name": typeof(this.state.Last_Name) != "undefined" ? this.state.Last_Name : "",
     "DOB": typeof(this.state.dob) != "undefined" ? this.state.dob : "",
-    "Gender": typeof(this.state.selectedGender) != "undefined" ? this.state.selectedGender : "",
+    "Gender": typeof(this.state.Gender) != "undefined" ? this.state.Gender : "",
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
   this.setModalVisible(false);
@@ -421,7 +420,7 @@ saveInterests(){
   renderModal()
   {
     var ageString = this.props.user.Age;
-     var genderString = this.props.user.Gender;
+     var genderString = this.props.user.Gender ? this.props.user.Gender: 'Select Gender';
      var DOBString = this.props.user.DOB ? this.props.user.DOB : 'Date of Birth';
      var phoneString = this.props.user.Phone ? this.props.user.Phone.toString() : '';
     const genderOptions = [
@@ -584,12 +583,12 @@ saveInterests(){
                 style ={{flex: 1, borderRadius:0}}
                 data={genderOptions}
                 initValue= {genderString}
-                onChange={(gender) => this.setState({selectedGender: gender.label})}>
+                onChange={(Gender) => this.setState({Gender: gender.label})}>
 
                 <Text
                   style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color: 'black'}}
                 >
-                  {this.state.selectedGender}
+                  {this.state.Gender}
                   </Text>
               </ModalPicker>
               </View>
