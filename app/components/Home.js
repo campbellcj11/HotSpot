@@ -68,6 +68,7 @@ export default class Home extends Component {
       loading: true,
       spinValue: new Animated.Value(0),
       isFirstTime: true,
+      hasCity: true,
     }
     this.currentIndex = 0;
 
@@ -642,32 +643,50 @@ export default class Home extends Component {
     // return (Arr)
   }
   renderView() {
+    if(this.state.hasCity)
+    {
+      return (
+        <View style={{flex:1}}>
+          <StatusBar
+            barStyle="light-content"
+          />
+          <View>
+            <Modal
+              animationType='fade'
+              transparent={false}
+              visible={this.state.hasCurrentSelection}
+              onRequestClose={() => this._closeSelection()}
+            >
+                <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
+            </Modal>
 
-    return (
-      <View style={{flex:1}}>
-        <StatusBar
-          barStyle="light-content"
-        />
-        <View>
-          <Modal
-            animationType='fade'
-            transparent={false}
-            visible={this.state.hasCurrentSelection}
-            onRequestClose={() => this._closeSelection()}
-          >
-              <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
-          </Modal>
-
-          <View style={styles.container}>
-            <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
-                {this.renderSlides()}
-            </ScrollView>
+            <View style={styles.container}>
+              <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
+                  {this.renderSlides()}
+              </ScrollView>
+            </View>
           </View>
+          <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
+          <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
         </View>
-        <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
-        <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
-      </View>
-    )
+      )
+    }
+    else{
+      return (
+        <View style={{flex:1}}>
+          <StatusBar
+            barStyle="light-content"
+          />
+          <View>
+            <View style={styles.container}>
+              <Button style={{}} textStyle={{color:'#0B82CC'}} onPress={() => this.setState({filterOpen:true})}>Please select a city</Button>
+            </View>
+          </View>
+          <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
+          <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
+        </View>
+      )
+    }
   }
   renderLogin(){
     var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
