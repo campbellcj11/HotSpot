@@ -150,10 +150,14 @@ export default class Discover extends Component {
     if (!this.state.searchText || !this.eventsInLocale) {
       return
     }
-    // perform search
+    // perform search (on events occuring after now)
     let matches = []
     let query = new RegExp(this.state.searchText, 'i')
+    let now = (new Date()).getTime()
     this.eventsInLocale.forEach(function(event, index) {
+      if (event.Date < now) {
+        return
+      }
       for (key in event) {
         if (query.test(event[key])) {
           matches.push(event)
