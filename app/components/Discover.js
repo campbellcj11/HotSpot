@@ -219,7 +219,7 @@ export default class Discover extends Component {
                    placeholder='Search'
                    placeholderTextColor='#a6a6a6'
                    selectionColor='#000000'
-                   underlineColorAndroid='transparent'
+                   underlineColorAndroid='rgba(0,0,0,0)'
                    onChangeText={(query) => this.setState({searchText: query})}
           >
           </TextInput>
