@@ -83,6 +83,7 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
+  console.log('AAAAA:' + user);
   offline.save('user', user);
   offline.save('isLoggedIn', true);
   return { type: SIGN_UP, currentUser: user};
@@ -301,7 +302,7 @@ export function signUpUser(user, imageUri) {
             "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
             "Additional_Information" : "user.email"
         });
-
+        console.log("HEREEEEE");
         dispatch(stateSignUp(user));
       })
       .catch(error => {

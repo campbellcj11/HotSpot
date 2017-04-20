@@ -256,12 +256,10 @@ _submitChanges(){
     "Phone": typeof(this.state.Phone) != "undefined" ? this.state.Phone : "",
   })
   var user = this.setupUser();
-  console.log('BBBBBB: ',user);
   this.props.saveUserData(user);
   this.setModalVisible(false);
 }
 setupUser(){
-  console.log('AAAAAA: ', this.props.user);
   return{
     Admin: this.props.user.Admin,
     DOB: this.state.dob,
@@ -293,6 +291,7 @@ _saveSettings(){
   {
   this.userRef.update({
     "Email": typeof(this.state.Email) != "undefined" ? this.state.Email : "",
+    "City": typeof(this.state.city) != "undefined" ? this.state.city : "",
   })
   this.props.saveLocation(this.state.city);
   this.settingsVisible(false);
@@ -334,7 +333,7 @@ saveInterests(){
         <View style = {styles.container_settings}>
           <View style = {styles.navigationBarStyle}>
             <Text style = {styles.navigationBarTextStyle}>
-              Edit Profile
+              Edit Settings
             </Text>
             <ImageButton image={close} style={{top:8}} onPress={() => this.resetSettingsValues()}>
             </ImageButton>

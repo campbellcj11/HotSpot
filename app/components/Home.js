@@ -92,11 +92,11 @@ export default class Home extends Component {
   }
 
   componentWillMount() {
-    console.warn(this.props.city);
     Actions.refresh({
              renderRightButton: () => this.renderRightButton(),
              renderLeftButton: () => this.renderLeftButton(),
         })
+    // Actions.refresh({title: this.props.city})
 
     // this.props.loadUserData();
   }
