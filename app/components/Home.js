@@ -71,6 +71,8 @@ export default class Home extends Component {
       spinValue: new Animated.Value(0),
       isFirstTime: true,
       hasCity: true,
+      currentPage: 1,
+      loadingMoreEvents:false,
     }
     this.currentIndex = 0;
 
@@ -286,6 +288,8 @@ export default class Home extends Component {
     this.props.saveLocation(this.state.city);
     this.props.saveStartDate(this.state.startDate);
     this.props.saveEndDate(this.state.endDate);
+    // this.setState({currentPage:1});
+    this.setState({loading:true,currentPage:1});
     if(this.props.loggedIn)
     {
       this.listenForItems();
@@ -389,6 +393,79 @@ export default class Home extends Component {
         { cancelable: false }
       )
     }
+  }
+  loadMore(){
+    var pageLength = 50;
+    var currentPage = this.state.currentPage + 1;
+    this.setState({currentPage:currentPage,loadingMoreEvents:true});
+    console.warn(currentPage);
+
+    var date = this.state.startDate ? this.state.startDate : new Date();
+    if(isNaN(this.state.startDate))
+    {
+      date = new Date();
+    }
+    // console.warn('AAA: ',date);
+    // console.log('AAA: ',date);
+    // var timeUTC = date.getTime();
+    var timeUTC = Moment.utc(date).valueOf();
+    var items = [];
+
+    var ref = this.getRef().child('events/' + this.state.city);
+    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(currentPage*pageLength).on('value', (snap) => {
+      snap.forEach((child) => {
+        var tagsRef = this.getRef().child('tags/' + child.key);
+        var Tags = [];
+        // items = [];
+        tagsRef.on("value", (snapshot) => {
+          snapshot.forEach((childUnder) => {
+            Tags.push(childUnder.key);
+          });
+          // console.warn(child.val().City);
+          if(this.state.city == '' || child.val().City == this.state.city)
+          {
+            // console.warn('State == city');
+            if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+            {
+              var endDate = this.state.endDate;
+              if(isNaN(endDate))
+              {
+                endDate = new Date();
+                endDate.setDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+              }
+              // console.warn('tag in interests');
+              // console.warn(this.state.endDate);
+              if(endDate)
+              {
+                if(endDate > new Date(child.val().Date))
+                {
+                  items.push({
+                    Key : child.key,
+                    Event_Name: child.val().Event_Name,
+                    Date: new Date(child.val().Date),
+                    Location: child.val().Location,
+                    Image: child.val().Image,
+                    latitude: child.val().Latitude,
+                    longitude: child.val().Longitude,
+                    Tags: child.val().Tags,
+                    Short_Description: child.val().Short_Description,
+                    Long_Description: child.val().Long_Description,
+                    Address: child.val().Address,
+                    Website: child.val().Website,
+                    MainTag: Tags ? Tags[0]:[],
+                    Event_Contact: child.val().Email_Contact,
+                    City: child.val().City,
+                  });
+                }
+              }
+            }
+            // console.log('ITs: ',items);
+            clearTimeout(this.loadTimeout);
+            this.loadTimeout = setTimeout(() => {this.setState({items: items,loadingMoreEvents:false},function(){this.numberOfEvents = items.length}), 250});
+          }
+        });
+      });
+    });
   }
   _login(){
     var user = {'email': this.state.email,
@@ -648,6 +725,13 @@ export default class Home extends Component {
   renderView() {
     if(this.state.hasCity)
     {
+      var hasMoreEvents = true;
+      var numberOfEvents = this.state.items.length;
+      if(this.numberOfEvents == numberOfEvents)
+      {
+        hasMoreEvents = false;
+      }
+
       return (
         <View style={{flex:1}}>
           <StatusBar
@@ -666,6 +750,18 @@ export default class Home extends Component {
             <View style={styles.container}>
               <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
                   {this.renderSlides()}
+                  {
+                    this.state.items.length > 0 ?
+                      this.state.loadingMoreEvents ?
+                        <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}}>Loading...</Button>
+                      :
+                        hasMoreEvents ?
+                          <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}} onPress={() => this.loadMore()}>Load More</Button>
+                        :
+                          <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}}>Sorry. That's all we have.</Button>
+                    :
+                      <View/>
+                  }
               </ScrollView>
             </View>
           </View>

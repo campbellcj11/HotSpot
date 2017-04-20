@@ -270,7 +270,7 @@ export default class FilterModal extends Component {
                 borderWidth: 0,
               }
             }}
-            onDateChange={(Event_Date) => {this.setState({startDate: Event_Date,dateFilterIndex:3})}}
+            onDateChange={(Event_Date) => {this.setState({startDate: Event_Date,dateFilterIndex:4})}}
           />
           <Text style={{marginLeft:8,marginRight:8,fontFamily:styleVariables.systemBoldFont,fontSize:18}}>-</Text>
           <DatePicker
@@ -293,7 +293,7 @@ export default class FilterModal extends Component {
                 borderWidth: 0,
               }
             }}
-            onDateChange={(Event_Date) => {this.setState({endDate: Event_Date,dateFilterIndex:3})}}
+            onDateChange={(Event_Date) => {this.setState({endDate: Event_Date,dateFilterIndex:4})}}
           />
         </View>
 
