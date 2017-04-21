@@ -257,7 +257,7 @@ export default class CreateEvent extends Component {
     // console.log(this.state.interests.indexOf(sentInterest));
     if(this.state.tags.indexOf(sentTag) == -1)
     {
-      var tags = this.state.tags ? this.state.tags || [];
+      var tags = this.state.tags ? this.state.tags : [];
       tags.push(sentTag);
       this.setState({tags:tags});
     }
