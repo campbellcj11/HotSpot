@@ -86,19 +86,19 @@ export default class SignupView extends Component {
   }
   signup(){
     user = {
-      email: this.state.email,
+      Email: this.state.email,
       password: this.state.password,
-      first: this.state.firstName,
-      last: this.state.lastName,
-      dob: this.state.dob,
+      First_Name: this.state.firstName,
+      Last_Name: this.state.lastName,
+      DOB: this.state.dob,
       interests: this.state.interests,
-      phoneNumber: this.state.phoneNumber,
+      Phone: this.state.phoneNumber,
       city: this.state.city,
-      gender: this.state.gender
+      Gender: this.state.gender
     }
     userActions.saveInterests(this.state.interests);
     userActions.saveLocation(this.state.city);
-    userActions.signUpUser(user, this.state.responseURI);
+    this.props.signUp(user, this.state.responseURI);
   }
   hasCorrectInformation(){
 

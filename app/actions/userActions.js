@@ -83,7 +83,7 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
-  console.log('AAAAA:' + user);
+  console.log('AAAAA:', user);
   offline.save('user', user);
   offline.save('isLoggedIn', true);
   return { type: SIGN_UP, currentUser: user};
@@ -266,23 +266,23 @@ export function logoutUser(){
 }
 
 export function signUpUser(user, imageUri) {
-  console.log('Signing up user');
+  console.log('Signing up user: ',user);
   return (dispatch) => {
     dispatch(signingUp());
-    firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+    firebase.auth().createUserWithEmailAndPassword(user.Email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          Email: user.email,
-          First_Name: user.first,
-          Last_Name: user.last,
-          Phone: user.phoneNumber,
-          DOB: user.dob,
+          Email: user.Email,
+          First_Name: user.First_Name,
+          Last_Name: user.Last_Name,
+          Phone: user.Phone,
+          DOB: user.DOB,
           City: user.city,
           Interests: user.interests,
           RegisteredUser: true,
           AdminUser: false,
           Last_Login : firebase.database.ServerValue.TIMESTAMP,
-          Gender: user.gender,
+          Gender: user.Gender,
           Image: ''
         });
 
@@ -309,7 +309,7 @@ export function signUpUser(user, imageUri) {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Signup for ' + user.email, error.message);
+        Alert.alert('Invalid Signup for ' + user.Email, error.message);
       });
   };
 }
