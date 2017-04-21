@@ -10,6 +10,9 @@ import {
   LOAD_ISLOGGEDIN_DATA,
   SAVE_CITY,
   SAVE_INTERESTS,
+  SAVE_START_DATE,
+  SAVE_END_DATE,
+  SAVE_POSTCARDS,
 } from '../actions/userActions'
 
 import offline from 'react-native-simple-store'
@@ -19,6 +22,9 @@ const initialState = {
   user: {},
   city: '',
   interests: [],
+  startDate: new Date(),
+  endDate: new Date(),
+  postcards: [],
 }
 
 export default function reducer(state = initialState, action) {
@@ -79,6 +85,21 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       interests: action.interests,
+    }
+  case SAVE_START_DATE:
+    return {
+      ...state,
+      startDate: action.startDate,
+    }
+  case SAVE_END_DATE:
+    return {
+      ...state,
+      endDate: action.endDate,
+    }
+  case SAVE_POSTCARDS:
+    return {
+      ...state,
+      postcards: action.postcards,
     }
   default:
     return state

@@ -6,6 +6,5 @@ export default function(store) {
     // console.log('Store ',store.getState());
 
     const {user} = store.getState().user;
-
   })
 }

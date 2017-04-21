@@ -21,7 +21,8 @@ import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 var {height, width} = Dimensions.get('window');
-import heartImage from '../images/favorite-heart-button.png'
+// import heartImage from '../images/favorite-heart-button.png'
+import heartImage from '../imgs/heart-full.png'
 import styleVariables from '../Utils/styleVariables'
 
 var eventActions = require("../actions/eventActions.js");
@@ -33,11 +34,17 @@ export default class EventCell extends Component {
     this.state = {
       favoriteColor: 'white',
     }
-    this.favoritesRef = firebase.database().ref("favorites/" + firebase.auth().currentUser.uid);
+    if(this.props.loggedIn)
+    {
+      this.favoritesRef = firebase.database().ref("favorites/" + firebase.auth().currentUser.uid);
+    }
   }
 
   componentWillMount() {
-    this.listenForItems(this.favoritesRef);
+    if(this.props.loggedIn)
+    {
+      this.listenForItems(this.favoritesRef);
+    }
   }
 
   listenForItems(favoritesRef) {
@@ -45,10 +52,12 @@ export default class EventCell extends Component {
       console.log("Current favorites of user: " + snap.val());
       var items = snap.val();
       var color = 'white';
+      var backgroundColor = '#0B82CC';
       //console.log("Event Name: " + this.props.eventInfo.Event_Name);
       if (items === null)
       {
         color = 'white';
+        backgroundColor = '#0B82CC';
       }
       else
       {
@@ -59,16 +68,19 @@ export default class EventCell extends Component {
         if (items.includes(this.props.eventInfo.City + '/' + this.props.eventInfo.Key) === true)
         {
         //   console.log("FLAG! Favorite exists: " + this.props.eventInfo.Key);
-          color = 'red'
+          color = 'red';
+          backgroundColor = 'white';
         }
         else
         {
         //   console.log("FLAG! Favorites DOES NOT: " + this.props.eventInfo.Key);
           color = 'white'
+          backgroundColor = '#0B82CC';
         }
       }
       this.setState({
         favoriteColor: color,
+        backgroundColor: backgroundColor,
       });
     });
   }
@@ -98,7 +110,7 @@ export default class EventCell extends Component {
   viewToRender()
   {
     return (
-      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="transparent">
+      <TouchableHighlight style={this.props.style} onPress={(cellInfo) => this.props.cellPressed(this.props.eventInfo)} underlayColor="#FFFFFF">
         <View style={styles.container}>
           <View style={{marginBottom:8,marginLeft:8,marginTop:8}}>
             <Text style={{fontFamily:styleVariables.systemBoldFont,fontSize: 18,marginBottom:4,}}>{this.props.eventInfo.Event_Name}</Text>
@@ -107,14 +119,14 @@ export default class EventCell extends Component {
           <Image source={{uri: this.props.eventInfo.Image ?  this.props.eventInfo.Image : ''}} style={styles.image}>
             <View style={{position:'absolute',left:8,right:8,bottom:8,flexDirection:'row'}}>
               <View style={{flex: .6,alignItems:'flex-start',justifyContent:'center'}}>
-                <Text style={{backgroundColor:'#0B82CC',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:2,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag ? this.props.eventInfo.MainTag.toUpperCase() : ''}</Text>
+                <Text style={{backgroundColor:'#0B82CC',fontWeight:'bold',fontFamily:styleVariables.systemRegularFont,padding:5,fontSize:12,color:'white'}}>{this.props.eventInfo.MainTag ? this.props.eventInfo.MainTag.toUpperCase() : ''}</Text>
               </View>
               <View style={{flex: .3}}>
               </View>
               {
                 !this.props.partOfFavorites ?
                   <View style={{flex: .1,alignItems:'center',justifyContent:'center'}}>
-                    {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{width:30,height:30}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:15,height:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
+                    {(firebase.auth().currentUser.email != 'test@test.com') ? <ImageButton style={{width:30,height:30,backgroundColor:this.state.backgroundColor,borderRadius:15}} image={heartImage} imageStyle={{tintColor:this.state.favoriteColor,width:15,height:15,resizeMode:'cover'}} onPress={() => this.favoriteButtonPressed()}/>: <View/>}
                   </View>
                 : null
               }
@@ -156,7 +168,7 @@ export default class EventCell extends Component {
       </TouchableHighlight>
     )
   }
-  render() {
+  renderView() {
     var dateNumber;
     var dateMonth;
     var dateYear;
@@ -185,6 +197,16 @@ export default class EventCell extends Component {
     return(
       Object.keys(this.props.eventInfo).length > 0 ? this.viewToRender() : <View/>
     )
+  }
+  render(){
+    if(this.props.loggedIn)
+    {
+      return this.renderView();
+    }
+    else
+    {
+      return <View/>
+    }
   }
 }
 

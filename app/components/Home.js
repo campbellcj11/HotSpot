@@ -14,26 +14,33 @@ import {
   StatusBar,
   ScrollView,
   Platform,
+  InteractionManager,
+  Animated,
+  Easing,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import titleImage from '../images/hs-title.png'
-import userImage from '../images/avatar.png'
-import passwordImage from '../images/key.png'
-import logoutImage from '../images/arrows.png'
-import searchImage from '../images/magnifying-glass.png'
-import plusImage from '../images/plus.png'
-import filterImage from '../images/filter.png'
+// import plusImage from '../images/plus.png'
+import plusImage from '../imgs/plus.png'
+// import filterImage from '../images/filter.png'
+import filterImage from '../imgs/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
-import EventCell from './EventCell'
+import EventCell from '../containers/EventCell'
 import CreateEvent from './CreateEvent'
 import FilterModal from './FilterModal'
 import Swiper from 'react-native-swiper';
+import SocialAuth from 'react-native-social-auth';
+import OAuthManager from 'react-native-oauth';
+import Moment from 'moment';
+import LandingPage from '../containers/LandingPage'
+import styleVariables from '../Utils/styleVariables'
+
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
 const TAB_HEIGHT = 50;
@@ -58,6 +65,14 @@ export default class Home extends Component {
       filterOpen: false,
       interests: this.props.interests,
       city: this.props.city,
+      startDate: this.props.startDate ? this.props.startDate : new Date(),
+      endDate: this.props.endDate,
+      loading: true,
+      spinValue: new Animated.Value(0),
+      isFirstTime: true,
+      hasCity: true,
+      currentPage: 1,
+      loadingMoreEvents:false,
     }
     this.currentIndex = 0;
 
@@ -67,8 +82,15 @@ export default class Home extends Component {
     this.props.loadLoggedInData();
     this.props.loadInterestsData();
     this.props.loadLocationData();
-    this.listenForItems();
-    this.getLocation();
+    this.props.loadStartDate();
+    this.props.loadEndDate();
+    this.props.loadPostcards();
+    if(this.props.loggedIn)
+    {
+      this.listenForItems();
+    }
+    // this.getLocation();
+    Actions.refresh({title: this.props.city})
   }
 
   componentWillMount() {
@@ -76,27 +98,64 @@ export default class Home extends Component {
              renderRightButton: () => this.renderRightButton(),
              renderLeftButton: () => this.renderLeftButton(),
         })
+    // Actions.refresh({title: this.props.city})
 
     // this.props.loadUserData();
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.user != this.props.user)
     {
-      this.listenForItems();
+      if(nextProps.loggedIn)
+      {
+        this.listenForItems();
+      }
     }
     if(nextProps.city != this.props.city)
     {
+      Actions.refresh({title: nextProps.city})
       this.setState({
         city: nextProps.city,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
+        // Actions.refresh({title:nextProps.city})
       })
-      this.listenForItems();
     }
     if(nextProps.interests != this.props.interests)
     {
       this.setState({
         interests: nextProps.interests,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
       })
-      this.listenForItems();
+    }
+    if(nextProps.startDate != this.props.startDate)
+    {
+      // console.warn('Has new props');
+      this.setState({
+        startDate: nextProps.startDate ? nextProps.startDate : new Date(),
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
+      })
+    }
+    if(nextProps.endDate != this.props.endDate)
+    {
+      this.setState({
+        endDate: nextProps.endDate,
+      },function(){
+        if(nextProps.loggedIn)
+        {
+          this.listenForItems();
+        }
+      })
     }
   }
   getLocation() {
@@ -183,9 +242,7 @@ export default class Home extends Component {
     this.setState({
       eventModal: true,
     })}
-  setEventVisible(visible){
 
-  }
   onCloseCreateEvent(){
     this.setState({
       eventModal: false,
@@ -220,18 +277,142 @@ export default class Home extends Component {
   setLocation(sentLocationString){
     this.setState({city:sentLocationString});
   }
+  setStartDate(sentStartDate){
+    this.setState({startDate:sentStartDate});
+  }
+  setEndDate(sentEndDate){
+    this.setState({endDate:sentEndDate});
+  }
   updateInfo(){
     this.props.saveInterests(this.state.interests);
     this.props.saveLocation(this.state.city);
-    this.listenForItems();
+    this.props.saveStartDate(this.state.startDate);
+    this.props.saveEndDate(this.state.endDate);
+    // this.setState({currentPage:1});
+    this.setState({loading:true,currentPage:1});
+    if(this.props.loggedIn)
+    {
+      this.listenForItems();
+    }
   }
   listenForItems() {
-    var today = new Date();
-    var timeUTC = today.getTime();
+    // var date = new Date();
+    var date = this.state.startDate ? this.state.startDate : new Date();
+    if(isNaN(this.state.startDate))
+    {
+      date = new Date();
+    }
+    // console.warn('AAA: ',date);
+    // console.log('AAA: ',date);
+    // var timeUTC = date.getTime();
+    var timeUTC = Moment.utc(date).valueOf();
     var items = [];
-    // console.log("TIME UTC: " + timeUTC);
+    // console.warn("TIME UTC: ", timeUTC);
+    // console.warn("Moment UTC: ", Moment.utc(this.state.startDate).valueOf());
+    if(date)
+    {
+      if(this.state.city)
+      {
+        var ref = this.getRef().child('events/' + this.state.city);
+        ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
+          snap.forEach((child) => {
+            var tagsRef = this.getRef().child('tags/' + child.key);
+            var Tags = [];
+            // items = [];
+            tagsRef.on("value", (snapshot) => {
+              snapshot.forEach((childUnder) => {
+                Tags.push(childUnder.key);
+              });
+              // console.warn(child.val().City);
+              if(this.state.city == '' || child.val().City == this.state.city)
+              {
+                // console.warn('State == city');
+                if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
+                {
+                  var endDate = this.state.endDate;
+                  if(isNaN(endDate))
+                  {
+                    endDate = new Date();
+                    endDate.setDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+                  }
+                  // console.warn('tag in interests');
+                  // console.warn(this.state.endDate);
+                  if(endDate)
+                  {
+                    if(endDate > new Date(child.val().Date))
+                    {
+                      items.push({
+                        Key : child.key,
+                        Event_Name: child.val().Event_Name,
+                        Date: new Date(child.val().Date),
+                        Location: child.val().Location,
+                        Image: child.val().Image,
+                        latitude: child.val().Latitude,
+                        longitude: child.val().Longitude,
+                        Tags: child.val().Tags,
+                        Short_Description: child.val().Short_Description,
+                        Long_Description: child.val().Long_Description,
+                        Address: child.val().Address,
+                        Website: child.val().Website,
+                        MainTag: Tags ? Tags[0]:[],
+                        Event_Contact: child.val().Email_Contact,
+                        City: child.val().City,
+                      });
+                    }
+                  }
+                }
+                console.log('ITLs: ',items.length);
+                // console.log('ITs: ',items);
+                clearTimeout(this.loadTimeout);
+                this.loadTimeout = setTimeout(() => {this.setState({items: items,loading:false}), 250});
+              }
+            });
+          });
+        });
+      }
+      else {
+        if(this.state.isFirstTime)
+        {
+          this.setState({isFirstTime:false});
+        }
+        else {
+          console.warn('Does not have a city');
+          this.setState({loading:false,hasCity:false});
+        }
+      }
+    }
+  }
+  tellUserToGetACity(){
+    if(this.state.loading)
+    {
+      Alert.alert(
+        'Please select a city','',
+        [
+          {text: 'Ok', onPress: () => {this.setState({loading:false,filterOpen:true})}},
+        ],
+        { cancelable: false }
+      )
+    }
+  }
+  loadMore(){
+    var pageLength = 50;
+    var currentPage = this.state.currentPage + 1;
+    this.setState({currentPage:currentPage,loadingMoreEvents:true});
+    console.warn(currentPage);
+
+    var date = this.state.startDate ? this.state.startDate : new Date();
+    if(isNaN(this.state.startDate))
+    {
+      date = new Date();
+    }
+    // console.warn('AAA: ',date);
+    // console.log('AAA: ',date);
+    // var timeUTC = date.getTime();
+    var timeUTC = Moment.utc(date).valueOf();
+    var items = [];
+
     var ref = this.getRef().child('events/' + this.state.city);
-    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(50).on('value', (snap) => {
+    ref.orderByChild("Date").startAt(timeUTC).limitToFirst(currentPage*pageLength).on('value', (snap) => {
       snap.forEach((child) => {
         var tagsRef = this.getRef().child('tags/' + child.key);
         var Tags = [];
@@ -241,41 +422,51 @@ export default class Home extends Component {
             Tags.push(childUnder.key);
           });
           // console.warn(child.val().City);
-          // console.warn(this.state.city);
           if(this.state.city == '' || child.val().City == this.state.city)
           {
             // console.warn('State == city');
             if(this.state.interests.length == 0 || this.state.interests.indexOf(Tags[0]) != -1)
             {
+              var endDate = this.state.endDate;
+              if(isNaN(endDate))
+              {
+                endDate = new Date();
+                endDate.setDate(new Date(new Date().setFullYear(new Date().getFullYear() + 1)));
+              }
               // console.warn('tag in interests');
-              items.push({
-                Key : child.key,
-                Event_Name: child.val().Event_Name,
-                Date: new Date(child.val().Date),
-                Location: child.val().Location,
-                Image: child.val().Image,
-                latitude: child.val().Latitude,
-                longitude: child.val().Longitude,
-                Tags: child.val().Tags,
-                Short_Description: child.val().Short_Description,
-                Long_Description: child.val().Long_Description,
-                Address: child.val().Address,
-                Website: child.val().Website,
-                MainTag: Tags ? Tags[0]:[],
-                Event_Contact: child.val().Email_Contact,
-                City: child.val().City,
-              });
+              // console.warn(this.state.endDate);
+              if(endDate)
+              {
+                if(endDate > new Date(child.val().Date))
+                {
+                  items.push({
+                    Key : child.key,
+                    Event_Name: child.val().Event_Name,
+                    Date: new Date(child.val().Date),
+                    Location: child.val().Location,
+                    Image: child.val().Image,
+                    latitude: child.val().Latitude,
+                    longitude: child.val().Longitude,
+                    Tags: child.val().Tags,
+                    Short_Description: child.val().Short_Description,
+                    Long_Description: child.val().Long_Description,
+                    Address: child.val().Address,
+                    Website: child.val().Website,
+                    MainTag: Tags ? Tags[0]:[],
+                    Event_Contact: child.val().Email_Contact,
+                    City: child.val().City,
+                  });
+                }
+              }
             }
-            // console.log('ITLs: ',items.length);
             // console.log('ITs: ',items);
             clearTimeout(this.loadTimeout);
-            this.loadTimeout = setTimeout(() => {this.setState({items: items}), 250});
+            this.loadTimeout = setTimeout(() => {this.setState({items: items,loadingMoreEvents:false},function(){this.numberOfEvents = items.length}), 250});
           }
         });
       });
     });
   }
-
   _login(){
     var user = {'email': this.state.email,
                 'password' : this.state.password};
@@ -346,6 +537,122 @@ export default class Home extends Component {
       </TouchableHighlight>
     )
   }
+  _loginWithFacebook()
+  {
+      SocialAuth.setFacebookApp({id: '1738197196497592', name: 'projectnow'});
+      SocialAuth.getFacebookCredentials(["email", "public_profile"],
+      SocialAuth.facebookPermissionsType.read).then((credentials) => {
+      this.setState({
+        error: null,
+        credentials,
+      })
+      console.log(this.state.credentials);
+      this._initFacebookUser(credentials.accessToken)
+    })
+    .catch((error) => {
+      this.setState({
+        error,
+        credentials: null,
+      })
+    })
+  }
+
+  _initFacebookUser(token)
+  {
+    var user;
+    console.log("Fetching data");
+    fetch('https://graph.facebook.com/v2.5/me?fields=email&access_token=' + token)
+    .then((response) => response.json())
+    .then((json) => {
+      // Some user object has been set up somewhere, build that user here
+      console.log(json);
+      user = {'email': json.email,
+              'password' : json.id};
+
+      if(this.state.isSignUp)
+      {
+        this.props.signUpUser(user);
+      }
+      else
+      {
+        this.props.loginUser(user);
+      }
+    })
+    .catch(() => {
+      console.log('ERROR GETTING DATA FROM FACEBOOK')
+    })
+    console.log(user);
+  }
+  _loginWithGoogle()
+  {
+    const manager = new OAuthManager('Project Now')
+    manager.configure({
+      google: {
+        callback_url: 'https://projectnow.firebaseapp.com',
+        client_id: '14798821887-8v5j5qtnn2m6bm3aghefq2pg2ngd0jsk.apps.googleusercontent.com',
+        client_secret: 'c9TBrQXY_cvsXLTp3iSv7keL'
+      }
+    })
+    console.log('starting google auth');
+    manager.authorize('google', {scopes: 'email'})
+      .then(resp =>{
+
+        this._initGoogleUser(manager)
+
+        console.log(resp)
+      })
+      .catch(err => console.log(err));
+  }
+
+  _initGoogleUser(manager)
+  {
+    const googleUrl = 'https://www.googleapis.com/plus/v1/people/me';
+    manager.makeRequest('google', googleUrl)
+      .then(resp => {
+        console.log('Data ->', resp.data);
+        user = {'email': resp.data.emails[0].value,
+                'password' : resp.data.id};
+      console.log('XXXXXXXXXXXXXXXXxTHIS IS THE EMAILXXXXXXXXXXXXX', resp.data.emails[0].value);
+        if(this.state.isSignUp)
+        {
+          this.props.signUpUser(user);
+        }
+        else
+        {
+          this.props.loginUser(user);
+        }
+      });
+  }
+/*
+  _loginWithTwitter()
+  {
+    const manager = new OAuthManager('Project Now')
+    manager.configure({
+      twitter: {
+        consumer_key: 'Lh63FfZqpywO7xTLNGsafDZwi',
+        consumer_secret: '7clzZEImtw2Ogz2Uwo5EThH7EfyFGLSf6Ad7iYz72ECfrnPWOy'
+      }
+    })
+    console.log("starting twitter auth");
+    manager.authorize('twitter')
+      .then(resp =>{
+
+        this._initTwitterUser(manager)
+
+        console.log(resp)
+      })
+      .catch(err => console.log(err));
+  }
+
+  _initTwitterUser(manager)
+  {
+    const userTimelineUrl = 'https://api.twitter.com/1.1/statuses/user_timeline.json';
+    manager.makeRequest('twitter', userTimelineUrl)
+      .then(resp => {
+        console.log('Data ->', resp.data);
+      });
+  }
+*/
   pressRow(rowData) {
     console.log('RowData: ',rowData);
     // this.setState({currentSelection:rowData});
@@ -415,124 +722,192 @@ export default class Home extends Component {
     // })
     // return (Arr)
   }
-  renderView(){
-    return (
-      <View>
-        <Modal
-          animationType='fade'
-          transparent={false}
-          visible={this.state.hasCurrentSelection}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-        >
-            <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
-        </Modal>
+  renderView() {
+    if(this.state.hasCity)
+    {
+      var hasMoreEvents = true;
+      var numberOfEvents = this.state.items.length;
+      if(this.numberOfEvents == numberOfEvents)
+      {
+        hasMoreEvents = false;
+      }
 
-        <View style={styles.container}>
-          <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
-              {this.renderSlides()}
-          </ScrollView>
+      return (
+        <View style={{flex:1}}>
+          <StatusBar
+            barStyle="light-content"
+          />
+          <View>
+            <Modal
+              animationType='fade'
+              transparent={false}
+              visible={this.state.hasCurrentSelection}
+              onRequestClose={() => this._closeSelection()}
+            >
+                <EventCard currentSelection={this.state.currentSelection} closeSelection={() => this._closeSelection()}/>
+            </Modal>
+
+            <View style={styles.container}>
+              <ScrollView ref='swiper' style={{height:height-HEADER_HEIGHT-TAB_HEIGHT,width:width,backgroundColor:'#E2E2E2'}}>
+                  {this.renderSlides()}
+                  {
+                    this.state.items.length > 0 ?
+                      this.state.loadingMoreEvents ?
+                        <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}}>Loading...</Button>
+                      :
+                        hasMoreEvents ?
+                          <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}} onPress={() => this.loadMore()}>Load More</Button>
+                        :
+                          <Button style={{width:width,alignItems:'center',justifyContent:'center'}} textStyle={{fontFamily:styleVariables.systemFont,color:'black',fontSize:12}}>Sorry. That's all we have.</Button>
+                    :
+                      <View/>
+                  }
+              </ScrollView>
+            </View>
+          </View>
+          <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
+          <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
         </View>
-      </View>
-    )
+      )
+    }
+    else{
+      return (
+        <View style={{flex:1}}>
+          <StatusBar
+            barStyle="light-content"
+          />
+          <View>
+            <View style={styles.container}>
+              <Button style={{backgroundColor:'#F97237',borderWidth:1,borderColor:'#EE6436',margin:16,borderRadius:22}} textStyle={{textAlign:'center',fontFamily:styleVariables.systemFont,fontSize:16,color:'white'}} onPress={() => this.setState({filterOpen:true, hasCity:true})}>Please Select a Location</Button>
+            </View>
+          </View>
+          <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} startDate={this.state.startDate} endDate={this.state.endDate} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)} saveStartDate={(sentStartDate) => this.setStartDate(sentStartDate)} saveEndDate={(sentEndDate) => this.setEndDate(sentEndDate)}/>
+          <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
+        </View>
+      )
+    }
   }
-  renderModal(){
+  renderLogin(){
     var loginButtonText = this.state.isSignUp ? 'Sign Up' : 'Login';
     var signUpButtonText = this.state.isSignUp ? 'Login' : 'Sign Up';
     var loginWithoutAccountButtonText = this.state.isSignUp ? '' : 'Login without an Account';
     var forgotPasswordButtonText = this.state.isSignUp ? '' : 'Forgot Password?';
-    return (
-      <Modal
-          animationType={'none'}
-          transparent={false}
-          visible={!this.props.loggedIn}
-          onRequestClose={() => {alert("Modal can not be closed.")}}
-      >
-        <View style={{flexDirection:'row'}}>
-        <View style={styles.modalBackground}>
-          <Image source={titleImage} style={styles.titleImage}/>
-          <View style={styles.userNameView}>
-            <TextInput style={styles.userNameTextInput}
-              ref='email'
-              onChangeText={(email) => this.setState({email})}
-              placeholder='Email'
-              placeholderTextColor='#C6E1E2'
-              underlineColorAndroid='transparent'>
-            </TextInput>
-          </View>
+    var loginWithFacebookButtonText = this.state.isSignUp ? 'Signup with Facebook' : 'Login with Facebook';
+    var loginWithTwitterButtonText = this.state.isSignUp ? 'Signup with Twitter' : 'Login with Twitter';
+    var loginWithGoogleButtonText = this.state.isSignUp ? 'Signup with Google' : 'Login with Google';
 
-          <View style={styles.passwordView}>
-            <TextInput style={styles.userNameTextInput}
-              secureTextEntry={!this.state.isSignUp}
-              ref='password'
-              onChangeText={(password) => this.setState({password})}
-              placeholder='Password'
-              placeholderTextColor='#C6E1E2'
-              underlineColorAndroid='transparent'>
-            </TextInput>
+    return (
+      <LandingPage>
+        {/*<Modal>
+        <View style={{flexDirection:'row'}}>
+          <View style={styles.modalBackground}>
+            <Image source={titleImage} style={styles.titleImage}/>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='email'
+                onChangeText={(email) => this.setState({email})}
+                placeholder='Email'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+
+            <View style={styles.passwordView}>
+              <TextInput style={styles.userNameTextInput}
+                secureTextEntry={!this.state.isSignUp}
+                ref='password'
+                onChangeText={(password) => this.setState({password})}
+                placeholder='Password'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            <Button
+              onPress={() => this._resetPassword()}
+              style={styles.forgotPasswordBlankButton}
+              textStyle={styles.forgotPasswordText}>
+              {forgotPasswordButtonText}
+            </Button>
+            <Button
+              onPress={() => this._login()}
+              style={styles.loginButton}
+              textStyle={styles.buttonText}>
+              {loginButtonText}
+            </Button>
+            <Button
+              onPress={() => this._loginWithFacebook()}
+              style={styles.facebookLogin}
+              textStyle={styles.facebookLoginText}>
+              {loginWithFacebookButtonText}
+            </Button>
+            {
+              Platform.OS == 'ios' ?
+              <View/>
+              :
+              <Button
+                onPress={() => this._loginWithGoogle()}
+                style={styles.googleLogin}
+                textStyle={styles.googleLoginText}>
+                {loginWithGoogleButtonText}
+              </Button>
+            }
+            <Button
+              onPress={() => this._loginWithoutAccount()}
+              style={styles.loginBlankButton}
+              textStyle={styles.buttonBlankText}>
+              {loginWithoutAccountButtonText}
+            </Button>
+            <Button
+              onPress={() => this._openSignupPage()}
+              style={styles.signupBlankButton}
+              textStyle={styles.buttonBlankText}>
+              {signUpButtonText}
+            </Button>
           </View>
-          <Button
-            onPress={() => this._resetPassword()}
-            style={styles.forgotPasswordBlankButton}
-            textStyle={styles.forgotPasswordText}>
-            {forgotPasswordButtonText}
-          </Button>
-          <Button
-            onPress={() => this._login()}
-            style={styles.loginButton}
-            textStyle={styles.buttonText}>
-            {loginButtonText}
-          </Button>
-          <Button
-            onPress={() => this._loginWithoutAccount()}
-            style={styles.loginBlankButton}
-            textStyle={styles.buttonBlankText}>
-            {loginWithoutAccountButtonText}
-          </Button>
-          <Button
-            onPress={() => this._openSignupPage()}
-            style={styles.signupBlankButton}
-            textStyle={styles.buttonBlankText}>
-            {signUpButtonText}
-          </Button>
         </View>
-        </View>
-      </Modal>
+        </Modal>*/}
+        </LandingPage>
     )
   }
-  render() {
-    console.log('PROPS!')
-    console.log(this.props)
-    let user, readonlyMessage, viewToShow
-    //if(firebase.auth().currentUser)
+  renderLoadingView(){
+    InteractionManager.runAfterInteractions(() => {
+      Animated.timing(
+          this.state.spinValue,
+        {
+          toValue: 10,
+          duration: 6000,
+          easing: Easing.linear
+        }
+      ).start()
+    });
+    // setTimeout(() => {this.setState({items: items,loading:false}), 250});
+    // Second interpolate beginning and end values (in this case 0 and 1)
+    const color = this.state.spinValue.interpolate({
+      inputRange: [0, 2, 4, 6, 8, 10,],
+      outputRange: ['#E2E2E2','#000000','#E2E2E2','#000000','#E2E2E2','#000000']
+    })
+    return(
+      <View style={{flex:1,paddingTop:64,alignItems:'center',justifyContent:'center',backgroundColor:'#E2E2E2'}}>
+        <Animated.Text style={{color: color}}>Loading</Animated.Text>
+      </View>
+    )
+  }
+  render(){
+
     if(this.props.loggedIn && this.props.user != {})
     {
-      user = this.props.user
-      readonlyMessage = <Text style={styles.offline}>Logged In {user.email}</Text>
-      viewToShow = this.renderView();
+      if(this.state.loading)
+      {
+        return this.renderLoadingView();
+      }
+      else {
+        return this.renderView();
+      }
     }
     else
     {
-      readonlyMessage = <Text style={styles.offline}>Not Logged In</Text>
-      viewToShow = this.renderModal();
+      return this.renderLogin();
     }
-
-    var modalBackgroundStyle = {
-      backgroundColor: this.state.transparent ? 'rgba(0, 0, 0, 0.5)' : '#f5fcff',
-    };
-    var innerContainerTransparentStyle = this.state.transparent
-      ? {backgroundColor: '#fff'}
-      : null;
-
-    return (
-      <View style={{flex:1}}>
-        <StatusBar
-          barStyle="light-content"
-        />
-        {viewToShow}
-        <FilterModal showing={this.state.filterOpen} interests={this.state.interests} city={this.state.city} close={ () => this.closeFilters()} interestPressed={ (sentInterest) => this.handleInterest(sentInterest)} setLocation={(sentLocationString) => this.setLocation(sentLocationString)}/>
-        <CreateEvent showing={this.state.eventModal} close={ () => this.onCloseCreateEvent()} />
-      </View>
-    )
   }
 }
 
@@ -625,6 +1000,63 @@ const styles = StyleSheet.create({
     height: 50,
     marginLeft: width*.2,
     marginRight: width*.2,
+  },
+  facebookLogin: {
+    marginTop: 5,
+    backgroundColor: '#3B5998',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#3B5998',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  facebookLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
+  },
+  twitterLogin: {
+    marginTop: 5,
+    backgroundColor: '#4099FF',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#4099FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  twitterLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
+  },
+  googleLogin: {
+    marginTop: 5,
+    backgroundColor: '#4099FF',
+    height: 50,
+    marginLeft:20,
+    marginRight: 20,
+    borderWidth: 2,
+    borderRadius: 25,
+    borderColor: '#4099FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  googleLoginText: {
+    color: 'white',
+    fontSize: 20,
+    textAlign: 'center',
+    fontFamily: 'Futura-Medium',
+    backgroundColor: 'transparent',
   },
   signupBlankButton: {
     position: 'absolute',

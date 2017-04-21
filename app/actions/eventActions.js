@@ -97,3 +97,27 @@ export function unFavorite(userUID, eventUID, city)
     }
   }
 }
+
+
+export function renderPossibleInterests()
+{
+    let db = firebase.database();
+    var query = db.ref("possibleTags/");
+    var possibleTags = [];
+    query.on('value', function(snap) { possibleTags = snap.val() });
+    return possibleTags;
+}
+
+export function renderPossibleLocations()
+{
+    let db = firebase.database();
+    var query = db.ref("events/");
+    var unfilteredList = [];
+    var listOfEvents = [];
+    query.on('value', function(snap) { listOfEvents = snap.val() });
+    for (eventLocale in listOfEvents)
+    {
+        unfilteredList.push(eventLocale);
+    }
+    return unfilteredList;
+}

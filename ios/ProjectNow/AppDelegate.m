@@ -11,16 +11,20 @@
 
 #import "RCTBundleURLProvider.h"
 #import "RCTRootView.h"
+#import "RNSocialAuthManager.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  
+  [RNSocialAuthManager application:application didFinishLaunchingWithOptions:launchOptions];
+  
   NSURL *jsCodeLocation;
 
  jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index.ios" fallbackResource:nil];
 
-//jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+//  jsCodeLocation = [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBundleURL:jsCodeLocation
                                                       moduleName:@"ProjectNow"
@@ -35,6 +39,11 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
+}
+
+- (BOOL) application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation
+{
+  return [RNSocialAuthManager application:application openURL:url sourceApplication:sourceApplication annotation:annotation];
 }
 
 @end

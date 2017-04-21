@@ -28,7 +28,7 @@ var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
-import EventCell from './EventCell'
+import EventCell from '../containers/EventCell'
 import Swiper from 'react-native-swiper';
 
 const HEADER_HEIGHT = Platform.OS == 'ios' ? 64 : 44;
@@ -92,8 +92,8 @@ export default class Favorites extends Component {
           ref.on('value', (snap) => {
             var today = new Date();
             var timeUTC = today.getTime();
-            console.log("Error date: " + snap.val().Date);
-            console.log("Key error: " + snap.key);
+            // console.log("Error date: " + snap.val().Date);
+            // console.log("Key error: " + snap.key);
           if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
               items.push({
                 Key : snap.key,
@@ -262,11 +262,11 @@ export default class Favorites extends Component {
       </View>
       // <View style={styles.container}>
       //   <View>
-      //     <ListView style={styles.scroll}
-      //       contentContainerStyle={styles.list}
-      //       dataSource={this.state.dataSource}
-      //       renderRow= {this.renderRow.bind(this)}>
-      //     </ListView>
+          // <ListView style={styles.scroll}
+          //   contentContainerStyle={styles.list}
+          //   dataSource={this.state.dataSource}
+          //   renderRow= {this.renderRow.bind(this)}>
+          // </ListView>
       //   </View>
       // </View>
     )

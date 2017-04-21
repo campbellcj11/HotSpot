@@ -7,6 +7,7 @@ var {
   Alert,
   Platform,
 } = ReactNative;
+import Moment from 'moment';
 
 //reducers
 export const LOG_IN = 'LOG_IN'
@@ -22,6 +23,15 @@ export const LOAD_USER_DATA = 'LOAD_USER_DATA';
 export const LOAD_ISLOGGEDIN_DATA = 'LOAD_ISLOGGEDIN_DATA';
 export const SAVE_INTERESTS = 'SAVE_INTERESTS';
 export const SAVE_CITY = 'SAVE_CITY';
+export const SAVE_START_DATE = 'SAVE_START_DATE';
+export const SAVE_END_DATE = 'SAVE_END_DATE';
+export const SAVE_POSTCARDS = 'SAVE_POSTCARDS';
+
+import RNFetchBlob from 'react-native-fetch-blob';
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+window.Blob = Blob;
 
 //initialize firebase TODO:pull from a credentials file
 const firebaseConfig = {
@@ -73,7 +83,10 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
-  return { type: SIGN_UP, currentUser: user };
+  console.log('AAAAA:', user);
+  offline.save('user', user);
+  offline.save('isLoggedIn', true);
+  return { type: SIGN_UP, currentUser: user};
 }
 
 export function stateResetPassword() {
@@ -90,6 +103,14 @@ function userDataLoaded(user) {
   return {
     type: LOAD_USER_DATA,
     user: user
+  }
+}
+
+export function saveUserData(user){
+  offline.save('user', user);
+  return {
+    type: LOG_IN,
+    currentUser: user,
   }
 }
 
@@ -127,6 +148,54 @@ export function saveLocation(city){
   return {
     type: SAVE_CITY,
     city: city
+  }
+}
+export function loadStartDate(){
+  return dispatch => { offline.get('startDate').then((startDate) => {
+    dispatch(saveStartDate(startDate || ''))
+  })}
+}
+export function saveStartDate(startDate){
+  var dateToSave = Moment(startDate);
+  // console.warn('DD: ',dateToSave);
+  if(dateToSave < new Date())
+  {
+    dateToSave = new Date()
+  }
+  offline.save('startDate', dateToSave);
+  return {
+    type: SAVE_START_DATE,
+    startDate: dateToSave
+  }
+}
+export function loadEndDate(){
+  return dispatch => { offline.get('endDate').then((endDate) => {
+    dispatch(saveEndDate(endDate || ''))
+  })}
+}
+export function saveEndDate(endDate){
+  var dateToSave = Moment(endDate);
+  // console.warn('DD: ',dateToSave);
+  if(dateToSave < new Date())
+  {
+    dateToSave = new Date()
+  }
+  offline.save('endDate', dateToSave);
+  return {
+    type: SAVE_END_DATE,
+    endDate: dateToSave
+  }
+}
+export function loadPostcards(){
+  return dispatch => { offline.get('postcards').then((postcards) => {
+    dispatch(savePostcards(postcards || []))
+  })}
+}
+export function savePostcards(postcards){
+  offline.save('postcards', postcards);
+  return {
+    type: SAVE_POSTCARDS,
+    postcards: postcards
   }
 }
 /*
@@ -193,30 +262,37 @@ export function logoutUser(){
       .then(currentUser => {
         dispatch(stateLogOut());
       })
-      .catch(error => {
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Logout for ' + user.email, error.message);
-      });
   };
 }
 
-export function signUpUser(user) {
-  console.log('Signing up user');
-  console.log("USER!: " + user);
+export function signUpUser(user, imageUri) {
+  console.log('Signing up user: ',user);
   return (dispatch) => {
     dispatch(signingUp());
-    firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
+    firebase.auth().createUserWithEmailAndPassword(user.Email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          email: user.email,
-          //TODO: need to implement first Name and last name fields on sign up.
-          //firstName: 'Conor',
-          //lastName: 'Campbell',
-          registeredUser: true,
-          adminUser: false,
-          lastLogin : firebase.database.ServerValue.TIMESTAMP
+          Email: user.Email,
+          First_Name: user.First_Name,
+          Last_Name: user.Last_Name,
+          Phone: user.Phone,
+          DOB: user.DOB,
+          City: user.city,
+          Interests: user.interests,
+          RegisteredUser: true,
+          AdminUser: false,
+          Last_Login : firebase.database.ServerValue.TIMESTAMP,
+          Gender: user.Gender,
+          Image: ''
+        });
+
+        //check for uploaded image
+        uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
+        .then(url => {
+            console.log("SIGNUP URL: " + url);
+            database.ref('users/' + firebase.auth().currentUser.uid).update({
+              Image: url
+            });
         });
 
         var metricQuery = database.ref("metrics/");
@@ -226,16 +302,46 @@ export function signUpUser(user) {
             "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
             "Additional_Information" : "user.email"
         });
-
+        console.log("HEREEEEE");
         dispatch(stateSignUp(user));
       })
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log('ERROR: ' + error.code + ' - ' + error.message);
-        Alert.alert('Invalid Signup for ' + user.email, error.message);
+        Alert.alert('Invalid Signup for ' + user.Email, error.message);
       });
   };
+}
+
+export function uploadImage(uri, imageName, mime = 'image/jpg')
+{
+    return new Promise((resolve, reject) => {
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+        let uploadBlob = null
+        const imageRef = firebase.storage().ref('UserImages').child(imageName)
+
+        fs.readFile(uploadUri, 'base64')
+        .then((data) => {
+          return Blob.build(data, { type: `${mime};BASE64` })
+        })
+        .then((blob) => {
+          uploadBlob = blob;
+          return imageRef.put(blob, { contentType: mime });
+        })
+        .then(() => {
+          uploadBlob.close()
+          return imageRef.getDownloadURL();
+        })
+        .then((url) => {
+          console.log("URL: " + url);
+          resolve(url)
+        })
+        .catch((error) => {
+          console.log("error!" + error);
+          reject(error)
+        })
+    })
 }
 
 export function resetPassword(email) {

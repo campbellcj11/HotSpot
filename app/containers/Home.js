@@ -7,8 +7,10 @@ function mapStateToProps(state) {
   return {
     loggedIn: state.user.loggedIn,
     user: state.user.user,
-    city: state.user.city ? state.user.city: '',
-    interests: state.user.interests ? state.user.interests: [],
+    city: state.user.city ? state.user.city : '',
+    interests: state.user.interests ? state.user.interests : [],
+    startDate: state.user.startDate ? state.user.startDate : new Date(),
+    endDate: state.user.endDate ? state.user.endDate : new Date(),
   }
 }
 

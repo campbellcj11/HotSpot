@@ -12,17 +12,21 @@ import {
   TouchableHighlight,
   Alert,
   StatusBar,
+  ScrollView,
 } from 'react-native'
 import Button from './Button'
 import ImageButton from './ImageButton'
 import { Actions } from 'react-native-router-flux';
 import * as firebase from 'firebase';
 var {height, width} = Dimensions.get('window');
+import EventCell from '../containers/EventCell'
+import styleVariables from '../Utils/styleVariables'
+
 
 const database = firebase.database();
 
 import icon3 from '../images/search-icon.png'
-const HEADER_HEIGHT = 64;
+const HEADER_HEIGHT = styleVariables.titleBarHeight
 const TAB_HEIGHT = 50;
 
 export default class Discover extends Component {
@@ -30,15 +34,34 @@ export default class Discover extends Component {
     super(props)
     const ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
     this.state = {
-      tag:'',
+      searchText:'',
       items: [],
       dataSource: ds,
     }
+    this.loadEvents(this.props.location)
   }
 
   componentWillMount() {
-
+    if (!this.eventsInLocale && this.props.location) {
+      this.loadEvents(this.props.location)
+    }
   }
+
+  loadEvents(locale) {
+    database.ref('events/' + locale)
+      .orderByChild('Date')
+      .on('value', (snapshot) => {
+          let eventArray = []
+          snapshot.forEach((child) => {
+            let event = child.val()
+            event.key = child.key
+            eventArray.push(event)
+          })
+          this.eventsInLocale = eventArray
+          //console.warn('Loaded ' + this.eventsInLocale.length + ' events')
+      })
+  }
+
   pressRow(rowData) {
     console.log('RowData2: ',rowData);
     // this.setState({currentSelection:rowData});
@@ -46,66 +69,44 @@ export default class Discover extends Component {
 
     Actions.tab3_2({title:rowData.Event_Name,currentSelection:rowData});
   }
-  renderRow(rowData){
-    var dateNumber;
-    var dateMonth;
-    var dateYear;
 
-    var months = new Array();
-    months[0] = "January";
-    months[1] = "February";
-    months[2] = "March";
-    months[3] = "April";
-    months[4] = "May";
-    months[5] = "June";
-    months[6] = "July";
-    months[7] = "August";
-    months[8] = "September";
-    months[9] = "October";
-    months[10] = "November";
-    months[11] = "December";
+  renderSlides() {
 
-    dateMonth = rowData.Date ? months[rowData.Date.getMonth()]: '';
-    dateNumber = rowData.Date ? rowData.Date.getDate(): '';
-    dateYear = rowData.Date ? rowData.Date.getUTCFullYear(): '';
+    var eventCells = [];
+    // console.warn(this.state.items.length);
+    for(var i=0;i < this.state.items.length; i++)
+    {
+      var cellInfo = this.state.items[i];
+    //   console.log('Cell Info ',i,': ',cellInfo);
+      eventCells.push(
+        <EventCell key={i} partOfFavorites={this.props.partOfFavorites} cellPressed={(cellInfo) => this.pressRow(cellInfo)} large={true} eventInfo={cellInfo} style={{marginBottom:8,backgroundColor:'white',borderBottomWidth:1,borderBottomColor:'#EEEEEE'}}/>
+      );
+    }
 
-    var dateString = dateMonth + ' ' + dateNumber + ', ' + dateYear;
-    return (
-      <TouchableHighlight
-        underlayColor = '#dddddd'
-        style = {styles.item}
-        onPress = {() => this.pressRow(rowData)}
-      >
-      <View style={styles.item}>
-      <View style={{flex:.85}}>
-          <View style={{flex:.75}}>
-            <Text style={styles.itemTitle}>{rowData.Event_Name}</Text>
-            <Text style={styles.itemText}>{rowData.Short_Description}</Text>
-          </View>
-          <View style={{marginLeft:5,flex:.25,justifyContent:'center'}}>
-            <Text numberOfLines={1} style={{color:'#261851',fontSize: 14,fontFamily: 'Futura-Medium'}}>{dateString}</Text>
-          </View>
-      </View>
-      <View style={{flex:.15}}>
-        <Image style={{flex:1,resizeMode:'cover'}} source={{uri: rowData.Image}}>
-        </Image>
-      </View>
-      </View>
-      </TouchableHighlight>
-    )
+    return (eventCells)
   }
 
   renderEvent(tagEvents)
   {
     var items = [];
-    var eventQuery = database.ref("events/");
+    var queryString = '/events/' + this.props.location;
+    var eventQuery = database.ref(queryString);
     tagEvents.forEach((element) => {
-      //console.log(element);
-      eventQuery = database.ref("events/"+element);
+      eventQuery = database.ref(queryString+'/'+element);
       eventQuery.once('value',(snapshot) => {
+        // var tagsRef = this.getRef().child('tags/' + child.key);
+        // console.log('Snapshot');
+        // console.log(snapshot);
+        var Tags = [];
+        // // items = [];
+        // tagsRef.on("value", (snapshot) => {
+        //   snapshot.forEach((childUnder) => {
+        //     Tags.push(childUnder.key);
+        //   });
         var today = new Date();
         var timeUTC = today.getTime();
-        if (snapshot.child("Date").val() >= timeUTC) {
+        if (snapshot.child("Date").val() >= timeUTC)
+        {
           items.push({
             Key: element,
             Event_Name: snapshot.child("Event_Name").val(),
@@ -117,13 +118,14 @@ export default class Discover extends Component {
             Tags: snapshot.child("Tags").val(),
             Short_Description: snapshot.child("Short_Description").val(),
             Long_Description: snapshot.child("Long_Description").val(),
+            MainTag: this.state.searchText,
             Address: snapshot.child("Address").val(),
             Website: snapshot.child("Website").val(),
           });
         }
      });
    });
-
+   console.warn('Items length: ',items.length);
    //sort by date
    var today = new Date();
    var timeUTC = today.getTime();
@@ -134,72 +136,105 @@ export default class Discover extends Component {
    //console.log(items);
    this.setState({
      dataSource: this.state.dataSource.cloneWithRows(items),
-     items: items,
+     items: items
    });
   }
 
-  renderTag()
-  {
-     var index = 0;
-     var tagEvents = [];
-     var tag = this.state.tag;
-     var tagQuery = database.ref("tags/"+tag).orderByKey();
-
-     tagQuery.once("value", (snapshot) => {
-         snapshot.forEach((childSnapshot) => {
-           var key = childSnapshot.val();
-           tagEvents[index] = key;
-           index++;
-         })
-        this.renderEvent(tagEvents);
-     });
+  getRef() {
+    return firebase.database().ref();
   }
 
-  renderTag()
+  // execute simple case insensitive search on all event fields for all events in current locale
+  search()
   {
-     var index = 0;
-     var tagEvents = [];
-     var tag = this.state.tag;
-     var tagQuery = database.ref("tags/").orderByKey();
-     tagQuery.once("value", (snapshot) => {
-         snapshot.forEach((childSnapshot) => {
-           var object = childSnapshot.val();
-           if (object[tag] != null)
-           {
-             tagEvents[index] = childSnapshot.key;
-           }
-           index++;
-         })
-        this.renderEvent(tagEvents);
-     });
+    if (!this.state.searchText || !this.eventsInLocale) {
+      return
+    }
+    // perform search (on events occuring after now)
+    let matches = []
+    let query = new RegExp(this.state.searchText, 'i')
+    let now = (new Date()).getTime()
+    this.eventsInLocale.forEach(function(event, index) {
+      if (event.Date < now) {
+        return
+      }
+      for (key in event) {
+        if (query.test(event[key])) {
+          matches.push(event)
+          return
+        }
+      }
+    })
+    //console.warn('Found ' + matches.length + ' matches')
+    // populate item array with match data + tags
+    let items = []
+    let matchIndex = matches.length
+    this.addMatchesWithTags(items, matches, 0, (items) => {
+      // set data for scroll view
+      clearTimeout(this.loadTimeout)
+      this.loadTimeout = setTimeout(() => {
+        this.setState({
+          dataSource: this.state.dataSource.cloneWithRows(items),
+          items: items
+        })
+      }, 250)
+    })
+  }
+
+  // asynchronously add tags to matches before setting datasource
+  addMatchesWithTags(items, matches, index, callback) {
+    if (index == matches.length) {
+      callback(items)
+      return
+    }
+    let match = matches[index]
+    getTags.call(this, match.key, (tags) => {
+      items.push({
+        Key : match.key,
+        Event_Name: match.Event_Name,
+        Date: new Date(match.Date),
+        Location: match.Location,
+        Image: match.Image,
+        latitude: match.Latitude,
+        longitude: match.Longitude,
+        Tags: tags,
+        Short_Description: match.Short_Description,
+        Long_Description: match.Long_Description,
+        Address: match.Address,
+        Website: match.Website,
+        MainTag: tags.length ? tags[0] : '',
+        Event_Contact: match.Email_Contact,
+        City: match.City,
+      })
+      this.addMatchesWithTags(items, matches, ++index, callback)
+    })
   }
 
   render() {
     return(
       <View style={styles.container}>
         <View style={styles.searchView}>
-          <Image source={icon3} style={{tintColor: '#a6a6a6',resizeMode: 'cover',margin: 5,width: 20, height: 20,}}/>
+          <Image source={icon3} style={styles.searchBarImage}/>
           <TextInput style={[styles.searchText, {textAlignVertical: 'center'}]}
                    placeholder='Search'
                    placeholderTextColor='#a6a6a6'
                    selectionColor='#000000'
-                   onChangeText={(tag) => this.setState({tag})}
+                   underlineColorAndroid='rgba(0,0,0,0)'
+                   onChangeText={(query) => this.setState({searchText: query})}
           >
           </TextInput>
           <Button
             style = {styles.searchButton}
             textStyle={styles.buttonText}
-            onPress = {() => this.renderTag()}
+            onPress = {() => this.search()}
           >
             Go
           </Button>
         </View>
         <View>
-          <ListView style={styles.scroll}
-          contentContainerStyle={styles.list}
-            dataSource={this.state.dataSource}
-            renderRow= {this.renderRow.bind(this)}>
-          </ListView>
+          <ScrollView ref='swiper' style={styles.swiper}>
+              {this.renderSlides()}
+          </ScrollView>
         </View>
       </View>
     )
@@ -213,60 +248,55 @@ const styles = StyleSheet.create({
   },
   searchView: {
     flexDirection: 'row',
-    backgroundColor: '#e6e6e6',
-    margin: 3,
-    height:25,
+    backgroundColor: '#fff',
+    margin: 1,
+    height: 35,
+    alignItems:'center'
   },
   searchText: {
     color: 'black',
+    fontSize: 16,
     flex: 1,
-    fontFamily: 'Futura-Medium',
+    fontFamily: styleVariables.systemRegularFont,
+    padding: 0
   },
   buttonText: {
       color: 'white',
       fontSize: 20,
       textAlign: 'center',
-      fontFamily: 'Futura-Medium',
-      height: 50,
-      lineHeight: 50,
+      fontFamily: styleVariables.systemRegularFont,
       backgroundColor: 'transparent',
+      padding: 0
   },
   searchButton: {
-    backgroundColor: '#261851',
+    backgroundColor: '#0E476A',
     flex: .20,
-    borderColor: '#D200FF',
-    height:25,
+    height: 35,
+    borderRadius: 3
   },
-  list: {
-    paddingBottom: 5,
-    justifyContent: 'center',
-    flexDirection: 'row',
-    flexWrap:'wrap',
+  searchBarImage: {
+    tintColor: '#a6a6a6',
+    resizeMode: 'cover',
+    width: 20,
+    height: 20,
+    marginLeft: 2,
+    marginRight: 2
   },
-  item: {
-    backgroundColor: '#FFFFFF',
+  swiper: {
+    height: height - HEADER_HEIGHT - TAB_HEIGHT - 25,
     width: width,
-    height: 100,
-    borderBottomWidth: 1,
-    borderBottomColor: '#261851',
-    flexDirection: 'row',
-  },
-  itemTitle: {
-    backgroundColor: 'transparent',
-    color: 'black',
-    fontSize: 20,
-    fontFamily: 'Nexa Bold',
-    padding: 2,
-  },
-  itemText: {
-    backgroundColor: 'transparent',
-    color: 'black',
-    fontSize: 16,
-    fontFamily: 'Nexa Light',
-    padding: 2,
-  },
-  scroll: {
-    top:0,
-    height:height*.79,
-  },
+    backgroundColor: '#E2E2E2'
+  }
 })
+
+// TODO move to eventActions
+function getTags(eventId, callback) {
+  let ref = database.ref('tags/' + eventId)
+  ref.on('value', (snapshot) => {
+    let tags = []
+    snapshot.forEach(child => {
+      tags.push(child.key)
+    })
+    callback(tags, eventId, ref)
+  })
+}
