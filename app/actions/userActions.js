@@ -267,12 +267,13 @@ export function logoutUser(){
 
 export function signUpUser(user, imageUri) {
   console.log('Signing up user: ',user);
+  console.log('AAAA: ' + user.email);
   return (dispatch) => {
     dispatch(signingUp());
-    firebase.auth().createUserWithEmailAndPassword(user.Email, user.password)
+    firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          Email: user.Email,
+          Email: user.email,
           First_Name: user.First_Name,
           Last_Name: user.Last_Name,
           Phone: user.Phone,
