@@ -86,7 +86,7 @@ export default class SignupView extends Component {
   }
   signup(){
     user = {
-      Email: this.state.email,
+      email: this.state.email,
       password: this.state.password,
       First_Name: this.state.firstName,
       Last_Name: this.state.lastName,

@@ -520,11 +520,11 @@ export default class CreateEvent extends Component {
          </ImageButton>
        </View>
 
-       <View style = {styles.container_addEvent}>
+       <ScrollView style={{height:height-HEADER_HEIGHT}}>
          <View style={styles.interestsHolder}>
            {this.renderTags()}
          </View>
-      </View>
+      </ScrollView>
      </View>
     </Modal>
 
