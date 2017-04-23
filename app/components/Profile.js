@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
-import backgroundImage from '../images/City-Light.png'
 import * as firebase from 'firebase';
 import {
   ActivityIndicator,
@@ -32,23 +31,14 @@ import settingsImage from '../images/settings.png'
 import closeImage from '../images/delete.png'
 import close from '../imgs/close.png'
 import checkImage from '../imgs/check.png'
-import addImage from '../images/plus.png'
 import styleVariables from '../Utils/styleVariables'
 import LinearGradient from 'react-native-linear-gradient'
 import Moment from 'moment'
 import Swiper from 'react-native-swiper';
-import SortableGrid from 'react-native-sortable-grid';
 import DatePicker from 'react-native-datepicker'
 import profileIcon from '../imgs/profile.png'
 var eventActions = require("../actions/eventActions.js");
 var userActions = require("../actions/userActions.js");
-
-import postcardImage1 from '../images/postcard1.png'
-import postcardImage2 from '../images/postcard2.jpg'
-import postcardImage2_1 from '../images/postcard2_1.jpg'
-import postcardImage2_2 from '../images/postcard2_2.jpg'
-import postcardImage2_3 from '../images/postcard2_3.jpg'
-import postcardImage4 from '../images/postcard4.jpg'
 
 import PostcardView from './PostcardView'
 
@@ -158,15 +148,6 @@ export default class Profile extends Component {
         city: nextProps.city,
       })
     }
-  }
-  // renderRightButton(){
-  //   return (
-  //     <ImageButton image={settingsImage} style={{width:21,height:21}} imageStyle={{width:18,height:18,tintColor:'white'}} onPress={this.onRightPress.bind(this)}>
-  //     </ImageButton>
-  //   );
-  // }
-  onRightPress(){
-    this.setModalVisible(true);
   }
   logout(){
     this.settingsVisible(false);
@@ -543,26 +524,6 @@ saveInterests(){
 
             <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02,}}>
               </View>
-{
-            // <View style={styles.settings_InputView}>
-            // <Text style={styles.settings_Header}>Age</Text>
-            //   <View style = {styles.settings_InfoField}>
-            //   <ModalPicker
-            //     selectStyle={{borderRadius:0, borderWidth: 0}}
-            //     selectTextStyle={{fontSize: 14, fontFamily: styleVariables.systemRegularFont}}
-            //     style ={{ borderRadius:0}}
-            //     data={ageOptions}
-            //     onChange={(age) => this.setState({selectedAge: age.label})}>
-            //
-            //     <Text
-            //       style={{padding:10, height:CARD_HEIGHT*.075,fontSize: 14, fontFamily: styleVariables.systemRegularFont, color:'black'}}
-            //     >
-            //     {this.state.selectedAge.toString()}
-            //       </Text>
-            //   </ModalPicker>
-            //   </View>
-            // </View>
-          }
           <View style={styles.settings_InputView}>
           <Text style={styles.settings_Header}>DOB</Text>
             <View style = {styles.settings_InfoField}>
@@ -657,31 +618,6 @@ saveInterests(){
       TagsVisible: visible,
     });
   }
-  // renderTagSelection(){
-  //   <Modal
-  //     animationType={'slide'}
-  //     transparent={false}
-  //     visible={this.state.TagsVisible}
-  //     onRequestClose={() => {alert("Modal can not be closed.")}}
-  //   >
-  //   <View style={{flex:1, flexDirection: 'column'}}>
-  //    <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-  //      <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-  //        <View>
-  //        <ImageButton image={closeImage} style={{top:2}} imageStyle={{tintColor:'white'}} onPress={() => this.setState({TagsVisible: false})}>
-  //        </ImageButton>
-  //        </View>
-  //      </View>
-  //    </View>
-  //
-  //      <View style = {styles.container_profile}>
-  //        <View style={styles.interestsHolder}>
-  //          {/*this.renderTags()*/}
-  //        </View>
-  //     </View>
-  //    </View>
-  //   </Modal>
-  // }
 
   buttonPressed(sentInterest){
     if(this.state.interests.indexOf(sentInterest) == -1)
@@ -749,7 +685,6 @@ saveInterests(){
   renderPostcards(){
     var maxViews = 5;
 
-    // var postCards = [{name:'Coachella',date: new Date(),cardImage: postcardImage1,color:'#0E476A',userImages:[]},{name:'Drake @ Colonial Life Arena',date: new Date(), cardImage: postcardImage2,color:'#F06D37',userImages:[postcardImage2_1,postcardImage2_2,postcardImage2_3]}]
     var postCardViews = [];
 
     var postCards = this.state.postcards || [];
@@ -950,38 +885,6 @@ saveInterests(){
         </View>
 
       </ScrollView>
-    {/*
-    <View style = {styles.innerContainer}>
-    <View style= {styles.ile}>
-      <View style= {styles.container_upper}>
-        <View style={styles.container_image}>
-          <Image source={{uri: this.state.imageLocation }} style={styles.userImage}/>
-        </View>
-        <View>
-          <Text style={styles.profile_username}> {this.state.First_Name}{" "}{this.state.Last_Name} </Text>
-        </View>
-        <View>
-          <Text style={styles.userLocation}>{this.props.location}</Text>
-        </View>
-        <Button style={{marginLeft:32,marginRight:32}} textStyle={{color:'white',textAlign:'center'}} onPress={() => this.logout()}>Sign out</Button>
-       </View>
-      <ScrollView style={styles.container_lower}>
-        <View style={styles.profile_interestHeader}>
-          <Text style={styles.profile_interests}>Interests</Text>
-        </View>
-        <View style={styles.interestsHolder}>
-          {this.renderInterests()}
-        </View>
-        <View style={styles.profile_interestHeader}>
-          <Text style={styles.profile_interests}>Post Cards</Text>
-        </View>
-        <View>
-          {this.renderPostcards()}
-        </View>
-      </ScrollView>
-    </View>
-  </View>
-  */}
   </View>
 )
   }
@@ -1056,22 +959,6 @@ saveInterests(){
   }
 }
 const styles = StyleSheet.create({
-  creator_EventView: {
-    width: width,
-    height: CARD_HEIGHT *0.1,
-
-  },
-  creator_NameInput: {
-    marginLeft:10,
-    marginRight: 5,
-    height: CARD_HEIGHT*.075,
-    justifyContent: 'center',
-    borderBottomWidth:.5,
-    borderBottomColor: '#d3d3d3',
-  },
-  linearGradient: {
-    flex:1,
-  },
   item: {
     backgroundColor: '#FFFFFF',
     width: 200,
@@ -1105,21 +992,10 @@ const styles = StyleSheet.create({
     top: Platform.OS == 'ios' ? 64:44,
     height: height - (Platform.OS == 'ios' ? 64:44) - 45,
     bottom: 45,
-    // flex: 1,
-    // flexDirection: 'column',
-    // borderColor: 'black',
-    // borderWidth: 2,
   },
   innerContainer:{
     flex: 1,
     flexDirection: 'column',
-    // borderColor: 'black',
-    // borderWidth: 2,
-  },
-  settings_card: {
-    top: 0,
-    width:CARD_WIDTH,
-    height:CARD_HEIGHT+TAB_HEIGHT,
   },
   container_Info: {
     width: CARD_WIDTH,
@@ -1172,13 +1048,10 @@ const styles = StyleSheet.create({
     },
   container_upper: {
     flex:1,
-
     backgroundColor: '#0E476A',
   },
   container_lower: {
     flex:1.75,
-    // borderWidth: 2,
-    // borderColor: 'green',
     backgroundColor:'#E2E2E2',
   },
   container_settings: {
@@ -1195,29 +1068,9 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
-  filterTypeTitle: {
-    fontFamily: styleVariables.systemBoldFont,
-    fontSize: 24,
-    color: '#F97237',
-    marginLeft: 16,
-    marginRight: 16,
-    marginBottom: 8,
-    marginTop:8,
-    textAlign:'center',
-  },
-  backgroundImage: {
-    position: 'absolute',
-    width: CARD_WIDTH,
-    top: height*.6,
-    height: height*.45,
-    resizeMode: 'stretch', // or 'stretch'
-  },
   userImage: {
     width: CARD_HEIGHT* .15,
     height: CARD_HEIGHT* .15,
-
-    //resizeMode: 'cover', // or 'stretch'
-    //justifyContent: 'center',
   },
   locationList:{
     marginLeft:32,
@@ -1232,17 +1085,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   profile_username: {
-    // borderWidth: 2,
-    // borderColor: 'pink',
     color: 'white',
     backgroundColor: 'transparent',
     height: 30,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
     fontSize: 18,
-  },
-  picker: {
-    width: 100
   },
   interestCell:{
     margin:8,
@@ -1257,26 +1105,12 @@ const styles = StyleSheet.create({
     color: '#848484',
   },
   userLocation: {
-    // borderWidth: 2,
-    // borderColor: 'black',
     color: 'white',
     backgroundColor: 'transparent',
     height: 25,
     textAlign: 'center',
     fontFamily: 'Futura-Medium',
     fontSize: 12,
-  },
-  loginButton: {
-    marginTop: 5,
-    backgroundColor: '#50E3C2',
-    height: 50,
-    // marginLeft:20,
-    // marginRight: 20,
-    borderWidth: 2,
-    borderRadius: 25,
-    borderColor: '#22FFCC',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   profile_interests: {
     height: 25,
@@ -1293,7 +1127,6 @@ const styles = StyleSheet.create({
     height: CARD_HEIGHT*.075,
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
-
   },
   selectedCell:{
     marginHorizontal: 7,
@@ -1323,7 +1156,6 @@ const styles = StyleSheet.create({
     marginTop:20,
     flex:.6,
     color: 'white',
-    //color:'#F97237',
     fontSize:20,
     fontFamily:'Futura-Medium',
     textAlign:'center',
@@ -1413,22 +1245,11 @@ const styles = StyleSheet.create({
   settings_image: {
     width: 100,
     height: 100,
-    // resizeMode: 'cover', // or 'stretch'
-    //justifyContent: 'center',
     borderRadius: 50,
-  },
-  settings_imageView: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: width,
-    height: CARD_HEIGHT * .4,
-    // borderWidth: 2,
-    // borderColor: 'red',
   },
   settings_closeModal: {
     paddingTop: 3,
     paddingLeft: 3,
-
   },
   settings_saveModal: {
     paddingTop: 3,
@@ -1440,15 +1261,10 @@ const styles = StyleSheet.create({
 
   },
   settings_NameView: {
-    // borderBottomWidth: .75,
-    // borderBottomColor: '#d3d3d3',
     width: width/2,
     height: CARD_HEIGHT * .1,
   },
-
   settings_EmailView: {
-    // borderBottomWidth: .75,
-    // borderBottomColor: '#d3d3d3',
     width: width,
     height: CARD_HEIGHT * .1,
   },
@@ -1461,20 +1277,12 @@ const styles = StyleSheet.create({
     height: CARD_HEIGHT * .1,
   },
   settings_NameInput: {
-    // borderWidth: 2,
-    // borderColor: 'red',
-    //height:25,
-    //paddingLeft: 10,
-    //paddingTop: 10,
     fontSize: 12,
     color:'black',
   },
   settings_Name: {
-    // borderWidth: 2,
-    // borderColor: 'black',
     justifyContent: 'center',
     paddingLeft: 10,
-    //paddingTop: 2,
   },
   settings_EmailInput: {
     marginLeft:10,
@@ -1511,13 +1319,10 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
   },
-
   view_iconView: {
     flex:1,
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    // borderWidth: 2,
-    // borderColor: 'red',
   },
   interestsHolder: {
     paddingLeft: 16,
@@ -1552,7 +1357,4 @@ const styles = StyleSheet.create({
     fontSize: 17,
     color: '#0B82CC',
   },
-  tagsCell: {
-    margin: 8,
-  }
 })
