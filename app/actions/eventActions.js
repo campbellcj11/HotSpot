@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: EventActions
+Description: Functionality regarding events.
+Note:
+
+*/
+///////////////////////
 import offline from 'react-native-simple-store'
 import * as firebase from 'firebase';
 
@@ -39,6 +49,9 @@ export function getSavedEvents()
   });
 }
 
+/*
+This function is used to favorite an event.
+*/
 export function favorite(userUID, eventUID, city)
 {
   let db = firebase.database();
@@ -71,6 +84,9 @@ export function favorite(userUID, eventUID, city)
     });
 }
 
+/*
+This function is used to unfavorite an event.
+*/
 export function unFavorite(userUID, eventUID, city)
 {
   let db = firebase.database();
@@ -98,7 +114,9 @@ export function unFavorite(userUID, eventUID, city)
   }
 }
 
-
+/*
+This function is used to render the possible interests for a user.
+*/
 export function renderPossibleInterests()
 {
     let db = firebase.database();
@@ -108,6 +126,9 @@ export function renderPossibleInterests()
     return possibleTags;
 }
 
+/*
+This function is used to render possible locations for our app.
+*/
 export function renderPossibleLocations()
 {
     let db = firebase.database();

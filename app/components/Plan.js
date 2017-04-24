@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Plan
+Description: This is an old class that is no longer used in our current UI.
+Note: Outdated. 
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

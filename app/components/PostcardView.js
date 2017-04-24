@@ -1,3 +1,17 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: PostcardView
+Description: Contains the functionality for the postcards feature. Displays the
+event and its image and allows the user to add more images to a card that the user
+can then swipe to view the images they upload.
+This page opens up different modals for editing settings according to
+what the user clicks.
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

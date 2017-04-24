@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: styleVariables
+Description: Util class that defines the preset styles that are used throughout
+the app
+
+*/
+///////////////////////
 import {
   Platform,
 } from 'react-native'

@@ -1,3 +1,14 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: LandingPage
+Description: Splash Screen for our app which allows you to open the
+sign up and login in flows. 
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: UserActions
+Description: Links redux app state to the DOM and contols user actions.
+Note: All of these functions return Promises.
+
+*/
+///////////////////////
 import offline from 'react-native-simple-store'
 import * as firebase from 'firebase';
 
@@ -83,7 +93,6 @@ export function stateLogOut() {
 }
 
 export function stateSignUp(user) {
-  console.log('AAAAA:', user);
   offline.save('user', user);
   offline.save('isLoggedIn', true);
   return { type: SIGN_UP, currentUser: user};
@@ -245,6 +254,9 @@ export function loginUser(user){
   };
 }
 
+/*
+This function logs a user out of firebase and also pushes a metric.
+*/
 export function logoutUser(){
   console.log('Logging out user');
 
@@ -265,14 +277,18 @@ export function logoutUser(){
   };
 }
 
+/*
+This function signs a user up via firebase and pushes this user to the database.
+Then is also uploads a photo to the database async. After, it updates the metrics
+as well.
+*/
 export function signUpUser(user, imageUri) {
-  console.log('Signing up user: ',user);
   return (dispatch) => {
     dispatch(signingUp());
-    firebase.auth().createUserWithEmailAndPassword(user.Email, user.password)
+    firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
         database.ref('users/' + firebase.auth().currentUser.uid).set({
-          Email: user.Email,
+          Email: user.email,
           First_Name: user.First_Name,
           Last_Name: user.Last_Name,
           Phone: user.Phone,
@@ -289,7 +305,6 @@ export function signUpUser(user, imageUri) {
         //check for uploaded image
         uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
         .then(url => {
-            console.log("SIGNUP URL: " + url);
             database.ref('users/' + firebase.auth().currentUser.uid).update({
               Image: url
             });
@@ -302,7 +317,6 @@ export function signUpUser(user, imageUri) {
             "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
             "Additional_Information" : "user.email"
         });
-        console.log("HEREEEEE");
         dispatch(stateSignUp(user));
       })
       .catch(error => {
@@ -314,6 +328,9 @@ export function signUpUser(user, imageUri) {
   };
 }
 
+/*
+This function uploads a photo to our database.
+*/
 export function uploadImage(uri, imageName, mime = 'image/jpg')
 {
     return new Promise((resolve, reject) => {
@@ -344,6 +361,9 @@ export function uploadImage(uri, imageName, mime = 'image/jpg')
     })
 }
 
+/*
+This function is used to reset the password for a user.
+*/
 export function resetPassword(email) {
   console.log('Resetting Password');
   return (dispatch) => {

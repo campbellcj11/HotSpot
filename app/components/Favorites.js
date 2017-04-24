@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Favorites
+Description: This creates the favorites page, which displays all the events
+that a user has favorited.
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {
@@ -94,43 +104,10 @@ export default class Favorites extends Component {
             var timeUTC = today.getTime();
             // console.log("Error date: " + snap.val().Date);
             // console.log("Key error: " + snap.key);
-          if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
-              items.push({
-                Key : snap.key,
-                Event_Name: snap.val().Event_Name,
-                Date: new Date(snap.val().Date),
-                Location: snap.val().Location,
-                City: snap.val().City,
-                Image: snap.val().Image,
-                latitude: snap.val().Latitude,
-                longitude: snap.val().Longitude,
-                Tags: snap.val().Tags,
-                Short_Description: snap.val().Short_Description,
-                Long_Description: snap.val().Long_Description,
-                Address: snap.val().Address,
-                Website: snap.val().Website,
-                MainTag: Tags ? Tags[0]:[],
-              });
-            }//If we want to look at only past events
-            else if (snap.val().Date <= timeUTC && this.state.viewPast) {
-                items.push({
-                  Key : snap.key,
-                  Event_Name: snap.val().Event_Name,
-                  Date: new Date(snap.val().Date),
-                  Location: snap.val().Location,
-                  City: snap.val().City,
-                  Image: snap.val().Image,
-                  latitude: snap.val().Latitude,
-                  longitude: snap.val().Longitude,
-                  Tags: snap.val().Tags,
-                  Short_Description: snap.val().Short_Description,
-                  Long_Description: snap.val().Long_Description,
-                  Address: snap.val().Address,
-                  Website: snap.val().Website,
-                  MainTag: Tags ? Tags[0]:[],
-                });
-              }//if we want to look at all events
-              else if (this.state.viewAll) {
+          if (snap.val() != null)
+          {
+              console.log('AAAA', snap.val());
+              if (snap.val().Date >= timeUTC && !this.state.viewAll && !this.state.viewPast) {
                   items.push({
                     Key : snap.key,
                     Event_Name: snap.val().Event_Name,
@@ -147,7 +124,44 @@ export default class Favorites extends Component {
                     Website: snap.val().Website,
                     MainTag: Tags ? Tags[0]:[],
                   });
-              }
+                }//If we want to look at only past events
+                else if (snap.val().Date <= timeUTC && this.state.viewPast) {
+                    items.push({
+                      Key : snap.key,
+                      Event_Name: snap.val().Event_Name,
+                      Date: new Date(snap.val().Date),
+                      Location: snap.val().Location,
+                      City: snap.val().City,
+                      Image: snap.val().Image,
+                      latitude: snap.val().Latitude,
+                      longitude: snap.val().Longitude,
+                      Tags: snap.val().Tags,
+                      Short_Description: snap.val().Short_Description,
+                      Long_Description: snap.val().Long_Description,
+                      Address: snap.val().Address,
+                      Website: snap.val().Website,
+                      MainTag: Tags ? Tags[0]:[],
+                    });
+                  }//if we want to look at all events
+                  else if (this.state.viewAll) {
+                      items.push({
+                        Key : snap.key,
+                        Event_Name: snap.val().Event_Name,
+                        Date: new Date(snap.val().Date),
+                        Location: snap.val().Location,
+                        City: snap.val().City,
+                        Image: snap.val().Image,
+                        latitude: snap.val().Latitude,
+                        longitude: snap.val().Longitude,
+                        Tags: snap.val().Tags,
+                        Short_Description: snap.val().Short_Description,
+                        Long_Description: snap.val().Long_Description,
+                        Address: snap.val().Address,
+                        Website: snap.val().Website,
+                        MainTag: Tags ? Tags[0]:[],
+                      });
+                  }
+          }
           });
         });
       }

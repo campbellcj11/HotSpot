@@ -1,3 +1,14 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: LoginView
+Description: Class which sets up the login view for a user to sign up,
+which consists of an email and password text input.
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

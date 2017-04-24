@@ -1,3 +1,14 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: TagSelection
+Description: Custom Modal that lists possible events tags according to
+database.
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import {
   StyleSheet,

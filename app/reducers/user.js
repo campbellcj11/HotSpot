@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: user
+Description: Takes input from userActions and saves it to the redux app state
+Note: 
+
+*/
+///////////////////////
 import {
   LOG_IN,
   LOG_OUT,
