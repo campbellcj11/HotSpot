@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: FilterModal
+Description: This allows the user the ability to filter events based on time,
+city, and interests.
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import {
   StyleSheet,

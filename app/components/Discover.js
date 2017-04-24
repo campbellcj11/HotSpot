@@ -1,3 +1,12 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Discover
+Description: Displays discover page which allows users to search for events
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {
