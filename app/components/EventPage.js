@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: EventPage
+Description: Holds multiple event cells on a single "page"
+Note: This class is no longer used because of a change to the UI design
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

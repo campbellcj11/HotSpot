@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: EventCard
+Description: This is the drill down view for evemts, that allows users to share,
+call, and email about events. 
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';
@@ -151,7 +161,7 @@ export default class EventCard extends Component {
               console.warn('Calendar authorization failed.')
             })
           return
-        } 
+        }
         let options = {
           startDate: (new Date(+current.Date)).toISOString(), // + is quick cast to Number
           endDate: (new Date(+current.Date + 3600000)).toISOString(),

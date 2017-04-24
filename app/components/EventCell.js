@@ -1,3 +1,12 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: EventCell
+Description: Displays in-line events on the feed favorites and discover page. 
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';

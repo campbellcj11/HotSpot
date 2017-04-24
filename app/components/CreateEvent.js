@@ -1,3 +1,12 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: CreateEvent
+Description: Displays inputs that allow users to create an event. 
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

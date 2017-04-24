@@ -1,3 +1,12 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Button
+Description: Custom button component
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import {
   StyleSheet,
