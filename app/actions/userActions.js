@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: UserActions
+Description: Links redux app state to the DOM and contols user actions.
+Note: All of these functions return Promises.
+
+*/
+///////////////////////
 import offline from 'react-native-simple-store'
 import * as firebase from 'firebase';
 
