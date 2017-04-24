@@ -34,26 +34,26 @@ import arrow_right from '../imgs/arrow-right.png'
 import filterImage from '../images/filter.png'
 import LinearGradient from 'react-native-linear-gradient';
 import NativeMethodsMixin from 'NativeMethodsMixin'
-var {width,height} = Dimensions.get('window');
 import * as firebase from 'firebase';
 import EventCard from './EventCard'
 import EventPage from './EventPage'
 import TagSelection from './TagSelection'
 import Swiper from 'react-native-swiper';
 import styleVariables from '../Utils/styleVariables'
+
 var eventActions = require("../actions/eventActions.js");
-
-
+var {width,height} = Dimensions.get('window');
 const HEADER_HEIGHT = styleVariables.titleBarHeight;
 const TAB_HEIGHT = 50;
 const CARD_WIDTH = width;
 const CARD_HEIGHT = height - HEADER_HEIGHT;
-
 const Blob = RNFetchBlob.polyfill.Blob;
 const fs = RNFetchBlob.fs;
 window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
 window.Blob = Blob;
 
+
+/* This variable returns the url of the event image saved in Firebase storage DB */
 const uploadImage = (uri, imageName, mime = 'image/jpg') => {
   return new Promise((resolve, reject) => {
     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
@@ -74,7 +74,7 @@ const uploadImage = (uri, imageName, mime = 'image/jpg') => {
       })
       .then((url) => {
 
-        resolve(url)
+        resolve(url)//returns firebase URL
       })
       .catch((error) => {
         reject(error)
@@ -118,19 +118,26 @@ export default class CreateEvent extends Component {
       textHeight: CARD_HEIGHT*.075,
     }
 
+    //reference to events in approval queue table
     this.eventQueue = this.getRef().child('approvalQueue/');
+
+    //reference to event images stored in firebase storage
     this.eventImageRef = this.getStorageRef().child('EventImages');
 
   }
 
+  //reference to Firebase DB
   getRef() {
     return firebase.database().ref();
   }
 
+  //reference to Firebase storage DB
   getStorageRef() {
     return firebase.storage().ref();
   }
 
+  /* This function renders the image selected from User's device. It utilizes
+  the package 'react-native-image-picker'*/
   renderImage(){
     ImagePicker.showImagePicker((response) => {
       if(response.didCancel) {
@@ -145,48 +152,50 @@ export default class CreateEvent extends Component {
       }
     })
   }
+
+  /*This function serves as a simple text input validation. Ensure the required fields
+  contain proper values */
   checkComplete(){
     var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
     var unixTime = new Date(mergeDateAndTime).getTime();
+    //empty field check
     if(
       this.mergeDateAndTime != '' &&
       this.state.Event_Address != '' &&
       this.state._city != '' &&
       this.state.Event_Name != '' &&
-      //this.state.Venue != '' &&
-      //this.state.Long_Description != '' &&
       this.state.Short_Description != '' &&
       this.state.State != '' &&
       this.state.tags.length != 0
     )
     {
+      //proceed to optional information input
+      //renders optional info modal
       this.setOptionalInfoVisible(true);
-      //return true;
     }
     else {
       Alert.alert('Please fill out all of the information.');
-      //return false;
     }
   }
+
+  /*This function is called once an event is submitted for approval. Upon submission,
+  an event object is created in Firebase DB and stored in the approval queue*/
   _submitEvent(userRef){
-    //var isComplete = this.checkComplete();
-    // if(isComplete)
-    // {
       var newEventKey = this.eventQueue.push().key;
-      //var imageLocation = this.eventImageRef + '/'+newEventKey + '.jpg';
       var mergeDateAndTime = this.state.Event_Date+ " " + this.state.Time;
       var unixTime = new Date(mergeDateAndTime).getTime();
 
+      //Uploads image from user device to firebase storage DB.
       uploadImage(this.state.responseURI, newEventKey+'.jpg')
           .then(url => firebase.database().ref('approvalQueue/'+newEventKey).update({
             "Image": url,
           })
           )
-      //  .then(url => this.setState({imageLocation: url}))
         .catch((error) => {
         reject(error)
            });
 
+      //new event object is created with unique key and values are saved to firebase.
       firebase.database().ref('approvalQueue/'+newEventKey).update({
         "Address" : this.state.Event_Address,
         "City": this.state._city,
@@ -195,7 +204,6 @@ export default class CreateEvent extends Component {
         "Email_Contact": this.state.Email_Contact,
         "Event_Name" : this.state.Event_Name,
         "Event_Type": this.state.Event_Type,
-        //"Image": this.state.imageLocation,
         "Latitude": this.state.Latitude,
         "Location": this.state.Event_Location,
         "Longitude": this.state.Longitude,
@@ -225,32 +233,28 @@ export default class CreateEvent extends Component {
         Time: '',
         Event_Date: '',
       })
+
+      //create event modal is closed upon submission
       this.props.close();
 
     }
 
-  //   else
-  //   {
-  //     Alert.alert('Please fill out all of the information.');
-  //   }
+  // setEventVisible(visible){
+  //   this.setState({
+  //     eventModal: visible,
+  //   })
+  // }
+  // onLeftPress(){
+  //   this.setEventVisible(true);
+  // }
+  //
+  // onExitPress(){
+  //   this.setEventVisible(false);
   // }
 
-  setEventVisible(visible){
-    this.setState({
-      eventModal: visible,
-    })
-  }
-
-
-
-  onLeftPress(){
-    this.setEventVisible(true);
-  }
-
-  onExitPress(){
-    this.setEventVisible(false);
-  }
-
+  /*This function is called once a tag has been selected. The tag will be added
+  to the dynamic list of tags.
+  */
   buttonPressed(sentTag) {
      console.log("tag!"+sentTag);
      console.log(this.state.tags);
@@ -271,29 +275,36 @@ export default class CreateEvent extends Component {
 
   }
 
+  /*This function renders the dynamic list of possible tags available to the user.*/
   renderTags(){
-    // Call to database to populate the possible tags
+    //calls renderPossibleInterests function found in eventActions.js
     tags = eventActions.renderPossibleInterests();
 
     var interestsViews = [];
     for (i in tags){
       var tag = i;
       var isSelected = this.state.tags.indexOf(tag) == -1 ? false : true;
-      // var backgroundColor = this.state.interests.indexOf(interest) == -1 ? styleVariables.greyColor : '#0B82CC';
+
+      //push selected interests to interestsView array.
       interestsViews.push(
-          <Button ref={tag} underlayColor={'#FFFFFF'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.buttonPressed.bind(this,tag)}>{tag.toUpperCase()}</Button>
+          <Button ref={tag} underlayColor={'#FFFFFF'} key={i}
+          style={isSelected ? styles.selectedCell : styles.interestCell}
+          textStyle={isSelected ? styles.selectedCellText : styles.interestCellText}
+          onPress={this.buttonPressed.bind(this,tag)}>{tag.toUpperCase()}</Button>
       );
     }
-
+    //return array of selected interests
     return interestsViews;
   }
 
+  /*This function will render the optional info modal.*/
   setOptionalInfoVisible(visible) {
     this.setState({
       optionalVisible: visible,
     });
   }
 
+ /*This function will render the content of the optional info modal */
   renderOptionalInfo() {
     var saveButtonText = 'Submit';
     var changePhoto = 'Click here to add image';
@@ -372,18 +383,20 @@ export default class CreateEvent extends Component {
           </View>
 
           <View style = {{flex:1, alignItems: 'center'}}>
-          <ImageButton image={checkImage} style={styles.saveBasicInput}
-          onPress={() => Alert.alert('Almost There...', 'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
-                   {text: 'Create Event', onPress: () => this._submitEvent()},
-                 ])}>
-          </ImageButton>
+            <ImageButton image={checkImage} style={styles.saveBasicInput}
+              onPress={() => Alert.alert('Almost There...',
+              'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
+              {text: 'Create Event', onPress: () => this._submitEvent()},
+            ])}>
+            </ImageButton>
           </View>
-          </KeyboardAwareScrollView>
-</View>
+       </KeyboardAwareScrollView>
+    </View>
 
     )
   }
 
+ /*This function will render the dynamic list of locations available to the user.*/
   renderLocation(){
     var possibleLocations = this.getPossibleLocations();
 
@@ -412,7 +425,9 @@ export default class CreateEvent extends Component {
     )
   }
 
+  /*This function will render the list of locations based on the filtered search. */
   getPossibleLocations() {
+    //calls renderPossibleLocations function found in eventActions.js
     var unfilteredList = eventActions.renderPossibleLocations();
     var filteredList = [];
     if(this.state.locationSearch == '')
@@ -433,6 +448,7 @@ export default class CreateEvent extends Component {
     return filteredList;
   }
 
+  /*This function will render to style and layout of the each individual location*/
   renderLocationRow(rowData){
     var isSelected = this.state._city == rowData ? true : false;
     return(
@@ -442,11 +458,12 @@ export default class CreateEvent extends Component {
     )
   }
 
+  /*Sets the state variable to the selected city.*/
   pressRow(rowData){
     this.setState({_city:rowData});
   }
 
-
+  /*This function renders the Create Event component */
   render() {
     var saveButtonText = 'Submit';
     var changePhoto = 'Click here to add image';
@@ -474,248 +491,227 @@ export default class CreateEvent extends Component {
     }
 
     return(
-
-    <Modal
-      animationType={'slide'}
-      transparent = {false}
-      visible = {this.props.showing}
-      onRequestClose={() => {alert("Modal can not be closed.")}}
-    >
-
-    <Modal
-      animationType={'slide'}
-      transparent={false}
-      visible={this.state.citiesVisible}
-      onRequestClose={() => {alert("Modal can not be closed.")}}
-    >
-     <View style = {styles.container_settings}>
-       <View style = {styles.navigationBarStyle}>
-         <Text style = {styles.navigationBarTextStyle}>
-           Select City
-         </Text>
-         <ImageButton image={checkImage} style={{top:8}} onPress={() => this.setState({citiesVisible: false})}>
-         </ImageButton>
-       </View>
-
-       <View style = {styles.container_addEvent}>
-         <View style={styles.interestsHolder}>
-           {this.renderLocation()}
-         </View>
-      </View>
-     </View>
-    </Modal>
-
-    <Modal
-      animationType={'slide'}
-      transparent={false}
-      visible={this.state.TagsVisible}
-      onRequestClose={() => {alert("Modal can not be closed.")}}
-    >
-     <View style = {styles.container_settings}>
-       <View style = {styles.navigationBarStyle}>
-         <Text style = {styles.navigationBarTextStyle}>
-           Select Tags
-         </Text>
-         <ImageButton image={closeImage} style={{top:8}} onPress={() => this.setState({TagsVisible: false})}>
-         </ImageButton>
-       </View>
-
-       <ScrollView style={{height:height-HEADER_HEIGHT}}>
-         <View style={styles.interestsHolder}>
-           {this.renderTags()}
-         </View>
-      </ScrollView>
-     </View>
-    </Modal>
-
-    <Modal
-      animationType={'slide'}
-      transparent={false}
-      visible={this.state.optionalVisible}
-      onRequestClose={() => {alert("Modal can not be closed.")}}
-    >
-    <View style={{flex:1, flexDirection: 'column'}}>
-     <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-       <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-         <View>
-         <ImageButton image={closeImage} style={{left:4,top:8,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.setState({optionalVisible: false})}>
-         </ImageButton>
-         </View>
-       </View>
-     </View>
-
-       <View style = {styles.container_addEvent}>
-           {this.renderOptionalInfo()}
-      </View>
-     </View>
-    </Modal>
-
-{/*
-      <View style={{flex:1, flexDirection: 'column', borderWidth: 2, borderColor: 'blue'}}>
-
-       <View style={{ backgroundColor:'#0E476A',position:'absolute',top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
-         <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
-             <ImageButton image={closeImage} style={{top:2,width:32,height:32}} imageStyle={{width:12,height:12,tintColor:'white'}} onPress={() => this.props.close()}>
-             </ImageButton>
-         </View>
-       </View>
-
-
-
-     </View>
-     */}
-
-     <View style = {styles.container_settings}>
-       <View style = {styles.navigationBarStyle}>
-         <Text style = {styles.navigationBarTextStyle}>
-           Create Event
-         </Text>
-         <ImageButton image={closeImage} style={{top:8}} onPress={() => this.props.close()}>
-         </ImageButton>
-       </View>
-
-  <KeyboardAwareScrollView>
-    <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-    </View>
-    <Text style = {styles.text_header}>Basic Info</Text>
-    <View style={styles.creator_EventView}>
-      <View style={styles.creator_NameInput}>
-        <TextInput
-          style = {styles.TextInput}
-          placeholder = 'Event Name'
-          ref='Name'
-          onChangeText={(Event_Name) => this.setState({Event_Name})}
-          placeholderTextColor={styleVariables.greyColor}
-          underlineColorAndroid='transparent'
+      <Modal
+        animationType={'slide'}
+        transparent = {false}
+        visible = {this.props.showing}
+        onRequestClose={() => {alert("Modal can not be closed.")}}
+      >
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.citiesVisible}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
         >
-        </TextInput>
-      </View>
-    </View>
+          <View style = {styles.container_settings}>
+            {/*Location selection modal*/}
+            <View style = {styles.navigationBarStyle}>
+              <Text style = {styles.navigationBarTextStyle}>
+                Select City
+              </Text>
+              <ImageButton image={checkImage} style={{top:8}} onPress={() => this.setState({citiesVisible: false})}>
+              </ImageButton>
+            </View>
 
-       <View style = {styles.creator_DateTimeView}>
-        <View style={styles.creator_DateInput}>
-         <DatePicker
-           style={{marginLeft: 10, marginRight: 5, borderBottomColor: '#d3d3d3', borderBottomWidth: .5,
-           }}
-           date={this.state.Event_Date}
-           mode="date"
-           placeholder="Date"
-           format="MMMM DD, YYYY"
-           minDate={this.state.currentDate}
-           showIcon={false}
-           confirmBtnText="Confirm"
-           cancelBtnText="Cancel"
-           customStyles={{
-             placeholderText: {
-               color: styleVariables.greyColor,
-               fontFamily: styleVariables.systemRegularFont,
-               fontSize: 15,
-             },
-             dateInput: {
-               borderWidth: 0,
-               alignItems: 'flex-start',
-             }
-           }}
-           onDateChange={(Event_Date) => {this.setState({Event_Date: Event_Date}), console.log("here!"+Event_Date)}}
-         />
-        </View>
-
-          <View style={styles.creator_TimeInput}>
-          <DatePicker
-            style={{marginLeft: 5, borderBottomColor: '#d3d3d3', borderBottomWidth: .5,}}
-            mode="time"
-            placeholder="Time"
-            date={this.state.Time}
-            format="h:mm a"
-            showIcon={false}
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={{
-              placeholderText: {
-                color: styleVariables.greyColor,
-                fontFamily: styleVariables.systemRegularFont,
-                fontSize: 15,
-              },
-              dateInput: {
-                borderWidth: 0,
-                alignItems: 'flex-start',
-              }
-            }}
-            onDateChange={(Time) => {this.setState({Time: Time}),console.log("here!"+Time)}}
-          />
+            <View style = {styles.container_addEvent}>
+              <View style={styles.interestsHolder}>
+                {/*Location selection modal*/}
+                {this.renderLocation()}
+              </View>
+            </View>
           </View>
-        </View>
+        </Modal>
 
-        <View style={styles.creator_EventView}>
-          <View style={styles.creator_NameInput}>
-            <TextInput
-              style = {styles.TextInput}
-              placeholder = 'Address'
-              ref='address'
-              onChangeText={(Event_Address) => this.setState({Event_Address})}
-              placeholderTextColor= {styleVariables.greyColor}
-              underlineColorAndroid='transparent'
-            >
-            </TextInput>
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.TagsVisible}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
+        >
+          <View style = {styles.container_settings}>
+            <View style = {styles.navigationBarStyle}>
+              <Text style = {styles.navigationBarTextStyle}>
+                Select Tags
+              </Text>
+              <ImageButton image={closeImage} style={{top:8}} onPress={() => this.setState({TagsVisible: false})}>
+              </ImageButton>
+            </View>
+            <ScrollView style={{height:height-HEADER_HEIGHT}}>
+              <View style={styles.interestsHolder}>
+                {/*Tag selection modal*/}
+                {this.renderTags()}
+              </View>
+            </ScrollView>
           </View>
+        </Modal>
+
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.optionalVisible}
+          onRequestClose={() => {alert("Modal can not be closed.")}}
+        >
+          <View style={{flex:1, flexDirection: 'column'}}>
+            <View style={{flex:1, backgroundColor:'#0E476A',position:'absolute',
+            top:0,left:0,right:0,height:Platform.OS == 'ios' ? 64 : 44}}>
+              <View style={{top:Platform.OS == 'ios' ? 20 : 0,flexDirection:'row'}}>
+                <View>
+                  <ImageButton image={closeImage} style={{left:4,top:8,width:24,height:24}} imageStyle={{width:16,height:16,tintColor:'white'}} onPress={() => this.setState({optionalVisible: false})}>
+                  </ImageButton>
+                </View>
+              </View>
+            </View>
+
+            <View style = {styles.container_addEvent}>
+              {/*Optional Information modal*/}
+              {this.renderOptionalInfo()}
+            </View>
+          </View>
+        </Modal>
+
+        <View style = {styles.container_settings}>
+          <View style = {styles.navigationBarStyle}>
+            <Text style = {styles.navigationBarTextStyle}>
+              Create Event
+            </Text>
+
+            <ImageButton image={closeImage} style={{top:8}} onPress={() => this.props.close()}>
+            </ImageButton>
+          </View>
+
+          {/*Renders text fields for event creation.*/}
+          <KeyboardAwareScrollView>
+            <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+            </View>
+            <Text style = {styles.text_header}>Basic Info</Text>
+
+            {/*Event Name input.*/}
+            <View style={styles.creator_EventView}>
+              <View style={styles.creator_NameInput}>
+                <TextInput
+                  style = {styles.TextInput}
+                  placeholder = 'Event Name'
+                  ref='Name'
+                  onChangeText={(Event_Name) => this.setState({Event_Name})}
+                  placeholderTextColor={styleVariables.greyColor}
+                  underlineColorAndroid='transparent'
+                >
+                </TextInput>
+              </View>
+            </View>
+
+            {/*Event date selection.*/}
+            <View style = {styles.creator_DateTimeView}>
+              <View style={styles.creator_DateInput}>
+                <DatePicker
+                  style={{marginLeft: 10, marginRight: 5,
+                    borderBottomColor: '#d3d3d3', borderBottomWidth: .5,
+                  }}
+                  date={this.state.Event_Date}
+                  mode="date"
+                  placeholder="Date"
+                  format="MMMM DD, YYYY"
+                  minDate={this.state.currentDate}
+                  showIcon={false}
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    placeholderText: {
+                      color: styleVariables.greyColor,
+                      fontFamily: styleVariables.systemRegularFont,
+                      fontSize: 15,
+                    },
+                    dateInput: {
+                      borderWidth: 0,
+                      alignItems: 'flex-start',
+                    }
+                  }}
+                  onDateChange={(Event_Date) => {this.setState({Event_Date: Event_Date})}}
+               />
+            </View>
+
+            {/*Event time selection.*/}
+            <View style={styles.creator_TimeInput}>
+              <DatePicker
+                style={{marginLeft: 5, borderBottomColor: '#d3d3d3', borderBottomWidth: .5,}}
+                mode="time"
+                placeholder="Time"
+                date={this.state.Time}
+                format="h:mm a"
+                showIcon={false}
+                confirmBtnText="Confirm"
+                cancelBtnText="Cancel"
+                customStyles={{
+                  placeholderText: {
+                    color: styleVariables.greyColor,
+                    fontFamily: styleVariables.systemRegularFont,
+                    fontSize: 15,
+                  },
+                  dateInput: {
+                    borderWidth: 0,
+                    alignItems: 'flex-start',
+                  }
+                }}
+                onDateChange={(Time) => {this.setState({Time: Time})}}
+              />
+            </View>
          </View>
-
-  {/*       <View style={styles.creator_EventView}>
-           <View style={styles.creator_NameInput}>
-             <TextInput
-               style = {styles.TextInput}
-               placeholder = 'City'
-               ref='City'
-               onChangeText={(City) => this.setState({City})}
-               placeholderTextColor={styleVariables.greyColor}
-               underlineColorAndroid='transparent'
-             >
-             </TextInput>
-           </View>
-         </View>
-*/}
-
-<View style={styles.creator_EventView}>
-  <View style={styles.creator_NameInput}>
-
-<Button
-  onPress={() => this.setState({citiesVisible: true})}
-  style={styles.tagButton}
-  textStyle={citySelected ? styles.TagButtonSelected : styles.TagButtonText}>
-  {cityString}
-</Button>
-</View>
-</View>
 
          <View style={styles.creator_EventView}>
            <View style={styles.creator_NameInput}>
              <TextInput
-               style = {styles.TextInput}
-               placeholder = 'State'
-               ref='State'
-               onChangeText={(State) => this.setState({State})}
-               placeholderTextColor={styleVariables.greyColor}
-               underlineColorAndroid='transparent'
-             >
-             </TextInput>
+                style = {styles.TextInput}
+                placeholder = 'Address'
+                ref='address'
+                onChangeText={(Event_Address) => this.setState({Event_Address})}
+                placeholderTextColor= {styleVariables.greyColor}
+                underlineColorAndroid='transparent'
+              >
+              </TextInput>
+            </View>
+           </View>
+
+           <View style={styles.creator_EventView}>
+             <View style={styles.creator_NameInput}>
+
+               <Button
+                 onPress={() => this.setState({citiesVisible: true})}
+                 style={styles.tagButton}
+                 textStyle={citySelected ? styles.TagButtonSelected : styles.TagButtonText}>
+                 {cityString}
+               </Button>
+             </View>
+           </View>
+
+           <View style={styles.creator_EventView}>
+             <View style={styles.creator_NameInput}>
+               <TextInput
+                 style = {styles.TextInput}
+                 placeholder = 'State'
+                 ref='State'
+                 onChangeText={(State) => this.setState({State})}
+                 placeholderTextColor={styleVariables.greyColor}
+                 underlineColorAndroid='transparent'
+                >
+                </TextInput>
+             </View>
+           </View>
+
+           <View style={styles.creator_EventView}>
+             <View style={styles.creator_NameInput}>
+
+             <Button
+               onPress={() => this.setState({TagsVisible: true})}
+               style={styles.tagButton}
+               textStyle={tagSelected ? styles.TagButtonSelected : styles.TagButtonText}>
+               {tagString}
+             </Button>
            </View>
          </View>
 
-        <View style={styles.creator_EventView}>
-        <View style={styles.creator_NameInput}>
-
-        <Button
-          onPress={() => this.setState({TagsVisible: true})}
-          style={styles.tagButton}
-          textStyle={tagSelected ? styles.TagButtonSelected : styles.TagButtonText}>
-          {tagString}
-        </Button>
-        </View>
-        </View>
-
-        <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
-          <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
-              <TextInput
+         <View style={[styles.creator_EventView, {height: Math.max(CARD_HEIGHT*.1,expandingView)}]}>
+           <View style={[styles.creator_DynamicInput, {height: Math.max(CARD_HEIGHT*.075,this.state.textHeight)}]}>
+             <TextInput
                 style = {styles.TextInput}
                 placeholder = 'Short Description (<250 characters)'
                 multiline={true}
@@ -729,40 +725,32 @@ export default class CreateEvent extends Component {
           </View>
 
           <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-            </View>
-          <View style={styles.imageView}>
-          <Button
-            onPress={() => this.renderImage()}
-            style={styles.imageButton}
-            textStyle={styles.imageButtonText}>
-            {changePhoto}
-          </Button>
           </View>
+
+          <View style={styles.imageView}>
+            <Button
+              onPress={() => this.renderImage()}
+              style={styles.imageButton}
+              textStyle={styles.imageButtonText}>
+              {changePhoto}
+            </Button>
+          </View>
+
           <View style={styles.eventImageView}>
             <Image source={{uri: this.state.responseURI }} style={styles.eventImage}/>
           </View>
 
           <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-            </View>
+          </View>
 
-  {/*  <Button
-      onPress={() => Alert.alert('Almost There...', 'This feature will require a small, one-time fee or a monthly subscription, but it is available to testers for free.',            [
-         {text: 'Create Event', onPress: () => this._submitEvent()},
-       ])}
-      style={styles.saveButton}
-      textStyle={styles.saveButtonText}>
-      {saveButtonText}
-    </Button>
-*/}
-  <View style={{flex:1, alignItems: 'center'}}>
-    <ImageButton image={arrow_right} style={styles.saveBasicInput}  onPress={() => this.checkComplete()}>
-    </ImageButton>
-    </View>
-    <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
-    </View>
-
-  </KeyboardAwareScrollView>
-</View>
+          <View style={{flex:1, alignItems: 'center'}}>
+            <ImageButton image={arrow_right} style={styles.saveBasicInput}  onPress={() => this.checkComplete()}>
+            </ImageButton>
+          </View>
+          <View style={{backgroundColor: 'transparent', height: CARD_HEIGHT*.02}}>
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
     </Modal>
     )
   }
@@ -852,9 +840,6 @@ const styles = StyleSheet.create({
       textAlign: 'center',
       fontFamily: styleVariables.systemRegularFont,
       backgroundColor: 'transparent',
-    },
-    interestsCell: {
-      margin: 8,
     },
     interestsHolder: {
       flex:1,
