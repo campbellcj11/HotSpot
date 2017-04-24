@@ -1,3 +1,15 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Profile
+Description: Page containing all profile information for a user.
+This page opens up different modals for editing settings according to
+what the user clicks. 
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import * as firebase from 'firebase';

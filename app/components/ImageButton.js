@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: ImageButton
+Description: Custom Button.
+Note:
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import {
   StyleSheet,

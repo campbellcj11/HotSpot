@@ -1,3 +1,15 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: Home
+Description: Home is the main class for our application. Here we render most things
+that are dependent upon the current state. This class is highly dependent upon
+props as well. 
+Note: We use listeners for our applcations that actively update events and favorites.
+
+*/
+///////////////////////
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
 import {

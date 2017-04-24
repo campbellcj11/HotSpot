@@ -1,3 +1,13 @@
+///////////////////////
+/*
+
+Author: ProjectNow Team
+Class: EventActions
+Description: Functionality regarding events.
+Note:
+
+*/
+///////////////////////
 import offline from 'react-native-simple-store'
 import * as firebase from 'firebase';
 
@@ -117,7 +127,7 @@ export function renderPossibleInterests()
 }
 
 /*
-This function is used to render possible locations for our app. 
+This function is used to render possible locations for our app.
 */
 export function renderPossibleLocations()
 {
