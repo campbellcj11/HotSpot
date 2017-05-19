@@ -1,4 +1,4 @@
-# Hotspot
+# HotSpot
 Our website: https://projectnow-964ba.firebaseapp.com/marketing/index.html
 
 ## Summary
