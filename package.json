@@ -1,5 +1,5 @@
 {
-  "name": "ProjectNow",
+  "name": "HotSpot",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -7,53 +7,23 @@
     "test": "jest"
   },
   "dependencies": {
-    "firebase": "^3.4.1",
-    "moment": "^2.17.1",
-    "react": "^15.4.2",
-    "react-native": "^0.38.0",
-    "react-native-autocomplete-input": "^3.1.2",
-    "react-native-calendar-datepicker": "^1.1.1",
-    "react-native-calendar-events": "1.2.1",
-    "react-native-datepicker": "^1.4.4",
-    "react-native-fetch-blob": "^0.10.2-beta.6",
-    "react-native-htmlview": "^0.5.0",
-    "react-native-image-crop-picker": "^0.10.1",
-    "react-native-image-picker": "^0.24.0",
-    "react-native-keyboard-aware-scroll-view": "^0.2.7",
-    "react-native-experimental-navigation": "0.26.10",
-    "react-native-linear-gradient": "^1.5.13",
-    "react-native-mail": "^2.0.1",
-    "react-native-maps": "^0.11.0",
-    "react-native-modal-picker": "0.0.16",
-    "react-native-oauth": "^2.1.16",
-    "react-native-paged-scroll-view": "2.0.4",
-    "react-native-parallax-scroll-view": "^0.19.0",
-    "react-native-router-flux": "^3.35.0",
-    "react-native-selectme": "^1.2.3",
-    "react-native-share": "^1.0.18",
+    "react": "16.0.0-alpha.6",
+    "react-native": "0.44.2",
+    "react-native-router-flux": "^3.39.2",
     "react-native-simple-store": "^1.1.0",
-    "react-native-social-auth": "^0.5.7",
-    "react-native-sortable-grid": "^2.0.0",
     "react-native-swiper": "^1.5.4",
     "react-redux": "^4.4.5",
     "redux": "^3.6.0",
+    "redux-logger": "^3.0.6",
     "redux-thunk": "^2.1.0"
   },
-  "jest": {
-    "preset": "react-native",
-    "setupFiles": [
-      "./jest/setup.js"
-    ]
-  },
   "devDependencies": {
-    "babel-jest": "^18.0.0",
-    "babel-preset-react-native": "^1.9.1",
-    "enzyme": "^2.7.1",
-    "jest": "^18.1.0",
-    "jest-react-native": "^18.0.0",
-    "react-addons-test-utils": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-native-mock": "^0.3.1",
-    "react-test-renderer": "^15.4.2"
+    "babel-jest": "20.0.3",
+    "babel-preset-react-native": "1.9.2",
+    "jest": "20.0.4",
+    "react-test-renderer": "16.0.0-alpha.6"
+  },
+  "jest": {
+    "preset": "react-native"
   }
 }
