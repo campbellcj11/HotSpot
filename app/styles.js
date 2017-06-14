@@ -10,6 +10,7 @@ export const appColors = {
   GRAY: '#E2E2E2',
   DARK_GRAY: '#848484',
   BLACK: '#302F2F',
+  GREEN: '#3CD758',
 }
 
 export const appStyleVariables = {

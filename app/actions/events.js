@@ -4,7 +4,7 @@ import Api from '../lib/api'
 //Testing Data
 FWevents = [
   {id:'1',title:'Dojanire Art Galla',startTime:'7:30pm',location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu'},
-  {id:'2',title:'Event 2'},
+  {id:'2',title:'Event 2 title that is a little long and it cant be much longer'},
   {id:'3',title:'Event 3'},
   {id:'4',title:'Event 4'},
   {id:'5',title:'Event 5'},

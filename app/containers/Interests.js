@@ -24,7 +24,7 @@ import {
 //npm packages
 
 //components
-import BasicNavBar from '../components/BasicNavBar'
+import ActionNavBar from '../components/ActionNavBar'
 //Class variables
 const STATUS_BAR_HEIGHT = Platform.OS == 'ios' ? 20 : 0;
 const HEADER_BAR_HEIGHT = 44;
@@ -44,10 +44,13 @@ class Interests extends Component {
   render() {
     return (
       <View style={styles.scene}>
-        <BasicNavBar
+        <ActionNavBar
           title={'Interests'}
           paddingTop={STATUS_BAR_HEIGHT}
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
+          leftButtonText={'Cancel'}
+          rightButtonText={'Update'}
+          submitPressed={() => Actions.pop()}
         />
       </View>
     )

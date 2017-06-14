@@ -24,7 +24,7 @@ import {
 //npm packages
 
 //components
-import BasicNavBar from '../components/BasicNavBar'
+import ActionNavBar from '../components/ActionNavBar'
 //Class variables
 const STATUS_BAR_HEIGHT = Platform.OS == 'ios' ? 20 : 0;
 const HEADER_BAR_HEIGHT = 44;
@@ -44,10 +44,13 @@ class EventSuggestion extends Component {
   render() {
     return (
       <View style={styles.scene}>
-        <BasicNavBar
-          title={'Suggest Events'}
+        <ActionNavBar
+          title={'Suggest an Event'}
           paddingTop={STATUS_BAR_HEIGHT}
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
+          leftButtonText={'Cancel'}
+          rightButtonText={'Submit'}
+          submitPressed={() => Actions.pop()}
         />
       </View>
     )
