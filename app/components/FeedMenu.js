@@ -41,7 +41,7 @@ export default class FeedMenu extends Component {
             <Text style={styles.menuButtonText}>Profile</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.locations();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.locations({userLocations: this.props.userLocations});this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Locations</Text>
           </TouchableHighlight>
 

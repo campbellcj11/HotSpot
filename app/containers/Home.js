@@ -145,7 +145,7 @@ class Home extends Component {
         >
           {this.renderListViews()}
         </Swiper>
-        {this.state.menuVisible ? <FeedMenu hideMenu={() => this.hideMenu()}/> : null}
+        {this.state.menuVisible ? <FeedMenu userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()}/> : null}
       </View>
     )
   }

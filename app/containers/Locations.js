@@ -22,9 +22,10 @@ import {
 } from 'react-native';
 
 //npm packages
-
+import SortableListView from 'react-native-sortable-listview'
 //components
 import ActionNavBar from '../components/ActionNavBar'
+import LocationCell from '../components/LocationCell'
 //Class variables
 const STATUS_BAR_HEIGHT = Platform.OS == 'ios' ? 20 : 0;
 const HEADER_BAR_HEIGHT = 44;
@@ -36,10 +37,34 @@ class Locations extends Component {
 
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
+      locations: this.props.userLocations ? this.props.userLocations : [],
     }
+    data = this.createDataHashForLocations(this.state.locations);
+    order = this.getDataHashOrder(data);
   }
   componentWillReceiveProps(nextProps){
 
+  }
+  submitPressed(){
+    console.log(order);
+    Actions.pop();
+  }
+  createDataHashForLocations(locations){
+    dataHash = {};
+    for(var i=0;i<locations.length;i++){
+      var location = locations[i];
+      dataHash[location.id] = location;
+    }
+    return dataHash
+  }
+  getDataHashOrder(data){
+    return Object.keys(data);
+  }
+  renderRow(rowData){
+    //<LocationCell rowData={rowData}/>
+    return (
+      <LocationCell rowData={rowData}/>
+    )
   }
   render() {
     return (
@@ -50,7 +75,17 @@ class Locations extends Component {
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
           leftButtonText={'Cancel'}
           rightButtonText={'Update'}
-          submitPressed={() => Actions.pop()}
+          submitPressed={() => this.submitPressed()}
+        />
+        <SortableListView
+          style={{flex: 1}}
+          data={data}
+          order={order}
+          onRowMoved={e => {
+            order.splice(e.to, 0, order.splice(e.from, 1)[0]);
+            this.forceUpdate();
+          }}
+          renderRow={(rowData) => this.renderRow(rowData)}
         />
       </View>
     )
