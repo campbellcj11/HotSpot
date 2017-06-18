@@ -22,7 +22,7 @@ import LinearGradient from 'react-native-linear-gradient';
 
 import menuIcon from '../images/menu.png'
 
-export default class EventCell extends Component {
+export default class LocationCell extends Component {
   constructor(props){
     super(props);
 

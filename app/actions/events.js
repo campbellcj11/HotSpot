@@ -2,10 +2,12 @@ import * as types from './types'
 import Api from '../lib/api'
 
 //Testing Data
+import testImage from '../images/gal_01.png'
+
 FWevents = [
-  {id:'1',title:'Dojanire Art Galla',startTime:'7:30pm',location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu'},
-  {id:'2',title:'Event 2 title that is a little long and it cant be much longer'},
-  {id:'3',title:'Event 3'},
+  {id:'1',title:'Dojanire Art Galla',startDate:new Date(),location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu',image:testImage},
+  {id:'2',title:'Event 2 title that is a little long and it cant be much longer',startTime:'7:30pm',location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu'},
+  {id:'3',title:'Event 3 has a rediculously long title and it will get cut off for sure'},
   {id:'4',title:'Event 4'},
   {id:'5',title:'Event 5'},
   {id:'6',title:'Event 6'},

@@ -17,14 +17,13 @@ import {
   StatusBar,
   RefreshControl,
   Dimensions,
-  UIManager,
-  LayoutAnimation,
 } from 'react-native';
 
 //npm packages
 
 //components
 import BasicNavBar from '../components/BasicNavBar'
+
 //Class variables
 const STATUS_BAR_HEIGHT = Platform.OS == 'ios' ? 20 : 0;
 const HEADER_BAR_HEIGHT = 44;
@@ -34,7 +33,6 @@ class Legal extends Component {
   constructor(props) {
     super(props);
 
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
     }
   }

@@ -11,6 +11,7 @@ export const appColors = {
   DARK_GRAY: '#848484',
   BLACK: '#302F2F',
   GREEN: '#3CD758',
+  RED: '#E22647',
 }
 
 export const appStyleVariables = {
