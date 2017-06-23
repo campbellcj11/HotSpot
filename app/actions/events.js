@@ -5,9 +5,9 @@ import Api from '../lib/api'
 import testImage from '../images/gal_01.png'
 
 FWevents = [
-  {id:'1',title:'Dojanire Art Galla',startDate:new Date(),location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu',image:testImage},
-  {id:'2',title:'Event 2 title that is a little long and it cant be much longer',startTime:'7:30pm',location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu'},
-  {id:'3',title:'Event 3 has a rediculously long title and it will get cut off for sure'},
+  {id:'1',title:'Dojanire Art Galla',startDate:new Date(),location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu',image:testImage,tag:'Art'},
+  {id:'2',title:'Event 2 title that is a little long and it cant be much longer',startTime:'7:30pm',location:'Metz Hall',shortDescription:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin in sodales erat, eu',image:testImage,tag:'Sport'},
+  {id:'3',title:'Event 3 has a rediculously long title and it will get cut off for sure',image:testImage,tag:'Comedy'},
   {id:'4',title:'Event 4'},
   {id:'5',title:'Event 5'},
   {id:'6',title:'Event 6'},
@@ -50,6 +50,26 @@ Devents = [
   {id:'40',title:'Event 40'},
 ];
 
+// export function getEvents(filters){
+//   return (dispatch, getState) => {
+//     const params = [
+//       'startDate=${encodeURIComponent(filters.startDate)}',
+//       'endDate=${encodeURIComponent(filters.endDate)}',
+//       'locationID=${encodeURIComponent(filters.locationID)}',
+//       'pageLimit=20',
+//     ].join('&'); //this gets appened to the url
+//     return Api.get('/events/getWithParams?${params}').then(resp => {
+//       console.warn('GetEvents Success');
+//       var currentEventsHash = getState().events.fetchedEventsHash;
+//       currentEventsHash[filters.locationID] = eventsToShow;
+//       var newEventsHash = currentEventsHash;
+//       dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
+//       // dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+//     }).catch( (ex) => {
+//       console.warn('GetEvents Fail');
+//     })
+//   }
+// }
 export function getEvents(filters){
   return (dispatch, getState) => {
     // const params = [

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { appStyleVariables, appColors } from '../styles';
+import { appStyleVariables, appColors, tagColors } from '../styles';
 import { Actions } from 'react-native-router-flux'
 import {
   ScrollView,
@@ -165,7 +165,11 @@ export default class EventCell extends Component {
       <View style={styles.container}>
         <TouchableHighlight key={this.props.rowData.id}>
           <View style={{overflow: 'hidden',borderTopLeftRadius:4,borderTopRightRadius:4,}}>
-            <Image style={styles.eventImage} source={this.props.rowData.image} resizeMode={'cover'}/>
+            <Image style={styles.eventImage} source={this.props.rowData.image} resizeMode={'cover'}>
+              <View style={[styles.tagTextHolder,{backgroundColor:tagColors[this.props.rowData.tag ? this.props.rowData.tag.toLowerCase() : '']}]}>
+                <Text style={styles.tagText}>{this.props.rowData.tag ? this.props.rowData.tag.toUpperCase() : ''}</Text>
+              </View>
+            </Image>
             <View style={{flexDirection:'row',marginVertical:4,marginHorizontal:8}}>
               <View style={styles.leftView}>
                 <Text style={styles.title} numberOfLines={3}>{this.props.rowData.title}</Text>
@@ -221,6 +225,19 @@ const styles = StyleSheet.create({
     width:width-16,
     borderTopLeftRadius:4,
     borderTopRightRadius:4,
+  },
+  tagTextHolder:{
+    position:'absolute',
+    left:8,
+    bottom:8,
+    paddingHorizontal:6,
+    paddingVertical:2,
+    borderRadius:4,
+  },
+  tagText:{
+    color:appColors.WHITE,
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 14,
   },
   leftView:{
     flex:.7,

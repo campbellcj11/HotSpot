@@ -19,7 +19,13 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       loggedIn: true,
-      user: action.currentUser,
+      user: action.user,
+    }
+  case types.LOG_OUT:
+    return {
+      ...state,
+      loggedIn: false,
+      user: {},
     }
   default:
     return state

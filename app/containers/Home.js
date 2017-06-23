@@ -19,11 +19,13 @@ import {
   Dimensions,
   UIManager,
   LayoutAnimation,
+  InteractionManager,
 } from 'react-native';
 
 //npm packages
 import Swiper from 'react-native-swiper';
 
+import LandingPage from './LandingPage'
 //components
 import EventFeedList from '../components/EventFeedList'
 import FeedNavBar from '../components/FeedNavBar'
@@ -47,12 +49,19 @@ class Home extends Component {
       hasCurrentLocation: this.props.userLocations.length != 0  ? true : false,
       fetchedEventsHash: {},
       menuVisible: false,
+      isLoggedIn: true,
     }
-    this.props.getUserLocations();
-    // this.props.getUserLocations().then(
-    //   this.getStartingEventsForAllLocations();
-    // )
-    this.getStartingEventsForAllLocations();
+  }
+  componentDidMount(){
+    var isLoggedIn = this.checkForUser();
+    if(isLoggedIn)
+    {
+      this.props.getUserLocations();
+      // this.props.getUserLocations().then(
+      //   this.getStartingEventsForAllLocations();
+      // )
+      this.getStartingEventsForAllLocations();
+    }
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.fetchedEventsHash){
@@ -69,6 +78,20 @@ class Home extends Component {
         this.getStartingEventsForAllLocations();
       });
     }
+  }
+  checkForUser(){
+    var returnValue;
+    if(this.props.user){
+      returnValue = true;
+    }
+    else{
+      // This needs to be removed once we want to worry about loggin in
+      // returnValue = true;
+      // This needs to be uncommented out once we want to worry about logging in
+      returnValue = false;
+      this.setState({isLoggedIn:false});
+    }
+    return returnValue;
   }
   goToDiscover(){
     Actions.discover();
@@ -123,8 +146,8 @@ class Home extends Component {
 
     return arr
   }
-  render() {
-    return (
+  renderView(){
+    return(
       <View style={styles.scene}>
         <StatusBar barStyle="light-content"/>
         <FeedNavBar
@@ -148,6 +171,21 @@ class Home extends Component {
         {this.state.menuVisible ? <FeedMenu userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()}/> : null}
       </View>
     )
+  }
+  renderLogin(){
+    return(
+      <LandingPage/>
+    )
+  }
+  render() {
+    if(this.state.isLoggedIn)
+    {
+      return this.renderView();
+    }
+    else
+    {
+      return this.renderLogin();
+    }
   }
 }
 

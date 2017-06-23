@@ -13,6 +13,8 @@ import Feedback from './app/containers/Feedback'
 import Legal from './app/containers/Legal'
 import Stats from './app/containers/Stats'
 import NewEvent from './app/containers/NewEvent'
+import EventFeedInterestFilter from './app/containers/EventFeedInterestFilter'
+import EventFeedDateFilter from './app/containers/EventFeedDateFilter'
 // import EventView from './app/containers/EventCard'
 // import EventView2 from './app/containers/Profile'
 import configureStore from './app/store/configureStore'
@@ -43,6 +45,8 @@ class App extends Component {
             <Scene key="legal" component={Legal} hideNavBar={true}/>
             <Scene key="stats" component={Stats} hideNavBar={true}/>
             <Scene key="newEvent" component={NewEvent} hideNavBar={true}/>
+            <Scene key="feedInterestFilter" component={EventFeedInterestFilter} hideNavBar={true} direction="vertical"/>
+            <Scene key="feedDateFilter" component={EventFeedDateFilter} hideNavBar={true} direction="vertical"/>
           </Scene>
         </Router>
       </Provider>

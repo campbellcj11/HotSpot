@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { appStyleVariables, appColors } from '../styles';
+import {Actions} from 'react-native-router-flux'
 import {
   ScrollView,
   ListView,
@@ -14,6 +15,8 @@ import {
   RefreshControl,
   Dimensions,
 } from 'react-native';
+
+import EventFeedInterestFilter from '../containers/EventFeedInterestFilter'
 
 export default class FeedFilterView extends Component {
   constructor(props){
@@ -31,10 +34,10 @@ export default class FeedFilterView extends Component {
       <View style={[styles.container,{height:this.props.height}]}>
         <Text style={styles.title}>Show me...</Text>
         <View style={styles.bottomHolder}>
-          <TouchableHighlight style={styles.filterButton}>
+          <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedInterestFilter()}>
             <Text style={styles.filterButtonText}>All Interests</Text>
           </TouchableHighlight>
-          <TouchableHighlight style={styles.filterButton}>
+          <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedDateFilter()}>
             <Text style={styles.filterButtonText}>All Dates</Text>
           </TouchableHighlight>
           <TouchableHighlight style={styles.filterButton}>

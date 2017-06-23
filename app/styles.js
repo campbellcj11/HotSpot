@@ -22,3 +22,25 @@ export const appStyleVariables = {
   SYSTEM_REGULAR_FONT: Platform.OS == 'ios' ? 'Helvetica Neue' : 'sans-serif',
   SYSTEM_LIGHT_FONT: Platform.OS == 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
 }
+
+export const tagColors = {
+  art:'#898CFF',
+  books: '#000000',
+  causes: '#000000',
+  class: '#000000',
+  comedy: '#FF89B5',
+  community: '#FFDC89',
+  conference: '#000000',
+  dance: '#90D4F7',
+  food: '#ED6D79',
+  health: '#668DE5',
+  movie: '#F5A26F',
+  music: '#DA97E0',
+  nightlife: '#CFF381',
+  other: '#FF96E3',
+  religion: '#BB96FF',
+  shopping: '#000000',
+  social: '#67EEBD',
+  sport: '#71E096',
+  theater: '#5AD0E5',
+}

@@ -3,6 +3,8 @@ package com.hotspot;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.xxsnakerxx.socialauth.SocialAuthPackage;
+import com.imagepicker.ImagePickerPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.BV.LinearGradient.LinearGradientPackage;
 import com.facebook.react.ReactNativeHost;
@@ -26,6 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new SocialAuthPackage(),
+            new ImagePickerPackage(),
             new RNFetchBlobPackage(),
             new LinearGradientPackage(),
             new CalendarEventsPackage()
