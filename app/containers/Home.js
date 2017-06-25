@@ -43,13 +43,14 @@ class Home extends Component {
 
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
+      user: this.props.user,
+      isLoggedIn: this.props.isLoggedIn,
       userLocations: this.props.userLocations,
       currentLocationIndex: 0,
       currentLocation: this.props.userLocations.length != 0 ? this.props.userLocations[0] : {},
       hasCurrentLocation: this.props.userLocations.length != 0  ? true : false,
       fetchedEventsHash: {},
       menuVisible: false,
-      isLoggedIn: true,
     }
   }
   componentDidMount(){
@@ -78,10 +79,18 @@ class Home extends Component {
         this.getStartingEventsForAllLocations();
       });
     }
+    if(nextProps.user != this.props.user){
+      console.warn('We are getting a new user');
+      this.setState({
+        user: nextProps.user,
+        isLoggedIn: nextProps.isLoggedIn,
+      })
+    }
   }
   checkForUser(){
     var returnValue;
-    if(this.props.user){
+    console.log('User: ',this.state.user);
+    if(Object.keys(this.state.user).length !== 0){
       returnValue = true;
     }
     else{
@@ -201,6 +210,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    user: state.user.user,
+    isLoggedIn: state.user.isLoggedIn,
     userLocations: state.user.userLocations,
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,

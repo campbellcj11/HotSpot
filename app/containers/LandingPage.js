@@ -56,7 +56,7 @@ class LandingPage extends Component {
   }
   renderLogin(){
     return(
-      <LoginView key={1} isSignUp={this.state.isSignUp} goBack={() => this.setToLanding()}/>
+      <LoginView key={1} loginUser={(user) => {this.props.loginUser(user)}} isSignUp={this.state.isSignUp} signUpUser={(user,responseURI) => this.props.signUpUser(user,responseURI)} goBack={() => this.setToLanding()} possibleLocations={this.props.possibleLocations} getPossibleLocations={() => this.props.getPossibleLocations()}/>
     )
   }
   renderView(){
@@ -178,6 +178,7 @@ function mapStateToProps(state) {
     userLocations: state.user.userLocations,
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
+    possibleLocations: state.app.possibleLocations ? state.app.possibleLocations : [],
   };
 }
 

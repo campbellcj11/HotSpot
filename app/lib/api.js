@@ -35,14 +35,14 @@ class Api {
     const url = `${host}${route}`
     let options = Object.assign({ method: verb }, params ? { body: JSON.stringify(params) } : null );
     options.headers = headers
-    console.warn(url);
     return fetch(url, options).then( resp => {
-      let json = resp.json();
+      console.warn('HERE');
+      console.log('Resp: ',resp);
       if (resp.ok) {
-        return json
+        return resp.json()
       }
-      return json.then(err => {throw err});
-    }).then( json => json.results );
+      return resp.json().then(err => {throw err});
+    }).then( json => json );
   }
 }
 export default Api

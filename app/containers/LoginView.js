@@ -160,7 +160,7 @@ export default class Login extends Component {
   }
   renderSignup(){
     return(
-      <SignupView ref={'signupView'} updateIndex={(newIndex) => this.updateIndex(newIndex)} signUp={(user,responseURI) => this.props.signUpUser(user,responseURI)}/>
+      <SignupView ref={'signupView'} updateIndex={(newIndex) => this.updateIndex(newIndex)} signUp={(user,responseURI) => this.props.signUpUser(user,responseURI)} possibleLocations={this.props.possibleLocations} getPossibleLocations={() => this.props.getPossibleLocations()}/>
     )
   }
   render() {

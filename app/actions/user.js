@@ -26,41 +26,48 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 export function signUpUser(user, imageUri) {
+  // console.log('User2: ',user);
   return (dispatch) => {
-    dispatch(signingUp());
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
-        database.ref('users/' + firebase.auth().currentUser.uid).set({
-          Email: user.email,
-          First_Name: user.First_Name,
-          Last_Name: user.Last_Name,
-          Phone: user.Phone,
-          DOB: user.DOB,
-          City: user.city,
-          Interests: user.interests,
-          RegisteredUser: true,
-          AdminUser: false,
-          Last_Login : firebase.database.ServerValue.TIMESTAMP,
-          Gender: user.Gender,
-          Image: ''
+        // console.log('CurrentUser: ', currentUser);
+        user.uid = firebase.auth().currentUser.uid;
+        var headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'dataType': 'json',
+        }
+        Api.post('/user/create',headers,user).then(resp => {
+          console.warn('Create Success');
+          // console.log('Create Response: ', resp);
+          // dispatch(stateLogIn(resp));
+        }).catch( (ex) => {
+          console.warn(ex);
+          console.warn('Create Fail');
         });
+        // database.ref('users/' + firebase.auth().currentUser.uid).set({
+        //   Email: user.email,
+        //   First_Name: user.First_Name,
+        //   Last_Name: user.Last_Name,
+        //   Phone: user.Phone,
+        //   DOB: user.DOB,
+        //   City: user.city,
+        //   Interests: user.interests,
+        //   RegisteredUser: true,
+        //   AdminUser: false,
+        //   Last_Login : firebase.database.ServerValue.TIMESTAMP,
+        //   Gender: user.Gender,
+        //   Image: ''
+        // });
 
         //check for uploaded image
-        uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
-        .then(url => {
-            database.ref('users/' + firebase.auth().currentUser.uid).update({
-              Image: url
-            });
-        });
-
-        var metricQuery = database.ref("metrics/");
-        metricQuery.push({
-            "UserID" : firebase.auth().currentUser.uid,
-            "Action" : "Sign up user",
-            "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
-            "Additional_Information" : "user.email"
-        });
-        dispatch(stateSignUp(user));
+        // uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
+        // .then(url => {
+        //     database.ref('users/' + firebase.auth().currentUser.uid).update({
+        //       Image: url
+        //     });
+        // });
+        // dispatch(stateSignUp(user));
       })
       .catch(error => {
         var errorCode = error.code;
@@ -75,32 +82,22 @@ export function loginUser(user){
   return (dispatch) => {
     firebase.auth().signInWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
-        // var ref = database.ref("users/" + firebase.auth().currentUser.uid);
-        //update timestamp
-        // ref.update({
-        //   Last_Login : firebase.database.ServerValue.TIMESTAMP
-        // });
-        //
-        // var metricQuery = database.ref("metrics/");
-        // metricQuery.push({
-        //     "UserID" : firebase.auth().currentUser.uid,
-        //     "Action" : "Login",
-        //     "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
-        //     "Additional_Information" : ""
-        // });
+
         var uid = firebase.auth().currentUser.uid;
         firebase.auth().currentUser.getToken().then(token => {
+          console.warn(uid);
+          console.warn(token);
           var headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'dataType': 'json',
-            'token' : token,
             'uid' : uid,
+            'token' : token,
           }
           Api.get('/login',headers).then(resp => {
             console.warn('Login Success');
             console.log('Login Response: ', resp);
-            // dispatch(stateLogIn(user));
+            dispatch(stateLogIn(resp));
           }).catch( (ex) => {
             console.warn(ex);
             console.warn('Login Fail');
@@ -135,8 +132,10 @@ export function logoutUser(){
 }
 // Functions that update the apps state
 export function stateLogIn(userData){
+  offline.save('user', userData);
+  offline.save('isLoggedIn', true);
   return {
-    type: types.LOG_OUT,
+    type: types.LOG_IN,
     user: userData,
   }
 }

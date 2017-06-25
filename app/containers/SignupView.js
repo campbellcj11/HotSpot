@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import { ActionCreators } from '../actions'
 import {
   ListView,
   StyleSheet,
@@ -60,11 +62,21 @@ export default class SignupView extends Component {
       locationSearch: '',
       gender: '',
       imageUrl: '',
+      possibleLocations: this.props.possibleLocations,
+      userLocations: [],
     }
   }
-
-  componentWillMount() {
-
+  componentDidMount() {
+    this.props.getPossibleLocations();
+  }
+  componentWillReceiveProps(nextProps){
+    if(nextProps.possibleLocations != this.props.possibleLocations){
+      this.setState({
+        possibleLocations: nextProps.possibleLocations,
+      },function(){
+        this.getPossibleLocations();
+      })
+    }
   }
   resetSignupState(){
     // console.warn('resetSignupState');
@@ -80,16 +92,17 @@ export default class SignupView extends Component {
     user = {
       email: this.state.email,
       password: this.state.password,
-      First_Name: this.state.firstName,
-      Last_Name: this.state.lastName,
-      DOB: this.state.dob,
+      first_name: this.state.firstName,
+      last_name: this.state.lastName,
+      dob: this.state.dob,
       interests: this.state.interests,
-      Phone: this.state.phoneNumber,
-      city: this.state.city,
-      Gender: this.state.gender
+      phone: this.state.phoneNumber,
+      locales: this.state.userLocations,
+      gender: this.state.gender
     }
     // userActions.saveInterests(this.state.interests);
     // userActions.saveLocation(this.state.city);
+    console.log('User: ', user);
     this.props.signUp(user, this.state.responseURI);
   }
   hasCorrectInformation(){
@@ -123,11 +136,18 @@ export default class SignupView extends Component {
     }
     else if(this.state.index == 3) //interests
     {
-      return true;
+      if(this.state.interests.length > 0)
+      {
+        return true;
+      }
+      else {
+        Alert.alert("Please select at least one interest");
+        hasAlerted = true;
+      }
     }
     else if(this.state.index == 4) //locations
     {
-      if(this.state.city != '')
+      if(this.state.userLocations.length != 0)
       {
         return true;
       }
@@ -454,7 +474,7 @@ export default class SignupView extends Component {
 
     var interestsViews = [];
     for (i in interests){
-        var interest = i;
+        var interest = interests[i];
         var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
         interestsViews.push(
             <Button ref={interest} underlayColor={'#0D5480'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest.toUpperCase()}</Button>
@@ -472,7 +492,7 @@ export default class SignupView extends Component {
     )
   }
   getPossibleLocations() {
-    var unfilteredList = []; //eventActions.renderPossibleLocations();
+    var unfilteredList = this.state.possibleLocations;
     var filteredList = [];
     if(this.state.locationSearch == '')
     {
@@ -483,7 +503,7 @@ export default class SignupView extends Component {
       for(var i=0;i<unfilteredList.length;i++)
       {
         var item = unfilteredList[i];
-        if(item.indexOf(this.state.locationSearch) != -1)
+        if(item.name.indexOf(this.state.locationSearch) != -1)
         {
           filteredList.push(item);
         }
@@ -492,15 +512,32 @@ export default class SignupView extends Component {
     return filteredList;
   }
   renderRow(rowData){
-    var isSelected = this.state.city == rowData ? true : false;
+    var isSelected = this.state.userLocations.indexOf(rowData) != -1 ? true : false;
     return(
       <TouchableHighlight underlayColor={'#0D5480'} style={isSelected ? styles.selectedLocationCell : styles.locationCell} onPress = {() => this.pressRow(rowData)}>
-        <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData}</Text>
+        <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData.name}</Text>
       </TouchableHighlight>
     )
   }
   pressRow(rowData){
-    this.setState({city:rowData});
+    if(this.state.userLocations.indexOf(rowData) == -1){
+      console.warn('Adding location to user locations');
+      var userLocations = this.state.userLocations;
+      userLocations.push(rowData);
+      this.setState({
+        userLocations: userLocations,
+      })
+    }
+    else{
+      console.warn('Removing location from user locations');
+      var userLocations = this.state.userLocations;
+      var index = userLocations.indexOf(rowData);
+      userLocations.splice(index,1);
+      this.setState({
+        userLocations: userLocations,
+      })
+    }
+    // this.setState({city:rowData});
   }
   renderLocationPage(){
     var possibleLocations = this.getPossibleLocations();

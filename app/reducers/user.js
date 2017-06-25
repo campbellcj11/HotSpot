@@ -3,7 +3,7 @@ import * as types from '../actions/types'
 import offline from 'react-native-simple-store'
 
 const initialState = {
-  loggedIn: false,
+  isLoggedIn: true,
   user: {},
   userLocations: [],
 }
@@ -18,13 +18,13 @@ export default function reducer(state = initialState, action) {
   case types.LOG_IN:
     return {
       ...state,
-      loggedIn: true,
+      isLoggedIn: true,
       user: action.user,
     }
   case types.LOG_OUT:
     return {
       ...state,
-      loggedIn: false,
+      isLoggedIn: false,
       user: {},
     }
   default:

@@ -1,4 +1,4 @@
-export const interests = [
+export const INTERESTS = [
   'art',
   'books',
   'causes',
@@ -16,6 +16,6 @@ export const interests = [
   'religion',
   'shopping',
   'social',
-  'sport',
+  'sports',
   'theater',
 ]; //if this list changes make sure to update the styles.js to have a color for the tag
