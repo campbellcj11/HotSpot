@@ -39,11 +39,11 @@ export function signUpUser(user, imageUri) {
         }
         Api.post('/user/create',headers,user).then(resp => {
           console.warn('Create Success');
-          // console.log('Create Response: ', resp);
-          // dispatch(stateLogIn(resp));
+          console.log('Create Response: ', resp);
+          dispatch(stateLogIn(user));
         }).catch( (ex) => {
-          console.warn(ex);
-          console.warn('Create Fail');
+        //   console.warn(ex);
+        //   console.warn('Create Fail');
         });
         // database.ref('users/' + firebase.auth().currentUser.uid).set({
         //   Email: user.email,
@@ -130,6 +130,37 @@ export function logoutUser(){
       })
   };
 }
+
+export function getUserLocations(){
+    return (dispatch, getState) => {
+        var headers = {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'dataType': 'json',
+        }
+        locales = getState().user.user.locales;
+        for (locale in locales)
+        {
+            Api.get('/locale/' + locale, headers).then(resp => {
+              console.warn('Get Locale Success');
+              console.log('Locales Get Response: ', resp);
+              dispatch(stateUserLocations(resp));
+            }).catch( (ex) => {
+            //   console.warn(ex);
+            //   console.warn('Create Fail');
+            });
+        }
+    }
+}
+
+export function loadOfflineUser() {
+  return (dispatch) => {
+    offline.get('user').then( (user) => {
+        dispatch(stateLogIn(user));
+    })
+  };
+}
+
 // Functions that update the apps state
 export function stateLogIn(userData){
   offline.save('user', userData);
@@ -144,7 +175,8 @@ export function stateLogOut(){
     type: types.LOG_OUT,
   }
 }
-export function getUserLocations(){
+
+export function stateUserLocations(resp){
   return {
     type: types.GET_USER_LOCATIONS,
     locations: locations,

@@ -54,6 +54,7 @@ class Home extends Component {
     }
   }
   componentDidMount(){
+    this.props.loadOfflineUser();
     var isLoggedIn = this.checkForUser();
     if(isLoggedIn)
     {
@@ -212,7 +213,7 @@ function mapStateToProps(state) {
   return {
     user: state.user.user,
     isLoggedIn: state.user.isLoggedIn,
-    userLocations: state.user.userLocations,
+    userLocations: state.user.user.locales ? state.user.user.locales : [],
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
   };

@@ -35,6 +35,7 @@ import DatePicker from 'react-native-datepicker'
 import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 import { INTERESTS } from '../lib/constants.js';
+import Moment from 'moment';
 
 // var userActions = require("../actions/userActions.js");
 // var eventActions = require("../actions/eventActions.js");
@@ -94,7 +95,7 @@ export default class SignupView extends Component {
       password: this.state.password,
       first_name: this.state.firstName,
       last_name: this.state.lastName,
-      dob: this.state.dob,
+      dob: (new Date(this.state.dob).getTime()/1000),
       interests: this.state.interests,
       phone: this.state.phoneNumber,
       locales: this.state.userLocations,
@@ -512,7 +513,7 @@ export default class SignupView extends Component {
     return filteredList;
   }
   renderRow(rowData){
-    var isSelected = this.state.userLocations.indexOf(rowData) != -1 ? true : false;
+    var isSelected = this.state.userLocations.indexOf(rowData.id) != -1 ? true : false;
     return(
       <TouchableHighlight underlayColor={'#0D5480'} style={isSelected ? styles.selectedLocationCell : styles.locationCell} onPress = {() => this.pressRow(rowData)}>
         <Text style={isSelected ? styles.selectedLocationCellText : styles.locationCellText}>{rowData.name}</Text>
@@ -523,7 +524,7 @@ export default class SignupView extends Component {
     if(this.state.userLocations.indexOf(rowData) == -1){
       console.warn('Adding location to user locations');
       var userLocations = this.state.userLocations;
-      userLocations.push(rowData);
+      userLocations.push(rowData.id);
       this.setState({
         userLocations: userLocations,
       })
@@ -531,7 +532,7 @@ export default class SignupView extends Component {
     else{
       console.warn('Removing location from user locations');
       var userLocations = this.state.userLocations;
-      var index = userLocations.indexOf(rowData);
+      var index = userLocations.indexOf(rowData.id);
       userLocations.splice(index,1);
       this.setState({
         userLocations: userLocations,
