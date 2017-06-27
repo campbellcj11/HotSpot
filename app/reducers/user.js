@@ -13,7 +13,7 @@ export default function reducer(state = initialState, action) {
   case types.GET_USER_LOCATIONS:
     return {
       ...state,
-      userLocations: action.locations,
+      userLocations: [...state.userLocations,action.location],
     }
   case types.LOG_IN:
     return {

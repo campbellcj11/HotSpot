@@ -69,7 +69,7 @@ export default class FeedMenu extends Component {
             <Text style={styles.menuButtonText}>Add Event (admin only)</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'}>
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {this.props.logout()}}>
             <Text style={styles.menuButtonText}>Logout</Text>
           </TouchableHighlight>
         </View>

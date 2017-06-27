@@ -1,5 +1,7 @@
 import * as types from './types'
 import Api from '../lib/api'
+import * as firebase from 'firebase';
+//initialize firebase TODO:pull from a credentials file
 
 //Testing Data
 import testImage from '../images/gal_01.png'
@@ -50,73 +52,114 @@ Devents = [
   {id:'40',title:'Event 40'},
 ];
 
-// export function getEvents(filters){
-//   return (dispatch, getState) => {
-//     const params = [
-//       'startDate=${encodeURIComponent(filters.startDate)}',
-//       'endDate=${encodeURIComponent(filters.endDate)}',
-//       'locationID=${encodeURIComponent(filters.locationID)}',
-//       'pageLimit=20',
-//     ].join('&'); //this gets appened to the url
-//     return Api.get('/events/getWithParams?${params}').then(resp => {
-//       console.warn('GetEvents Success');
-//       var currentEventsHash = getState().events.fetchedEventsHash;
-//       currentEventsHash[filters.locationID] = eventsToShow;
-//       var newEventsHash = currentEventsHash;
-//       dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
-//       // dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
-//     }).catch( (ex) => {
-//       console.warn('GetEvents Fail');
-//     })
-//   }
-// }
 export function getEvents(filters){
   return (dispatch, getState) => {
-    // const params = [
-    //   'startDate=${encodeURIComponent(filters.startDate)}',
-    //   'startDate=${encodeURIComponent(filters.endDate)}',
-    //   'locationID=${encodeURIComponent(filters.locationID)}',
-    //   'pageLimit=50',
-    // ].join('&'); //this gets appened to the url
-    // return Api.get('/events/getWithParams?${params}').then(resp => {
-    //   console.warn('Success');
-    //   dispatch(setFetchedEvents({ events: resp }));
-    // }).catch( (ex) => {
-    //   console.warn('Fail');
-    // })
-
-    var currentEventsHash = getState().events.fetchedEventsHash;
-
-    pageLimit = 5;
-    pageNumber = filters.page;
-    startIndex = pageNumber*pageLimit;
-    endIndex = startIndex+pageLimit;
-
-    eventsToShow = [];
-
-    for( i=startIndex ; i < endIndex ; i++ ){
-      if(filters.locationID == 1){
-        if(i < FWevents.length){
-          event = FWevents[i];
-          event.cityID = filters.locationID;
-          eventsToShow.push(event);
-        }
+    firebase.auth().currentUser.getToken().then(token => {
+      var uid = getState().user.user.uid;
+      console.warn(filters.startDate);
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : uid,
+        'token' : token,
       }
-      else{
-        if(i < Devents.length){
-          event = Devents[i];
-          event.cityID = filters.locationID;
-          eventsToShow.push(event);
-        }
+      var body ={
+      	"tags": ["art"],
+          "sortBy": "start_date",
+          "pageSize": 20,
+          "pageNumber": filters.page,
+          "count": filters.showCount,
+          "query": [
+          	{
+          		"field": "locale_id",
+          		"operator": "=",
+          		"value": filters.locationID,
+          		"logicAfter" : "AND"
+          	},
+          	{
+          		"field": "status",
+          		"operator": "=",
+          		"value": "active",
+          		"logicAfter" : "AND"
+          	},
+          	{
+          		"field": "start_date",
+          		"operator": ">=",
+          		"value": filters.startDate
+          	}
+          ]
       }
-    }
-    currentEventsHash[filters.locationID] = eventsToShow;
+      return Api.post('/getEvents?',headers,body).then(resp => {
 
-    var newEventsHash = currentEventsHash;
+        console.warn('GetEvents Success');
+        console.warn(resp.count);
+        var events = [];
+        if(filters.showCount){
+          events = resp.events;
+        }
+        else {
+          events = resp;
+        }
 
-    dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+        // var currentEventsHash = getState().events.fetchedEventsHash;
+        // currentEventsHash[filters.locationID] = eventsToShow;
+        // var newEventsHash = currentEventsHash;
+        // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
+        // dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+      }).catch( (ex) => {
+        console.warn('Error: ', ex);
+        console.warn('GetEvents Fail');
+      })
+    })
   }
 }
+// export function getEvents(filters){
+//   return (dispatch, getState) => {
+//     // const params = [
+//     //   'startDate=${encodeURIComponent(filters.startDate)}',
+//     //   'locationID=${encodeURIComponent(filters.locationID)}',
+//     //   'pageLimit=50',
+//     // ].join('&'); //this gets appened to the url
+//     // return Api.get('/events?${params}').then(resp => {
+//     //   console.warn('Success');
+//     //   // dispatch(setFetchedEvents({ events: resp }));
+//     // }).catch( (ex) => {
+//     //   console.warn('Fail');
+//     // })
+//
+//     var currentEventsHash = getState().events.fetchedEventsHash;
+//
+//     pageLimit = 5;
+//     pageNumber = filters.page;
+//     startIndex = pageNumber*pageLimit;
+//     endIndex = startIndex+pageLimit;
+//
+//     eventsToShow = [];
+//
+//     for( i=startIndex ; i < endIndex ; i++ ){
+//       if(filters.locationID == 1){
+//         if(i < FWevents.length){
+//           event = FWevents[i];
+//           event.cityID = filters.locationID;
+//           eventsToShow.push(event);
+//         }
+//       }
+//       else{
+//         if(i < Devents.length){
+//           event = Devents[i];
+//           event.cityID = filters.locationID;
+//           eventsToShow.push(event);
+//         }
+//       }
+//     }
+//     currentEventsHash[filters.locationID] = eventsToShow;
+//
+//     var newEventsHash = currentEventsHash;
+//
+//     dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+//   }
+// }
 
 export function loadMoreEvents(filters){
   return (dispatch, getState) => {

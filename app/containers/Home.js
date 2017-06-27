@@ -55,37 +55,49 @@ class Home extends Component {
   }
   componentDidMount(){
     this.props.loadOfflineUser();
-    var isLoggedIn = this.checkForUser();
-    if(isLoggedIn)
-    {
-      this.props.getUserLocations();
-      // this.props.getUserLocations().then(
-      //   this.getStartingEventsForAllLocations();
-      // )
-      this.getStartingEventsForAllLocations();
-    }
+    // if(isLoggedIn)
+    // {
+    //   // this.props.getUserLocations();
+    //   // this.props.getUserLocations().then(
+    //   //   this.getStartingEventsForAllLocations();
+    //   // )
+    //   // this.getStartingEventsForAllLocations();
+    // }
   }
   componentWillReceiveProps(nextProps){
+    console.log(nextProps);
     if(nextProps.fetchedEventsHash){
       this.setState({
         fetchedEventsHash: nextProps.fetchedEventsHash,
       })
     }
-    if(nextProps.userLocations != this.props.userLocations){
+    if(nextProps.userLocations.length != this.props.userLocations.length){
+      console.warn('We are getting a new locations');
       this.setState({
         currentLocation: nextProps.userLocations.length != 0  ? nextProps.userLocations[this.state.currentLocationIndex] : {},
         hasCurrentLocation: nextProps.userLocations.length != 0  ? true : false,
         userLocations: nextProps.userLocations,
       }, function(){
-        this.getStartingEventsForAllLocations();
+        clearTimeout(this.getEventsTimeout);
+        this.getEventsTimeout = setTimeout(() => this.getStartingEventsForAllLocations(), 500);
       });
     }
     if(nextProps.user != this.props.user){
-      console.warn('We are getting a new user');
-      this.setState({
-        user: nextProps.user,
-        isLoggedIn: nextProps.isLoggedIn,
-      })
+      if(this.checkForUser()){
+        console.warn('We are getting a new user');
+        this.setState({
+          user: nextProps.user,
+          isLoggedIn: nextProps.isLoggedIn,
+        },function(){
+          this.props.getUserLocations();
+        })
+      }
+      else{
+        this.setState({
+          user: {},
+          isLoggedIn: false,
+        });
+      }
     }
   }
   checkForUser(){
@@ -106,16 +118,26 @@ class Home extends Component {
   goToDiscover(){
     Actions.discover();
   }
+  logout(){
+    this.hideMenu();
+    this.props.logoutUser();
+  }
   getEvents(){
   }
   getStartingEventsForAllLocations(){
+    console.warn('Getting Starting Events');
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
-      this.props.getEvents({page:0,locationID:location.id});
+      this.props.getEvents({
+        page:1,
+        locationID:location.id,
+        startDate:new Date(),
+        showCount:true,
+      });
     }
   }
   onRefresh(locationID){
-    this.props.getEvents({page:0,locationID:locationID});
+    this.props.getEvents({page:1,locationID:locationID});
   }
   loadMore(filters){
     this.props.loadMoreEvents(filters);
@@ -137,21 +159,18 @@ class Home extends Component {
   }
   renderListViews(){
     var arr = [];
-    for(var i=0;i<this.props.userLocations.length;i++){
-      var location = this.props.userLocations[i];
-      var locationID = location.id;
+    for(var i=0;i<this.state.userLocations.length;i++){
+      var locationID = this.state.userLocations[i];
       var events = this.state.fetchedEventsHash[locationID];
-      if(events){
-        arr.push(
-          <EventFeedList
-            key={locationID}
-            locationID={locationID}
-            events={events}
-            onRefresh={(locationID) => this.onRefresh(locationID)}
-            loadMore={(filters) => this.loadMore(filters)}
-          />
-        )
-      }
+      arr.push(
+        <EventFeedList
+          key={locationID}
+          locationID={locationID}
+          events={events ? events : []}
+          onRefresh={(locationID) => this.onRefresh(locationID)}
+          loadMore={(filters) => this.loadMore(filters)}
+        />
+      )
     }
 
     return arr
@@ -178,7 +197,7 @@ class Home extends Component {
         >
           {this.renderListViews()}
         </Swiper>
-        {this.state.menuVisible ? <FeedMenu userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()}/> : null}
+        {this.state.menuVisible ? <FeedMenu userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/> : null}
       </View>
     )
   }
@@ -213,7 +232,7 @@ function mapStateToProps(state) {
   return {
     user: state.user.user,
     isLoggedIn: state.user.isLoggedIn,
-    userLocations: state.user.user.locales ? state.user.user.locales : [],
+    userLocations: state.user.userLocations,
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
   };

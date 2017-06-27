@@ -144,6 +144,7 @@ export default class Login extends Component {
         {forgotPasswordButtonText}
       </Button>
       <Button
+        underlayColor={'#F17C49'}
         onPress={() => this.login()}
         style={styles.loginButton}
         textStyle={styles.buttonText}>

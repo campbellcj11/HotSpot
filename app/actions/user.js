@@ -38,8 +38,8 @@ export function signUpUser(user, imageUri) {
           'dataType': 'json',
         }
         Api.post('/user/create',headers,user).then(resp => {
-          console.warn('Create Success');
-          console.log('Create Response: ', resp);
+          // console.warn('Create Success');
+          // console.log('Create Response: ', resp);
           dispatch(stateLogIn(user));
         }).catch( (ex) => {
         //   console.warn(ex);
@@ -78,7 +78,7 @@ export function signUpUser(user, imageUri) {
   };
 }
 export function loginUser(user){
-  console.log('Logging in user');
+  console.warn('Logging in user');
   return (dispatch) => {
     firebase.auth().signInWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
@@ -95,12 +95,13 @@ export function loginUser(user){
             'token' : token,
           }
           Api.get('/login',headers).then(resp => {
-            console.warn('Login Success');
-            console.log('Login Response: ', resp);
-            dispatch(stateLogIn(resp));
+            // console.warn('Login Success');
+            console.warn('Login Response: ', resp);
+            dispatch(stateLogIn(resp.user));
           }).catch( (ex) => {
             console.warn(ex);
             console.warn('Login Fail');
+            // dispatch(stateLogOut());
           });
         })
       })
@@ -115,13 +116,13 @@ export function loginUser(user){
 export function logoutUser(){
   console.log('Logging out user');
 
-  var metricQuery = database.ref("metrics/");
-  metricQuery.push({
-      "UserID" : firebase.auth().currentUser.uid,
-      "Action" : "Logout",
-      "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
-      "Additional_Information" : ""
-  });
+  // var metricQuery = database.ref("metrics/");
+  // metricQuery.push({
+  //     "UserID" : firebase.auth().currentUser.uid,
+  //     "Action" : "Logout",
+  //     "Timestamp" : firebase.database.ServerValue.TIMESTAMP,
+  //     "Additional_Information" : ""
+  // });
 
   return (dispatch) => {
     firebase.auth().signOut()
@@ -138,12 +139,14 @@ export function getUserLocations(){
           'Content-Type': 'application/json',
           'dataType': 'json',
         }
-        locales = getState().user.user.locales;
-        for (locale in locales)
+        console.warn('Get State: ', getState().user.user);
+        locales = getState().user.user.locales ? getState().user.user.locales : [];
+        for (var i=0; i < locales.length; i++)
         {
+          var locale = locales[i];
             Api.get('/locale/' + locale, headers).then(resp => {
-              console.warn('Get Locale Success');
-              console.log('Locales Get Response: ', resp);
+              // console.warn('Get Locale Success');
+              console.warn('Locales Get Response: ', resp.name);
               dispatch(stateUserLocations(resp));
             }).catch( (ex) => {
             //   console.warn(ex);
@@ -171,14 +174,17 @@ export function stateLogIn(userData){
   }
 }
 export function stateLogOut(){
+  offline.save('user', {});
+  offline.save('isLoggedIn', false);
   return {
     type: types.LOG_OUT,
   }
 }
 
-export function stateUserLocations(resp){
+export function stateUserLocations(resp,index){
   return {
     type: types.GET_USER_LOCATIONS,
-    locations: locations,
+    location: resp,
+    index: index,
   }
 }

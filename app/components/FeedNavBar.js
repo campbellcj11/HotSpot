@@ -22,7 +22,7 @@ import searchIcon from '../images/search.png'
 export default class FeedNavBar extends Component {
   constructor(props){
     super(props);
-
+    
     this.state = {
       userLocations: this.props.userLocations,
       hasCurrentLocation: this.props.currentLocation ? true : false,
@@ -62,7 +62,7 @@ export default class FeedNavBar extends Component {
           </TouchableHighlight>
         </View>
         <View style={styles.middleViewHolder}>
-          <Text style={styles.title}>{this.state.hasCurrentLocation ? this.state.currentLocation.city : ''}</Text>
+          <Text style={styles.title}>{this.state.hasCurrentLocation ? this.state.currentLocation.name : 'No currentLocation'}</Text>
           <View style={{flexDirection:'row'}}>
             {this.renderLocationDots()}
           </View>
