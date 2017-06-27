@@ -32,14 +32,18 @@ export function signUpUser(user, imageUri) {
       .then(currentUser => {
         // console.log('CurrentUser: ', currentUser);
         user.uid = firebase.auth().currentUser.uid;
+        if (isNaN(user.dob))
+        {
+            delete user.dob;
+        }
         var headers = {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
           'dataType': 'json',
         }
         Api.post('/user/create',headers,user).then(resp => {
-          // console.warn('Create Success');
-          // console.log('Create Response: ', resp);
+        //   console.warn('Create Success');
+        //   console.log('Create Response: ', resp);
           dispatch(stateLogIn(user));
         }).catch( (ex) => {
         //   console.warn(ex);
