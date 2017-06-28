@@ -4,6 +4,8 @@ import { bindActionCreators } from 'redux'
 import {Actions} from 'react-native-router-flux'
 import { ActionCreators } from '../actions'
 import { appStyleVariables, appColors } from '../styles';
+import Api from '../lib/api'
+import { Alert } from 'react-native';
 import {
   ScrollView,
   ListView,
@@ -40,6 +42,7 @@ class OptionButton extends Component {
   }
   setSelected(){
     this.setState({isSelected:!this.state.isSelected});
+    this.props.onPress();
   }
   render(){
     return(
@@ -88,11 +91,76 @@ class Feedback extends Component {
 
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
+        currentUser: this.props.currentUser,
+        message: '',
+        option: 0,
     }
   }
   componentWillReceiveProps(nextProps){
-
+      if (nextProps.currentUser != this.props.currentUser)
+      {
+          this.setState({currentUser: nextProps.currentUser});
+      }
   }
+
+  submitFeedback()
+  {
+      var type = '';
+      if (this.state.option == 1)
+      {
+          type = 'Inaccurate Event Information';
+      }
+      else if (this.state.option == 2)
+      {
+          type = 'Bug'
+      }
+      else if (this.state.option == 3)
+      {
+          type = 'Feature'
+      }
+      else if (this.state.option == 4)
+      {
+          type = 'Other'
+      }
+      else
+      {
+          type = '';
+          Alert.alert('Type must be selected.');
+      }
+      if (this.state.message == '' || type == '')
+      {
+          Alert.alert('Message and type must be selected and filled out.');
+      }
+      else
+      {
+          this.postFeedback(this.state.currentUser.id, type, this.state.message);
+          Actions.pop()
+      }
+  }
+
+  postFeedback(user_id, type, message)
+  {
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+      }
+      var putData = {
+          user_id: user_id,
+          type: type,
+          message: message
+      }
+      Api.post('/feedback',headers, putData).then(resp => {
+        console.warn('Feedback Success');
+        // console.log('Create Response: ', resp);
+        // dispatch(stateLogIn(user));
+      }).catch( (ex) => {
+        // console.warn(ex);
+        // console.warn('Create Fail');
+        Alert.alert('Feedback post failed please try again.');
+      });
+  }
+
   render() {
     return (
       <View style={styles.scene}>
@@ -102,18 +170,19 @@ class Feedback extends Component {
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
           leftButtonText={'Cancel'}
           rightButtonText={'Submit'}
-          submitPressed={() => Actions.pop()}
+          submitPressed={() => this.submitFeedback()}
         />
         <Text style={styles.titleText}>Let me tell you about...</Text>
-        <OptionButton ref={'option1'} title={'Inaccurate Event Information'}/>
-        <OptionButton ref={'option2'} title={'A bug I found'}/>
-        <OptionButton ref={'option3'} title={'A feature I want'}/>
-        <OptionButton ref={'option4'} title={'Something else'}/>
+        <OptionButton onPress={() => this.setState({option:1})} ref={'option1'} title={'Inaccurate Event Information'}/>
+        <OptionButton onPress={() => this.setState({option:2})} ref={'option2'} title={'A bug I found'}/>
+        <OptionButton onPress={() => this.setState({option:3})} ref={'option3'} title={'A feature I want'}/>
+        <OptionButton onPress={() => this.setState({option:4})} ref={'option4'} title={'Something else'}/>
         <TextInput
           style={styles.textInput}
           multiline={true}
           placeholder={'Description'}
           placeholderTextColor={appColors.DARK_GRAY}
+          onChangeText={(message) => this.setState({message})}
         />
       </View>
     )
@@ -149,6 +218,7 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+      currentUser: state.user.user,
   };
 }
 
