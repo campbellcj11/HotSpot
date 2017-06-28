@@ -76,6 +76,7 @@ class Home extends Component {
     }
     if(nextProps.userLocations.length != this.props.userLocations.length){
       // console.warn('We are getting a new locations');
+      // console.warn(nextProps.userLocations);
       this.setState({
         currentLocation: nextProps.userLocations.length != 0  ? nextProps.userLocations[this.state.currentLocationIndex] : {},
         hasCurrentLocation: nextProps.userLocations.length != 0  ? true : false,
