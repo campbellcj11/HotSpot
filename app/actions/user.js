@@ -118,7 +118,7 @@ export function loginUser(user){
   };
 }
 export function logoutUser(){
-  console.log('Logging out user');
+  console.warn('Logging out user');
 
   // var metricQuery = database.ref("metrics/");
   // metricQuery.push({
@@ -131,6 +131,7 @@ export function logoutUser(){
   return (dispatch) => {
     firebase.auth().signOut()
       .then(currentUser => {
+        console.warn('HERE');
         dispatch(stateLogOut());
       })
   };
@@ -163,7 +164,9 @@ export function getUserLocations(){
 export function loadOfflineUser() {
   return (dispatch) => {
     offline.get('user').then( (user) => {
-        dispatch(stateLogIn(user));
+      offline.get('isLoggedIn').then( (isLoggedIn) => {
+        dispatch(stateSaveLoadedUser(user,isLoggedIn));
+      })
     })
   };
 }
@@ -175,6 +178,14 @@ export function stateLogIn(userData){
   return {
     type: types.LOG_IN,
     user: userData,
+    isLoggedIn: true,
+  }
+}
+export function stateSaveLoadedUser(userData,isLoggedIn){
+  return {
+    type: types.LOG_IN,
+    user: userData,
+    isLoggedIn: isLoggedIn,
   }
 }
 export function stateLogOut(){

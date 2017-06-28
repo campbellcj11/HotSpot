@@ -54,9 +54,10 @@ Devents = [
 
 export function getEvents(filters){
   return (dispatch, getState) => {
-    firebase.auth().currentUser.getToken().then(token => {
+    // firebase.auth().currentUser.getToken().then(token => {
       var uid = getState().user.user.uid;
-      console.warn(filters.startDate);
+      var token = '0000';
+
       var headers = {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -65,7 +66,7 @@ export function getEvents(filters){
         'token' : token,
       }
       var body ={
-      	"tags": ["art"],
+      	"tags": filters.tags,
           "sortBy": "start_date",
           "pageSize": 20,
           "pageNumber": filters.page,
@@ -92,8 +93,8 @@ export function getEvents(filters){
       }
       return Api.post('/getEvents?',headers,body).then(resp => {
 
-        console.warn('GetEvents Success');
-        console.warn(resp.count);
+        // console.warn('GetEvents Success');
+        // console.warn(resp.count);
         var events = [];
         if(filters.showCount){
           events = resp.events;
@@ -102,16 +103,23 @@ export function getEvents(filters){
           events = resp;
         }
 
-        // var currentEventsHash = getState().events.fetchedEventsHash;
-        // currentEventsHash[filters.locationID] = eventsToShow;
-        // var newEventsHash = currentEventsHash;
+        var currentEventsHash = getState().events.fetchedEventsHash;
+        currentEventsHash[filters.locationID] = events;
+        var newEventsHash = currentEventsHash;
         // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
-        // dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+        // console.warn('Events: ', events);
+        // console.warn('Filters: ', filters.locationID);
+        // console.warn('NEH: ', newEventsHash);
+        dispatch(setFetchedEvents(events,filters.locationID,newEventsHash))
+
       }).catch( (ex) => {
         console.warn('Error: ', ex);
         console.warn('GetEvents Fail');
       })
-    })
+    // }).catch( (ex) => {
+    //   console.warn('Error: ', ex);
+    //   console.warn('Issue with auth');
+    // })
   }
 }
 // export function getEvents(filters){
@@ -162,54 +170,57 @@ export function getEvents(filters){
 // }
 
 export function loadMoreEvents(filters){
-  return (dispatch, getState) => {
-    var currentEventsHash = getState().events.fetchedEventsHash;
 
-    eventsToShow = [];
-
-    for( i=0 ; i < filters.currentEvents.length ; i++ ){
-      if(filters.locationID == 1){
-        if(i < FWevents.length){
-          event = FWevents[i];
-          eventsToShow.push(event);
-        }
-      }
-      else{
-        if(i < Devents.length){
-          event = Devents[i];
-          eventsToShow.push(event);
-        }
-      }
-    }
-
-    pageLimit = 5;
-    pageNumber = filters.page;
-    startIndex = pageNumber*pageLimit;
-    endIndex = startIndex+pageLimit;
-
-    for( i=startIndex ; i < endIndex ; i++ ){
-      if(filters.locationID == 1){
-        if(i < FWevents.length){
-          event = FWevents[i];
-          event.cityID = filters.locationID;
-          eventsToShow.push(event);
-        }
-      }
-      else{
-        if(i < Devents.length){
-          event = Devents[i];
-          event.cityID = filters.locationID;
-          eventsToShow.push(event);
-        }
-      }
-    }
-    currentEventsHash[filters.locationID] = eventsToShow;
-
-    var newEventsHash = currentEventsHash;
-
-    dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
-  }
 }
+// export function loadMoreEvents(filters){
+//   return (dispatch, getState) => {
+//     var currentEventsHash = getState().events.fetchedEventsHash;
+//
+//     eventsToShow = [];
+//
+//     for( i=0 ; i < filters.currentEvents.length ; i++ ){
+//       if(filters.locationID == 1){
+//         if(i < FWevents.length){
+//           event = FWevents[i];
+//           eventsToShow.push(event);
+//         }
+//       }
+//       else{
+//         if(i < Devents.length){
+//           event = Devents[i];
+//           eventsToShow.push(event);
+//         }
+//       }
+//     }
+//
+//     pageLimit = 5;
+//     pageNumber = filters.page;
+//     startIndex = pageNumber*pageLimit;
+//     endIndex = startIndex+pageLimit;
+//
+//     for( i=startIndex ; i < endIndex ; i++ ){
+//       if(filters.locationID == 1){
+//         if(i < FWevents.length){
+//           event = FWevents[i];
+//           event.cityID = filters.locationID;
+//           eventsToShow.push(event);
+//         }
+//       }
+//       else{
+//         if(i < Devents.length){
+//           event = Devents[i];
+//           event.cityID = filters.locationID;
+//           eventsToShow.push(event);
+//         }
+//       }
+//     }
+//     currentEventsHash[filters.locationID] = eventsToShow;
+//
+//     var newEventsHash = currentEventsHash;
+//
+//     dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
+//   }
+// }
 
 export function setFetchedEvents(events,locationID,currentEventsHash){
   return {

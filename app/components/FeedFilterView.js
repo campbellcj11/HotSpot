@@ -16,12 +16,9 @@ import {
   Dimensions,
 } from 'react-native';
 
-import EventFeedInterestFilter from '../containers/EventFeedInterestFilter'
-
 export default class FeedFilterView extends Component {
   constructor(props){
     super(props);
-
     this.state = {
 
     }

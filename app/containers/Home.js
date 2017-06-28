@@ -51,6 +51,7 @@ class Home extends Component {
       hasCurrentLocation: this.props.userLocations.length != 0  ? true : false,
       fetchedEventsHash: {},
       menuVisible: false,
+      localInterests: [],
     }
   }
   componentDidMount(){
@@ -65,14 +66,13 @@ class Home extends Component {
     // }
   }
   componentWillReceiveProps(nextProps){
-    console.log(nextProps);
     if(nextProps.fetchedEventsHash){
       this.setState({
         fetchedEventsHash: nextProps.fetchedEventsHash,
       })
     }
     if(nextProps.userLocations.length != this.props.userLocations.length){
-      console.warn('We are getting a new locations');
+      // console.warn('We are getting a new locations');
       this.setState({
         currentLocation: nextProps.userLocations.length != 0  ? nextProps.userLocations[this.state.currentLocationIndex] : {},
         hasCurrentLocation: nextProps.userLocations.length != 0  ? true : false,
@@ -83,37 +83,26 @@ class Home extends Component {
       });
     }
     if(nextProps.user != this.props.user){
-      if(this.checkForUser()){
-        console.warn('We are getting a new user');
-        this.setState({
-          user: nextProps.user,
-          isLoggedIn: nextProps.isLoggedIn,
-        },function(){
-          this.props.getUserLocations();
-        })
-      }
-      else{
-        this.setState({
-          user: {},
-          isLoggedIn: false,
-        });
-      }
+      // console.warn('We are getting a new user');
+      // console.warn('User: ', nextProps.user);
+      // console.warn('IsloggedIn: ', nextProps.isLoggedIn);
+      this.setState({
+        user: nextProps.user,
+        isLoggedIn: nextProps.isLoggedIn,
+      },function(){
+        if(this.state.localInterests.length == 0)
+        {
+          // this.props.getLocalInterests();
+          // this.props.setLocalInterests(nextProps.user.interests);
+        }
+      })
     }
-  }
-  checkForUser(){
-    var returnValue;
-    console.log('User: ',this.state.user);
-    if(Object.keys(this.state.user).length !== 0){
-      returnValue = true;
+    if(nextProps.localInterests != this.props.localInterests && nextProps.localInterests.length != 0)
+    {
+      this.setState({localInterests: nextProps.localInterests},function(){
+        this.updateEvents()
+      });
     }
-    else{
-      // This needs to be removed once we want to worry about loggin in
-      // returnValue = true;
-      // This needs to be uncommented out once we want to worry about logging in
-      returnValue = false;
-      this.setState({isLoggedIn:false});
-    }
-    return returnValue;
   }
   goToDiscover(){
     Actions.discover();
@@ -125,7 +114,8 @@ class Home extends Component {
   getEvents(){
   }
   getStartingEventsForAllLocations(){
-    console.warn('Getting Starting Events');
+    // console.warn('Getting Starting Events');
+    // console.warn(this.state.localInterests);
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
       this.props.getEvents({
@@ -133,6 +123,20 @@ class Home extends Component {
         locationID:location.id,
         startDate:new Date(),
         showCount:true,
+        tags: this.state.localInterests,
+      });
+    }
+  }
+  updateEvents(){
+    // console.warn(this.state.localInterests);
+    for(var i=0;i<this.state.userLocations.length;i++){
+      var location = this.state.userLocations[i];
+      this.props.getEvents({
+        page:1,
+        locationID:location.id,
+        startDate:new Date(),
+        showCount:true,
+        tags: this.state.localInterests,
       });
     }
   }
@@ -140,7 +144,7 @@ class Home extends Component {
     this.props.getEvents({page:1,locationID:locationID});
   }
   loadMore(filters){
-    this.props.loadMoreEvents(filters);
+    // this.props.loadMoreEvents(filters);
   }
   onMomentumScrollEnd(e, state, context) {
     this.setState({currentLocationIndex:state.index,currentLocation:this.props.userLocations[state.index]});
@@ -160,7 +164,7 @@ class Home extends Component {
   renderListViews(){
     var arr = [];
     for(var i=0;i<this.state.userLocations.length;i++){
-      var locationID = this.state.userLocations[i];
+      var locationID = this.state.userLocations[i].id;
       var events = this.state.fetchedEventsHash[locationID];
       arr.push(
         <EventFeedList
@@ -232,9 +236,10 @@ function mapStateToProps(state) {
   return {
     user: state.user.user,
     isLoggedIn: state.user.isLoggedIn,
-    userLocations: state.user.userLocations,
+    userLocations: state.user.user.locales ? state.user.user.locales : [],
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
+    localInterests: state.app.localInterests,
   };
 }
 

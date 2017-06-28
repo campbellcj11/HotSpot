@@ -18,7 +18,7 @@ export default function reducer(state = initialState, action) {
   case types.LOG_IN:
     return {
       ...state,
-      isLoggedIn: true,
+      isLoggedIn: action.isLoggedIn,
       user: action.user,
     }
   case types.LOG_OUT:

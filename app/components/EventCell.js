@@ -154,30 +154,42 @@ export default class EventCell extends Component {
     this.setState({isFavorited: !this.state.isFavorited})
   }
   render(){
-    var startDate = Moment(this.props.rowData.startData);
+    var startDate = Moment(this.props.rowData.start_date);
 
     var startTime = startDate.format('LT');
     var month = startDate.format('MMMM');
     var day = startDate.format('DD');
     var dow = startDate.calendar();
 
+    var arr = [];
+    for(var i=0;i<this.props.rowData.tags.length;i++)
+    {
+      var tag = this.props.rowData.tags[i];
+      arr.push(
+        <View key={i} style={[styles.tagTextHolder,{backgroundColor:tagColors[tag ? tag.toLowerCase() : '']}]}>
+          <Text style={styles.tagText}>{tag ? tag.toUpperCase() : ''}</Text>
+        </View>
+      )
+    }
+
+    // console.warn(this.props.rowData.venue_name);
     return(
       <View style={styles.container}>
         <TouchableHighlight key={this.props.rowData.id}>
           <View style={{overflow: 'hidden',borderTopLeftRadius:4,borderTopRightRadius:4,}}>
-            <Image style={styles.eventImage} source={this.props.rowData.image} resizeMode={'cover'}>
-              <View style={[styles.tagTextHolder,{backgroundColor:tagColors[this.props.rowData.tag ? this.props.rowData.tag.toLowerCase() : '']}]}>
-                <Text style={styles.tagText}>{this.props.rowData.tag ? this.props.rowData.tag.toUpperCase() : ''}</Text>
+            <Image style={styles.eventImage} source={{uri:this.props.rowData.image}} resizeMode={'cover'}>
+              <View style={styles.tagsHolder}>
+                {arr}
               </View>
             </Image>
             <View style={{flexDirection:'row',marginVertical:4,marginHorizontal:8}}>
               <View style={styles.leftView}>
-                <Text style={styles.title} numberOfLines={3}>{this.props.rowData.title}</Text>
+                <Text style={styles.title} numberOfLines={3}>{this.props.rowData.name}</Text>
                 <View style={{flexDirection:'row'}}>
                   <Text style={styles.time}>{startTime}</Text>
-                  <Text style={styles.location}> - {this.props.rowData.location}</Text>
+                  <Text style={styles.location} ellipsizeMode={'tail'} numberOfLines={1}> - {this.props.rowData.venue_name}</Text>
                 </View>
-                <Text style={styles.shortDescription} numberOfLines={2}>{this.props.rowData.shortDescription}</Text>
+                <Text style={styles.shortDescription} numberOfLines={2}>{this.props.rowData.short_description}</Text>
                 <View style={styles.bottomView}>
                   <TouchableHighlight underlayColor={'transparent'} onPress={() => this.openShare()}>
                     <View style={styles.actionButtonContentHolder}>
@@ -226,10 +238,16 @@ const styles = StyleSheet.create({
     borderTopLeftRadius:4,
     borderTopRightRadius:4,
   },
-  tagTextHolder:{
+  tagsHolder:{
     position:'absolute',
     left:8,
     bottom:8,
+    paddingHorizontal:6,
+    paddingVertical:2,
+    marginHorizontal:2,
+    flexDirection:'row',
+  },
+  tagTextHolder:{
     paddingHorizontal:6,
     paddingVertical:2,
     borderRadius:4,
@@ -253,6 +271,8 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     marginLeft:8,
     marginRight:16,
+    marginTop:8,
+    marginBottom:8,
   },
   title:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
@@ -269,6 +289,7 @@ const styles = StyleSheet.create({
     fontFamily: appStyleVariables.SYSTEM_FONT,
     fontSize: 12,
     color: appColors.BLACK,
+    flex:1,
   },
   shortDescription:{
     fontFamily: appStyleVariables.SYSTEM_LIGHT_FONT,
