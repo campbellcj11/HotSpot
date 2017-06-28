@@ -119,6 +119,37 @@ export function loginUser(user){
     });
   };
 }
+
+export function updateUser(user)
+{
+    //THIS ALMOST WORKS NOT YET THOUGH
+    putData = user;
+    delete putData.id;
+    delete putData.email;
+    delete putData.locales;
+    delete putData.interests;
+    delete putData.profile_image;
+    console.warn("Updating User");
+    console.log(putData);
+    var headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'dataType': 'json',
+    }
+    return (dispatch) => {
+      //this functionality should be in updateUser in user.js actions - (didn't know how to map it)
+      console.log(user);
+      Api.put('/user/update/' + user.id, headers, user).then(resp => {
+        // console.warn('Get Locale Success');
+        console.warn('UserUpdate Get Response: ', resp.name);
+         dispatch(stateLogIn(user));
+      }).catch( (ex) => {
+        console.warn(ex);
+        console.warn('Update Fail');
+        });
+    };
+}
+
 export function logoutUser(){
   console.warn('Logging out user');
 
@@ -206,4 +237,12 @@ export function stateUserLocations(resp,index){
     location: resp,
     index: index,
   }
+}
+
+export function stateUserUpdate(userData)
+{
+    return {
+        type: types.GET_USER_LOCATIONS,
+        user: userData,
+    }
 }

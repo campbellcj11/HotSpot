@@ -10,6 +10,11 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+  case types.USER_UPDATE:
+    return {
+        ...state,
+        user: action.user
+    }
   case types.GET_USER_LOCATIONS:
     return {
       ...state,
