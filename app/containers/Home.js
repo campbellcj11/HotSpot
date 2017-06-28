@@ -52,11 +52,13 @@ class Home extends Component {
       fetchedEventsHash: {},
       menuVisible: false,
       localInterests: [],
+      localStartDate: this.props.localStartDate ? this.props.localStartDate : new Date(),
     }
   }
   componentDidMount(){
     this.props.loadOfflineUser();
     this.props.getLocalInterests();
+    this.props.getLocalStartDate();
     // if(isLoggedIn)
     // {
     //   // this.props.getUserLocations();
@@ -104,6 +106,13 @@ class Home extends Component {
         this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
       });
     }
+    if(nextProps.localStartDate != this.props.localStartDate)
+    {
+      this.setState({localStartDate: nextProps.localStartDate},function(){
+        clearTimeout(this.updateEventsTimeout);
+        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+      });
+    }
   }
   goToDiscover(){
     Actions.discover();
@@ -122,22 +131,21 @@ class Home extends Component {
       this.props.getEvents({
         page:1,
         locationID:location.id,
-        startDate:new Date(),
+        startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
         showCount:true,
-        tags: this.state.localInterests,
+        tags: this.state.localInterests ? this.state.localInterests : [],
       });
     }
   }
   updateEvents(){
-    // console.warn(this.state.localInterests);
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
       this.props.getEvents({
         page:1,
         locationID:location.id,
-        startDate:new Date(),
+        startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
         showCount:true,
-        tags: this.state.localInterests,
+        tags: this.state.localInterests ? this.state.localInterests : [],
       });
     }
   }
@@ -241,6 +249,7 @@ function mapStateToProps(state) {
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
     localInterests: state.app.localInterests,
+    localStartDate: state.app.localStartDate,
   };
 }
 

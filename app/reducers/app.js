@@ -3,6 +3,7 @@ import * as types from '../actions/types'
 const initialState = {
   possibleLocations: [],
   localInterests: [],
+  localStartDate: new Date(),
 }
 
 export default function reducer(state = initialState, action) {
@@ -16,6 +17,11 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       localInterests: action.localInterests,
+    }
+  case types.SAVE_START_DATE:
+    return {
+      ...state,
+      localStartDate: action.localStartDate,
     }
   default:
     return state

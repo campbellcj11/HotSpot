@@ -47,3 +47,24 @@ function stateSaveLocalInterests(sentInterests){
     localInterests: sentInterests,
   }
 }
+
+export function setLocalStartDate(startDate){
+  offline.save('startDate', startDate);
+  return (dispatch) => {
+    dispatch(stateSaveLocalStartDate(startDate))
+  }
+}
+export function getLocalStartDate(){
+  return (dispatch, getState) => {
+    return offline.get('startDate').then(startDate => {
+      dispatch(stateSaveLocalStartDate(startDate));
+    });
+  }
+}
+function stateSaveLocalStartDate(startDate){
+  var startDate = startDate ? startDate : new Date();
+  return {
+    type: types.SAVE_START_DATE,
+    startDate: startDate,
+  }
+}
