@@ -193,6 +193,8 @@ export function stateSaveLoadedUser(userData,isLoggedIn){
 export function stateLogOut(){
   offline.save('user', {});
   offline.save('isLoggedIn', false);
+  offline.save('startDate', new Date());
+  offline.save('localInterests', []);
   return {
     type: types.LOG_OUT,
   }
