@@ -20,11 +20,13 @@ export default class FeedFilterView extends Component {
   constructor(props){
     super(props);
     this.state = {
-
+      interests: this.props.interests,
     }
   }
   componentWillReceiveProps(nextProps){
-
+    if(nextProps.interests != this.props.interests){
+      this.setState({interests:nextProps.interests});
+    }
   }
   render(){
     return(
@@ -32,7 +34,7 @@ export default class FeedFilterView extends Component {
         <Text style={styles.title}>Show me...</Text>
         <View style={styles.bottomHolder}>
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedInterestFilter()}>
-            <Text style={styles.filterButtonText}>All Interests</Text>
+            <Text style={styles.filterButtonText}>{this.state.interests ? this.state.interests.length + ' interests' : 'All Interests'}</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedDateFilter()}>
             <Text style={styles.filterButtonText}>All Dates</Text>

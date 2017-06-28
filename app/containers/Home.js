@@ -56,6 +56,7 @@ class Home extends Component {
   }
   componentDidMount(){
     this.props.loadOfflineUser();
+    this.props.getLocalInterests();
     // if(isLoggedIn)
     // {
     //   // this.props.getUserLocations();
@@ -92,7 +93,6 @@ class Home extends Component {
       },function(){
         if(this.state.localInterests.length == 0)
         {
-          // this.props.getLocalInterests();
           // this.props.setLocalInterests(nextProps.user.interests);
         }
       })
@@ -100,7 +100,8 @@ class Home extends Component {
     if(nextProps.localInterests != this.props.localInterests && nextProps.localInterests.length != 0)
     {
       this.setState({localInterests: nextProps.localInterests},function(){
-        this.updateEvents()
+        clearTimeout(this.updateEventsTimeout);
+        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
       });
     }
   }
@@ -115,7 +116,7 @@ class Home extends Component {
   }
   getStartingEventsForAllLocations(){
     // console.warn('Getting Starting Events');
-    // console.warn(this.state.localInterests);
+    // console.warn(this.state.localInterests.length);
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
       this.props.getEvents({
@@ -191,7 +192,7 @@ class Home extends Component {
           showMenu={() => this.showMenu()}
           goToDiscover={() => this.goToDiscover()}
         />
-        <FeedFilterView height={104}/>
+        <FeedFilterView height={104} interests={this.state.localInterests}/>
         <Swiper
           height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-104}
           showsButtons={false}

@@ -28,20 +28,18 @@ export function setLocalInterests(sentInterests){
   for(var i=0;i<sentInterests.length;i++){
     newInterests[i] = sentInterests[i];
   }
-  
+
   offline.save('localInterests', newInterests);
   return (dispatch) => {
     dispatch(stateSaveLocalInterests(newInterests))
   }
 }
 export function getLocalInterests(){
-  offline.get('localInterests').then(interests => {
-    return (dispatch) => {
-      dispatch(stateSaveLocalInterests(interests))
-    }
-  }).catch(error => {
-    dispatch(stateSaveLocalInterests([]))
-  });;
+  return (dispatch, getState) => {
+    return offline.get('localInterests').then(interests => {
+      dispatch(stateSaveLocalInterests(interests));
+    });
+  }
 }
 function stateSaveLocalInterests(sentInterests){
   return {
