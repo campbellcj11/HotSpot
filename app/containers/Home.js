@@ -128,25 +128,29 @@ class Home extends Component {
     // console.warn(this.state.localInterests.length);
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
-      this.props.getEvents({
-        page:1,
-        locationID:location.id,
-        startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
-        showCount:true,
-        tags: this.state.localInterests ? this.state.localInterests : [],
-      });
+      if(location){
+        this.props.getEvents({
+          page:1,
+          locationID:location.id,
+          startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+          showCount:true,
+          tags: this.state.localInterests ? this.state.localInterests : [],
+        });
+      }
     }
   }
   updateEvents(){
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
-      this.props.getEvents({
-        page:1,
-        locationID:location.id,
-        startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
-        showCount:true,
-        tags: this.state.localInterests ? this.state.localInterests : [],
-      });
+      if(location){
+        this.props.getEvents({
+          page:1,
+          locationID:location.id,
+          startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+          showCount:true,
+          tags: this.state.localInterests ? this.state.localInterests : [],
+        });
+      }
     }
   }
   onRefresh(locationID){
