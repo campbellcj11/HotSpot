@@ -205,9 +205,9 @@ class Home extends Component {
           showMenu={() => this.showMenu()}
           goToDiscover={() => this.goToDiscover()}
         />
-        <FeedFilterView height={104} interests={this.state.localInterests}/>
+        <FeedFilterView height={60} interests={this.state.localInterests}/>
         <Swiper
-          height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-104}
+          height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-60}
           showsButtons={false}
           showsPagination={false}
           loop={false}

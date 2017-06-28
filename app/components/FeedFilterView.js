@@ -31,10 +31,10 @@ export default class FeedFilterView extends Component {
   render(){
     return(
       <View style={[styles.container,{height:this.props.height}]}>
-        <Text style={styles.title}>Show me...</Text>
+        {/*<Text style={styles.title}>Show me...</Text>*/}
         <View style={styles.bottomHolder}>
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedInterestFilter()}>
-            <Text style={styles.filterButtonText}>{this.state.interests ? this.state.interests.length + ' interests' : 'All Interests'}</Text>
+            <Text style={styles.filterButtonText}>{ (this.state.interests && this.state.interests.length > 0) ? this.state.interests.length + ' interests' : 'All Interests'}</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedDateFilter()}>
             <Text style={styles.filterButtonText}>All Dates</Text>
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   bottomHolder:{
     flexDirection:'row',
     marginHorizontal: 8,
-    marginBottom: 16,
+    marginVertical:8,
   },
   filterButton:{
     marginHorizontal: 8,
