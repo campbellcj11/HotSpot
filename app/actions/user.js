@@ -122,15 +122,20 @@ export function loginUser(user){
 
 export function updateUser(user)
 {
-    //THIS ALMOST WORKS NOT YET THOUGH
-    putData = user;
-    delete putData.id;
-    delete putData.email;
-    delete putData.locales;
-    delete putData.interests;
-    delete putData.profile_image;
-    console.warn("Updating User");
-    console.log(putData);
+    // console.log("User before update: ");
+    // console.log(user);
+    var putData = {
+        first_name: user.first_name,
+        last_name: user.last_name,
+        dob: new Date(user.dob * 1000),
+        phone: user.phone,
+        gender: user.gender
+    };
+    var currentID = user.id;
+    // console.log("User after update: ");
+    // console.log(user);
+    // console.warn("Put info User");
+    // console.log(putData);
     var headers = {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
@@ -138,15 +143,14 @@ export function updateUser(user)
     }
     return (dispatch) => {
       //this functionality should be in updateUser in user.js actions - (didn't know how to map it)
-      console.log(user);
-      Api.put('/user/update/' + user.id, headers, user).then(resp => {
+      Api.put('/user/update/' + currentID, headers, putData).then(resp => {
         // console.warn('Get Locale Success');
-        console.warn('UserUpdate Get Response: ', resp.name);
+        // console.warn('UserUpdate Get Response: ', resp.name);
          dispatch(stateLogIn(user));
       }).catch( (ex) => {
-        console.warn(ex);
-        console.warn('Update Fail');
-        });
+        // console.warn(ex);
+        // console.warn('Update Fail');
+      });
     };
 }
 

@@ -42,7 +42,8 @@ class Profile extends Component {
         currentUser: this.props.currentUser,
         firstName: this.props.currentUser.first_name,
         lastName: this.props.currentUser.last_name,
-        dob: this.props.currentUser.dob ? new Date(this.props.currentUser.dob * 1000 + 86400000) : null,
+        dob: this.props.currentUser.dob ? this.props.currentUser.dob : '',
+        // dobDatetime: this.props.currentUser.dob ? new Date(this.props.currentUser.dob * 1000 + 86400000) : null,
         gender: this.props.currentUser.gender ? this.props.currentUser.gender : null,
         phone: this.props.currentUser.phone ? this.props.currentUser.phone : null
     }
@@ -55,13 +56,12 @@ class Profile extends Component {
   }
 
   submitPressed(){
-    // console.log(this.state.currentUser);
     var newUser = this.state.currentUser;
     newUser.first_name = this.state.firstName;
     newUser.last_name = this.state.lastName;
     newUser.dob = this.state.dob;
     newUser.phone = this.state.phone;
-    newUser.gender = this.state.gender;
+    newUser.gender = this.state.gender != null ? this.state.gender : '';
     this.props.updateUser(newUser);
     Actions.pop();
   }
@@ -78,7 +78,7 @@ formatDate(date) {
   var monthIndex = date.getMonth();
   var year = date.getFullYear();
 
-  return day + ' ' + monthNames[monthIndex] + ' ' + year;
+  return  monthNames[monthIndex] + ' ' + day + ', ' + year;
 }
 
   render() {
@@ -98,8 +98,8 @@ formatDate(date) {
               <TextInput style={styles.textInput}
                 ref='First Name'
                 onChangeText={(firstName) => this.setState({firstName})}
-                placeholder= {this.state.currentUser ? this.state.currentUser.first_name : 'First Name'}
-                placeholderTextColor= {this.state.currentUser ? appColors.BLACK : '#DCE3E3'}
+                placeholder= {this.state.firstName ? this.state.firstName : 'First Name'}
+                placeholderTextColor= {this.state.firstName ? appColors.BLACK : '#DCE3E3'}
                 underlineColorAndroid='transparent'
                 keyboardType={'email-address'}
                 returnKeyType={'next'}
@@ -110,8 +110,8 @@ formatDate(date) {
               <TextInput style={styles.textInput}
                 ref='lastName'
                 onChangeText={(lastName) => this.setState({lastName})}
-                placeholder= {this.state.currentUser ? this.state.currentUser.last_name : 'Last Name'}
-                placeholderTextColor= {this.state.currentUser ? appColors.BLACK : '#DCE3E3'}
+                placeholder= {this.state.lastName ? this.state.lastName : 'Last Name'}
+                placeholderTextColor= {this.state.lastName ? appColors.BLACK : '#DCE3E3'}
                 underlineColorAndroid='transparent'
                 returnKeyType={'next'}
                 onSubmitEditing={() => {this.refs.dob.focus();}}>
@@ -121,7 +121,7 @@ formatDate(date) {
               <DatePicker
                 ref='dob'
                 style={styles.datePicker}
-                date={this.state.dob}
+                date={new Date(this.state.dob * 1000)}
                 mode="date"
                 placeholder= 'Date of Birth'
                 format="MMMM DD, YYYY"
@@ -144,7 +144,7 @@ formatDate(date) {
                     alignItems: 'flex-start',
                   }
                 }}
-                onDateChange={(dob) => {this.setState({dob: dob})}}
+                onDateChange={(dob) => {this.setState({dob: Date.parse(dob)/1000})}}
                 onSubmitEditing={() => this.refs.gender.focus()}
               />
             </View>
@@ -152,8 +152,8 @@ formatDate(date) {
               <TextInput style={styles.textInput}
                 ref='gender'
                 onChangeText={(gender) => this.setState({gender})}
-                placeholder= {this.state.currentUser.gender ? this.state.currentUser.gender : 'Gender'}
-                placeholderTextColor= {this.state.currentUser.gender ? appColors.BLACK : '#DCE3E3'}
+                placeholder= {this.state.gender ? this.state.gender : 'Gender'}
+                placeholderTextColor= {this.state.gender ? appColors.BLACK : '#DCE3E3'}
                 underlineColorAndroid='transparent'
                 returnKeyType={'next'}
                 onSubmitEditing={() => this.refs.phone.focus()}>
@@ -163,8 +163,8 @@ formatDate(date) {
               <TextInput style={styles.textInput}
                 ref='phone'
                 onChangeText={(phone) => this.setState({phone})}
-                placeholder= {this.state.currentUser.phone ? this.state.currentUser.phone : 'Gender'}
-                placeholderTextColor= {this.state.currentUser.phone ? appColors.BLACK : '#DCE3E3'}
+                placeholder= {this.state.phone ? this.state.phone : 'Gender'}
+                placeholderTextColor= {this.state.phone ? appColors.BLACK : '#DCE3E3'}
                 underlineColorAndroid='transparent'
                 returnKeyType={'done'}>
               </TextInput>
