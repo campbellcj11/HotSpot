@@ -41,7 +41,7 @@ export default class FeedMenu extends Component {
             <Text style={styles.menuButtonText}>Profile</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.locations({userLocations: this.props.userLocations});this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.locations();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Locations</Text>
           </TouchableHighlight>
 
@@ -49,9 +49,9 @@ export default class FeedMenu extends Component {
             <Text style={styles.menuButtonText}>Interests</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.eventSuggestion();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+          {/*<TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.eventSuggestion();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Event Suggestion</Text>
-          </TouchableHighlight>
+          </TouchableHighlight>*/}
 
           <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.feedback();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Feedback</Text>
@@ -61,13 +61,13 @@ export default class FeedMenu extends Component {
             <Text style={styles.menuButtonText}>Legal</Text>
           </TouchableHighlight>
 
-          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.stats();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+          {/*<TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.stats();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Stats (admin only)</Text>
           </TouchableHighlight>
 
           <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.newEvent();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
             <Text style={styles.menuButtonText}>Add Event (admin only)</Text>
-          </TouchableHighlight>
+          </TouchableHighlight>*/}
 
           <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {this.props.logout()}}>
             <Text style={styles.menuButtonText}>Logout</Text>

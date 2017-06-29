@@ -20,6 +20,8 @@ import {
   UIManager,
   LayoutAnimation,
 } from 'react-native';
+import { INTERESTS } from '../lib/constants.js';
+import Button from '../components/Button'
 
 //npm packages
 
@@ -36,12 +38,54 @@ class Interests extends Component {
 
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
+      selectedInterests: this.populateInterests(this.props.selectedInterests),
     }
   }
   componentWillReceiveProps(nextProps){
-
+    if(nextProps.selectedInterests != this.props.selectedInterests){
+      this.setState({selectedInterests: this.populateInterests(nextProps.selectedInterests)})
+    }
+  }
+  populateInterests(sentSelectedInterests){
+    var array = [];
+    for(var i=0;i<sentSelectedInterests.length;i++)
+    {
+      array.push(sentSelectedInterests[i]);
+    }
+    return array
+  }
+  interestSelected(sentInterest){
+    if(this.state.selectedInterests.indexOf(sentInterest) == -1)
+    {
+      var interests = this.state.selectedInterests;
+      interests.push(sentInterest);
+      this.setState({selectedInterests:interests});
+    }
+    else {
+      var interests = this.state.selectedInterests;
+      var index = interests.indexOf(sentInterest);
+      interests.splice(index,1);
+      this.setState({selectedInterests:interests});
+    }
+  }
+  submitPressed(){
+    // this.props.submitPressed();
+    this.props.user.interests = this.state.selectedInterests;
+    this.props.setLocalInterests(this.state.selectedInterests);
+    Actions.pop()
   }
   render() {
+    interests = INTERESTS;
+
+    var interestsViews = [];
+    for (i in interests){
+        var interest = interests[i];
+        var isSelected = this.state.selectedInterests.indexOf(interest) == -1 ? false : true;
+        interestsViews.push(
+            <Button ref={interest} underlayColor={'transparent'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest.toUpperCase()}</Button>
+        );
+    }
+
     return (
       <View style={styles.scene}>
         <ActionNavBar
@@ -50,8 +94,15 @@ class Interests extends Component {
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
           leftButtonText={'Cancel'}
           rightButtonText={'Update'}
-          submitPressed={() => Actions.pop()}
+          submitPressed={() => this.submitPressed()}
         />
+        <View style={{flex:1}}>
+          <ScrollView>
+            <View style={{flexDirection:'row',flexWrap:'wrap'}}>
+              {interestsViews}
+            </View>
+          </ScrollView>
+        </View>
       </View>
     )
   }
@@ -61,6 +112,31 @@ const styles = StyleSheet.create({
   scene: {
     flex: 1,
   },
+  interestCell:{
+    margin:8,
+    borderWidth:1,
+    borderColor:'#848484',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  selectedCell:{
+    marginHorizontal: 7,
+    marginVertical:8,
+    borderWidth:2,
+    borderColor:'#0B82CC',
+    backgroundColor:'#FFFFFF',
+    borderRadius:4,
+  },
+  interestCellText:{
+    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontSize: 16,
+    color: '#848484',
+  },
+  selectedCellText:{
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 15,
+    color: '#0B82CC',
+  },
 });
 
 function mapDispatchToProps(dispatch) {
@@ -69,6 +145,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    user: state.user.user,
+    selectedInterests: state.user.user.interests,
   };
 }
 

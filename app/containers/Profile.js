@@ -163,7 +163,7 @@ formatDate(date) {
               <TextInput style={styles.textInput}
                 ref='phone'
                 onChangeText={(phone) => this.setState({phone})}
-                placeholder= {this.state.phone ? this.state.phone : 'Gender'}
+                placeholder= {this.state.phone ? this.state.phone : 'Phone'}
                 placeholderTextColor= {this.state.phone ? appColors.BLACK : '#DCE3E3'}
                 underlineColorAndroid='transparent'
                 returnKeyType={'done'}>

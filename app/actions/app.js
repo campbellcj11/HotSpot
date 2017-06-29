@@ -68,3 +68,33 @@ function stateSaveLocalStartDate(startDate){
     startDate: startDate,
   }
 }
+
+export function setLocalEndDate(endDate){
+  offline.save('endDate', endDate);
+  return (dispatch) => {
+    dispatch(stateSaveLocalEndDate(endDate))
+  }
+}
+export function getLocalEndDate(){
+  return (dispatch, getState) => {
+    return offline.get('endDate').then(endDate => {
+      dispatch(stateSaveLocalEndDate(endDate));
+    });
+  }
+}
+function stateSaveLocalEndDate(endDate){
+  var endDate = endDate ? endDate : getOneYearOut();
+  return {
+    type: types.SAVE_END_DATE,
+    endDate: endDate,
+  }
+}
+function getOneYearOut(){
+  var today = new Date();
+  var year = today.getFullYear();
+  var month = today.getMonth();
+  var day = today.getDate();
+  var todayNextYear = new Date(year + 1, month, day)
+
+  return todayNextYear;
+}

@@ -243,10 +243,19 @@ export function stateUserLocations(resp,index){
   }
 }
 
+export function updateUserWithNewLocales(user){
+  return (dispatch) => {
+      dispatch(stateLogIn(user));
+  };
+}
 export function stateUserUpdate(userData)
 {
-    return {
-        type: types.GET_USER_LOCATIONS,
-        user: userData,
-    }
+  if(!userData.profile_image){
+    userData.profile_image = '';
+  }
+  offline.save('user': userData);
+  return {
+      type: types.UPDATE_USER,
+      user: userData,
+  }
 }

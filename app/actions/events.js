@@ -87,7 +87,13 @@ export function getEvents(filters){
           	{
           		"field": "start_date",
           		"operator": ">=",
-          		"value": filters.startDate
+          		"value": filters.startDate,
+              "logicAfter" : "AND"
+          	},
+            {
+          		"field": "end_date",
+          		"operator": "<=",
+          		"value": filters.endDate
           	}
           ]
       }
@@ -113,8 +119,8 @@ export function getEvents(filters){
         dispatch(setFetchedEvents(events,filters.locationID,newEventsHash))
 
       }).catch( (ex) => {
-        console.warn('Error: ', ex);
-        console.warn('GetEvents Fail');
+        // console.warn('Error: ', ex);
+        // console.warn('GetEvents Fail');
       })
     // }).catch( (ex) => {
     //   console.warn('Error: ', ex);
@@ -170,7 +176,99 @@ export function getEvents(filters){
 // }
 
 export function loadMoreEvents(filters){
+  // console.warn('loadingMore');
+  return (dispatch, getState) => {
+    // firebase.auth().currentUser.getToken().then(token => {
+      var uid = getState().user.user.uid;
+      var token = '0000';
 
+      // console.warn('EndDate: ',filters.endDate);
+      // console.warn('Filters.page: ', filters.page);
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : uid,
+        'token' : token,
+      }
+      var body ={
+        "tags": filters.tags,
+          "sortBy": "start_date",
+          "pageSize": 20,
+          "pageNumber": filters.page,
+          "count": filters.showCount,
+          "query": [
+            {
+              "field": "locale_id",
+              "operator": "=",
+              "value": filters.locationID,
+              "logicAfter" : "AND"
+            },
+            {
+              "field": "status",
+              "operator": "=",
+              "value": "active",
+              "logicAfter" : "AND"
+            },
+            {
+              "field": "start_date",
+              "operator": ">=",
+              "value": filters.startDate,
+              "logicAfter" : "AND"
+            },
+            {
+              "field": "end_date",
+              "operator": "<=",
+              "value": filters.endDate
+            }
+          ]
+      }
+      return Api.post('/getEvents?',headers,body).then(resp => {
+
+        // console.warn('Loading More Success');
+        // console.warn('R: ',resp.count);
+
+        var currentEventsHash = getState().events.fetchedEventsHash;
+        var currentEvents = currentEventsHash[filters.locationID];
+
+        // var events = currentEvents;
+
+        // console.warn('EB: ',currentEvents.length);
+        if(filters.showCount){
+          for(var i=0;i<resp.events.length;i++){
+            currentEvents.push(resp.events[i]);
+          }
+          // currentEvents.concat(resp.events);
+        }
+        else {
+          for(var i=0;i<resp.length;i++){
+            currentEvents.push(resp[i]);
+          }
+          // currentEvents.concat(resp);
+        }
+        // console.warn('EA: ',currentEvents.length);
+        // currentEvents.concat(events);
+        var newEvents = []
+        for(var i=0;i<currentEvents.length;i++){
+          newEvents.push(currentEvents[i])
+        }
+        currentEventsHash[filters.locationID] = newEvents;
+        // var newEventsHash = currentEventsHash;
+        // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
+        // console.warn('Events: ', events);
+        // console.warn('Filters: ', filters.locationID);
+        // console.warn('NEH: ', newEventsHash);
+        dispatch(setFetchedEvents(newEvents,filters.locationID,currentEventsHash))
+
+      }).catch( (ex) => {
+        console.warn('Error: ', ex);
+        console.warn('LoadMore Fail');
+      })
+    // }).catch( (ex) => {
+    //   console.warn('Error: ', ex);
+    //   console.warn('Issue with auth');
+    // })
+  }
 }
 // export function loadMoreEvents(filters){
 //   return (dispatch, getState) => {

@@ -10,7 +10,6 @@ export default function configureStore(initialState) {
   const enhancer = compose(
     applyMiddleware(
       thunk, // lets us dispatch() functions
-      logger,
     ),
   );
 

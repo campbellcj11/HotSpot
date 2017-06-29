@@ -37,7 +37,7 @@ export default class FeedFilterView extends Component {
             <Text style={styles.filterButtonText}>{ (this.state.interests && this.state.interests.length > 0) ? this.state.interests.length + ' interests' : 'All Interests'}</Text>
           </TouchableHighlight>
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedDateFilter()}>
-            <Text style={styles.filterButtonText}>All Dates</Text>
+            <Text style={styles.filterButtonText}>Dates</Text>
           </TouchableHighlight>
           <TouchableHighlight style={styles.filterButton}>
             <Text style={styles.filterButtonText}>All Events</Text>

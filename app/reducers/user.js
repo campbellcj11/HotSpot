@@ -10,7 +10,7 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
-  case types.USER_UPDATE:
+  case types.UPDATE_USER:
     return {
         ...state,
         user: action.user

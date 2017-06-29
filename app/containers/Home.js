@@ -53,12 +53,24 @@ class Home extends Component {
       menuVisible: false,
       localInterests: [],
       localStartDate: this.props.localStartDate ? this.props.localStartDate : new Date(),
+      localEndDate: this.props.localEndDate ? this.props.localEndDate : this.getOneYearOut(),
+      shouldReloadLists: false,
     }
+  }
+  getOneYearOut(){
+    var today = new Date();
+    var year = today.getFullYear();
+    var month = today.getMonth();
+    var day = today.getDate();
+    var todayNextYear = new Date(year + 1, month, day)
+
+    return todayNextYear;
   }
   componentDidMount(){
     this.props.loadOfflineUser();
     this.props.getLocalInterests();
     this.props.getLocalStartDate();
+    this.props.getLocalEndDate();
     // if(isLoggedIn)
     // {
     //   // this.props.getUserLocations();
@@ -70,11 +82,13 @@ class Home extends Component {
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.fetchedEventsHash){
+      // console.warn('Has new events');
       this.setState({
         fetchedEventsHash: nextProps.fetchedEventsHash,
+        shouldReloadLists: false,
       })
     }
-    if(nextProps.userLocations.length != this.props.userLocations.length){
+    if(nextProps.userLocations != this.props.userLocations){
       // console.warn('We are getting a new locations');
       // console.warn(nextProps.userLocations);
       this.setState({
@@ -109,7 +123,17 @@ class Home extends Component {
     }
     if(nextProps.localStartDate != this.props.localStartDate)
     {
+      // console.warn('Has new start date');
       this.setState({localStartDate: nextProps.localStartDate},function(){
+        clearTimeout(this.updateEventsTimeout);
+        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+      });
+    }
+    if(nextProps.localEndDate != this.props.localEndDate)
+    {
+      // console.warn('Has new end date');
+      // console.warn(nextProps.localEndDate);
+      this.setState({localEndDate: nextProps.localEndDate},function(){
         clearTimeout(this.updateEventsTimeout);
         this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
       });
@@ -125,8 +149,6 @@ class Home extends Component {
   getEvents(){
   }
   getStartingEventsForAllLocations(){
-    // console.warn('Getting Starting Events');
-    // console.warn(this.state.localInterests.length);
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
       if(location){
@@ -134,6 +156,7 @@ class Home extends Component {
           page:1,
           locationID:location.id,
           startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+          endDate:this.state.localEndDate ? this.state.localEndDate : this.getOneYearOut(),
           showCount:true,
           tags: this.state.localInterests ? this.state.localInterests : [],
         });
@@ -148,17 +171,33 @@ class Home extends Component {
           page:1,
           locationID:location.id,
           startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+          endDate:this.state.localEndDate ? this.state.localEndDate : this.getOneYearOut(),
           showCount:true,
           tags: this.state.localInterests ? this.state.localInterests : [],
         });
       }
     }
+    this.setState({shouldReloadLists: true});
   }
   onRefresh(locationID){
-    this.props.getEvents({page:1,locationID:locationID});
+    this.props.getEvents({
+      page:1,
+      locationID:locationID,
+      startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+      endDate:this.state.localEndDate ? this.state.localEndDate : this.getOneYearOut(),
+      showCount:true,
+      tags: this.state.localInterests ? this.state.localInterests : [],
+    });
   }
   loadMore(filters){
-    // this.props.loadMoreEvents(filters);
+    this.props.loadMoreEvents({
+      page:filters.page,
+      locationID:filters.locationID,
+      startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
+      endDate:this.state.localEndDate ? this.state.localEndDate : this.getOneYearOut(),
+      showCount:true,
+      tags: this.state.localInterests ? this.state.localInterests : [],
+    });
   }
   onMomentumScrollEnd(e, state, context) {
     this.setState({currentLocationIndex:state.index,currentLocation:this.props.userLocations[state.index]});
@@ -187,6 +226,7 @@ class Home extends Component {
           events={events ? events : []}
           onRefresh={(locationID) => this.onRefresh(locationID)}
           loadMore={(filters) => this.loadMore(filters)}
+          shouldReloadLists={this.state.shouldReloadLists}
         />
       )
     }
@@ -255,6 +295,7 @@ function mapStateToProps(state) {
     fetchedEventsHash: state.events.fetchedEventsHash,
     localInterests: state.app.localInterests,
     localStartDate: state.app.localStartDate,
+    localEndDate: state.app.localEndDate,
   };
 }
 

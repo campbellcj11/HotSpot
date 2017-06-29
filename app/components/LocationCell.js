@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { appStyleVariables, appColors } from '../styles';
+import { appStyleVariables, appColors, tagColors } from '../styles';
 import {Actions} from 'react-native-router-flux'
 import {
   ScrollView,
@@ -18,6 +18,8 @@ import {
 
 var {width,height} = Dimensions.get('window');
 
+import { INTERESTS } from '../lib/constants.js';
+
 import LinearGradient from 'react-native-linear-gradient';
 
 import menuIcon from '../images/menu.png'
@@ -34,6 +36,7 @@ export default class LocationCell extends Component {
 
   }
   render(){
+    colorNumber = this.props.rowData.id % INTERESTS.length;
     return(
       <View style={styles.container}>
         <TouchableHighlight
@@ -42,9 +45,9 @@ export default class LocationCell extends Component {
           {...this.props.sortHandlers}
         >
           <View style={{flexDirection:'row'}}>
-              <Image style={styles.image} source={this.props.rowData.image} resizeMode={'cover'}>
+              <Image style={[styles.image,{backgroundColor:tagColors[INTERESTS[colorNumber]]}]} source={{uri:this.props.rowData.image}} resizeMode={'cover'}>
                 <LinearGradient colors={['#33333395', '#33333300']} style={styles.linearGradient}>
-                  <Text style={styles.city}>{this.props.rowData.city}</Text>
+                  <Text style={styles.city}>{this.props.rowData.name}</Text>
                 </LinearGradient>
               </Image>
             <View style={{width:(width-32)*.2,justifyContent:'center',alignItems:'center'}}>
@@ -78,5 +81,6 @@ const styles = StyleSheet.create({
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
     fontSize: 24,
     color: appColors.WHITE,
+    backgroundColor:'transparent',
   },
 });

@@ -265,6 +265,7 @@ const styles = StyleSheet.create({
   rightView:{
     flex:.3,
     alignItems:'center',
+    paddingLeft:4,
   },
   bottomView:{
     flexDirection:'row',
@@ -317,16 +318,19 @@ const styles = StyleSheet.create({
     fontFamily: appStyleVariables.SYSTEM_FONT,
     fontSize: 16,
     color: appColors.BLACK,
+    textAlign:'center',
   },
   dayText:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
     fontSize: 18,
     color: appColors.BLACK,
+    textAlign:'center',
   },
   dowText:{
     fontFamily: appStyleVariables.SYSTEM_FONT,
     fontSize: 14,
     color: appColors.BLACK,
+    textAlign:'center',
   },
   favoriteButton:{
     marginTop:8,

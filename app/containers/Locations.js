@@ -40,13 +40,31 @@ class Locations extends Component {
       locations: this.props.userLocations ? this.props.userLocations : [],
     }
     data = this.createDataHashForLocations(this.state.locations);
-    order = this.getDataHashOrder(data);
+    order = this.getDataHashOrder(this.state.locations);
   }
   componentWillReceiveProps(nextProps){
-
+    if(nextProps.userLocations != this.props.userLocations){
+      this.setState({locations: nextProps.userLocations ? nextProps.userLocations : []})
+    }
+  }
+  clone(obj) {
+      if (null == obj || "object" != typeof obj) return obj;
+      var copy = obj.constructor();
+      for (var attr in obj) {
+          if (obj.hasOwnProperty(attr)) copy[attr] = this.clone(obj[attr]);
+      }
+      return copy;
   }
   submitPressed(){
-    console.log(order);
+    var newArray = [];
+    for(var i=0; i < order.length; i++){
+      newArray.push(data[order[i]]);
+    }
+    var newUser = this.clone(this.props.user);
+    newUser.locales = newArray;
+    console.log('LCS: ',newUser.locales);
+    console.log(newUser);
+    this.props.updateUserWithNewLocales(newUser);
     Actions.pop();
   }
   createDataHashForLocations(locations){
@@ -57,8 +75,13 @@ class Locations extends Component {
     }
     return dataHash
   }
-  getDataHashOrder(data){
-    return Object.keys(data);
+  getDataHashOrder(array){
+    var order = [];
+    for(var i=0;i<array.length;i++){
+      var location = array[i];
+      order.push(location.id);
+    }
+    return order;
   }
   renderRow(rowData){
     //<LocationCell rowData={rowData}/>
@@ -104,6 +127,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    user: state.user.user,
+    userLocations: state.user.user.locales ? state.user.user.locales : [],
   };
 }
 

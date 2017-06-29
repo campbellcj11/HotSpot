@@ -4,6 +4,7 @@ const initialState = {
   possibleLocations: [],
   localInterests: [],
   localStartDate: new Date(),
+  localEndDate: new Date( new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()),
 }
 
 export default function reducer(state = initialState, action) {
@@ -21,7 +22,12 @@ export default function reducer(state = initialState, action) {
   case types.SAVE_START_DATE:
     return {
       ...state,
-      localStartDate: action.localStartDate,
+      localStartDate: action.startDate,
+    }
+  case types.SAVE_END_DATE:
+    return {
+      ...state,
+      localEndDate: action.endDate,
     }
   default:
     return state

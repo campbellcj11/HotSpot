@@ -60,6 +60,11 @@ class EventFeedDateFilter extends Component {
   componentWillReceiveProps(nextProps){
 
   }
+  submitPressed(){
+    this.props.setLocalStartDate(this.state.startDate);
+    this.props.setLocalEndDate(this.state.endDate);
+    Actions.pop();
+  }
   dateFilterButtonPressed(sentIndex){
     this.setState({dateFilterIndex:sentIndex});
     if(sentIndex == 0) //Today
@@ -115,6 +120,8 @@ class EventFeedDateFilter extends Component {
   }
   render() {
     // var presetFilters = ['Today','Tomorrow','Week','Weekend','Next Week','This Month','Custom'];
+    var startDate = new Date(this.state.startDate);
+    var endDate = new Date(this.state.endDate);
 
     var presetFilters = ['Today','Tomorrow','Week','Weekend','Custom'];
 
@@ -136,7 +143,7 @@ class EventFeedDateFilter extends Component {
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
           leftButtonText={'Cancel'}
           rightButtonText={'Submit'}
-          submitPressed={() => Actions.pop()}
+          submitPressed={() => this.submitPressed()}
         />
         <View style={styles.datesHolder}>
           {presetFiltersViews}
@@ -144,7 +151,7 @@ class EventFeedDateFilter extends Component {
         <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
           <DatePicker
             style={{borderWidth:1,borderColor:'#848484',borderRadius:4,alignItems:'center',justifyContent:'center'}}
-            date={this.state.startDate}
+            date={startDate}
             mode="date"
             placeholder='Start Date'
             format="MMM DD, YYYY"
@@ -167,7 +174,7 @@ class EventFeedDateFilter extends Component {
           <Text style={{marginLeft:8,marginRight:8,fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:18}}>-</Text>
           <DatePicker
             style={{borderWidth:1,borderColor:'#848484',borderRadius:4,alignItems:'center',justifyContent:'center'}}
-            date={this.state.endDate}
+            date={endDate}
             mode="date"
             placeholder='End Date'
             format="MMM DD, YYYY"
@@ -237,6 +244,8 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
   return {
+    startDate: state.app.localStartDate,
+    endDate: state.app.localEndDate,
   };
 }
 

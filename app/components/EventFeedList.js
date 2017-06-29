@@ -10,6 +10,7 @@ import {
   Platform,
   RefreshControl,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 
 //components
@@ -20,44 +21,80 @@ export default class EventFeedList extends Component {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      events: this.props.events,
+      events: this.props.events ? this.props.events : [],
       dataSource: ds.cloneWithRows(this.props.events),
       refreshing: false,
-      page:0,
-      loadingMore: false,
+      page:1,
+      loadingMore: true,
+      outOfEvents: false,
+      shouldReload: this.props.shouldReloadLists,
     }
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.events != this.props.events){
-      // console.warn('Has new events');
-      // console.warn('Next Events: ', nextProps.events);
-      const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-      this.setState({
-        events: nextProps.events,
-        dataSource: ds.cloneWithRows(nextProps.events),
-      }, function(){
-        if(this.state.loadingMore){
-          this.setState({loadingMore:false});
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.setState({
+          events: nextProps.events,
+          dataSource: ds.cloneWithRows(nextProps.events),
+          outOfEvents: false,
+        }, function(){
+          if(this.state.loadingMore){
+            clearTimeout(this.updateEventsTimeout);
+            this.updateEventsTimeout = setTimeout(() => {this.setState({loadingMore:false})}, 500)
+          }
+        })
+    }
+    else{
+      if(this.state.loadingMore){
+        this.setState({
+          loadingMore: false,
+        })
+      }
+      else {
+        if(nextProps.events.length != 0)
+        {
+          this.setState({
+            outOfEvents: true,
+            loadingMore: false,
+          })
         }
-      })
+      }
+    }
+
+    if(nextProps.shouldReloadLists != this.props.shouldReloadLists){
+      if(nextProps.shouldReloadLists)
+      {
+        clearTimeout(this.reloadTimeout);
+        this.reloadTimeout = setTimeout(() => this.reloadList(), 500)
+      }
     }
   }
+  reloadList(){
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    this.setState({
+      events: [],
+      dataSource: ds.cloneWithRows([]),
+      page:1,
+      loadingMore: true,
+      outOfEvents: false,
+    })
+  }
   onRefresh(){
-    this.setState({refreshing: true});
+    this.setState({refreshing: true, loadingMore: true});
     this.props.onRefresh(this.props.locationID);
     this.setState({refreshing: false,page:0});
   }
   loadMore(){
-    // if(! this.state.refreshing){
-    //   this.setState({loadingMore:true});
-    //   var nextPage = this.state.page + 1;
-    //   this.props.loadMore({
-    //     page:nextPage,
-    //     currentEvents:this.props.events,
-    //     locationID:this.props.locationID,
-    //   });
-    //   this.setState({page:nextPage});
-    // }
+    if(! this.state.refreshing && ! this.state.loadingMore){
+      this.setState({loadingMore:true});
+      var nextPage = this.state.page + 1;
+      this.props.loadMore({
+        page:nextPage,
+        currentEvents:this.props.events,
+        locationID:this.props.locationID,
+      });
+      this.setState({page:nextPage});
+    }
   }
   renderRow(rowData){
     return (
@@ -69,15 +106,28 @@ export default class EventFeedList extends Component {
 
     if(this.state.loadingMore)
     {
-      viewToShow = <Text>Loading More Events</Text>
+      viewToShow = <ActivityIndicator style={{marginTop:4,}}/>;
     }
-
-    if(this.state.events.length == 0)
+    else if(this.state.events.length == 0)
     {
-      viewToShow = <Text>No Events Found</Text>
+      viewToShow = (
+        <TouchableHighlight underlayColor={'transparent'} onPress={() => this.onRefresh()}>
+          <View>
+            <Text>No Events Found</Text>
+            <Text>Try again?</Text>
+          </View>
+        </TouchableHighlight>)
     }
 
-    return viewToShow
+    if(this.state.outOfEvents)
+    {
+      viewToShow = <Text>That's all for now</Text>
+    }
+    return (
+      <View style={{alignItems:'center',justifyContent:'center'}}>
+        {viewToShow}
+      </View>
+    )
   }
   render(){
     return(
