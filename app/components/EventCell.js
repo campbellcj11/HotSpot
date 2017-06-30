@@ -46,7 +46,7 @@ export default class EventCell extends Component {
             sameDay : '[Today]',
             nextDay : '[Tomorrow]',
             lastWeek : '[Last] dddd',
-            nextWeek : '[Next] dddd',
+            nextWeek : '[This] dddd',
             sameElse : 'dddd'
         }
     });
@@ -78,9 +78,9 @@ export default class EventCell extends Component {
           let imageUrl = 'data:image/' + fileType + ';base64,' + base64Data
           // share externally
           Share.open({
-            title: current.Event_Name + ' on HotSpot',
-            subject: current.Event_Name + ' on HotSpot',
-            message: 'I found ' + current.Event_Name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location,
+            title: current.name + ' on HotSpot',
+            subject: current.name + ' on HotSpot',
+            message: 'I found ' + current.name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + this.props.location,
             url: imageUrl,
             type: 'image/' + fileType
           })
@@ -191,8 +191,7 @@ export default class EventCell extends Component {
               <View style={styles.leftView}>
                 <Text style={styles.title} numberOfLines={3}>{this.props.rowData.name}</Text>
                 <View style={{flexDirection:'row'}}>
-                  <Text style={styles.time}>{startTime}</Text>
-                  <Text style={styles.location} ellipsizeMode={'tail'} numberOfLines={1}> - {this.props.rowData.venue_name}</Text>
+                  <Text style={styles.location} ellipsizeMode={'tail'} numberOfLines={1}>{this.props.rowData.venue_name}</Text>
                 </View>
                 <Text style={styles.shortDescription} numberOfLines={2}>{this.props.rowData.short_description}</Text>
                 <View style={styles.bottomView}>
@@ -205,7 +204,7 @@ export default class EventCell extends Component {
                   <TouchableHighlight underlayColor={'transparent'} onPress={() => this.addToCalendar()}>
                     <View style={styles.actionButtonContentHolder}>
                       <Image style={styles.actionButtonImage} source={calendarIcon} resizeMode={'contain'}/>
-                      <Text style={styles.actionButtonText}>Add To Calendar</Text>
+                      <Text style={styles.actionButtonText}>Calendar</Text>
                     </View>
                   </TouchableHighlight>
                 </View>
@@ -214,6 +213,7 @@ export default class EventCell extends Component {
                 <Text style={styles.monthText}>{month}</Text>
                 <Text style={styles.dayText}>{day}</Text>
                 <Text style={styles.dowText}>{dow}</Text>
+                <Text style={styles.time}>{startTime}</Text>
                 <TouchableHighlight underlayColor={'transparent'} style={styles.favoriteButton} onPress={() => this.toggleFavorite()}>
                   <View style={{width:44,height:44}}>
                     <ExplodingHeart ref={'heart'} frameWidth={44} frameHeight={44} selected={this.state.isFavorited}/>
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius:4,
   },
   eventImage: {
-    height:128,
+    height:180,
     width:width-16,
     borderTopLeftRadius:4,
     borderTopRightRadius:4,
@@ -294,14 +294,15 @@ const styles = StyleSheet.create({
   },
   title:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
-    fontSize: 24,
+    fontSize: 20,
     color: appColors.BLACK,
     marginBottom:2,
   },
   time:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
-    fontSize: 12,
+    fontSize: 18,
     color: appColors.BLACK,
+    marginTop:2,
   },
   location:{
     fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
@@ -310,7 +311,7 @@ const styles = StyleSheet.create({
     flex:1,
   },
   shortDescription:{
-    fontFamily: appStyleVariables.SYSTEM_LIGHT_FONT,
+    fontFamily: appStyleVariables.SYSTEM_FONT,
     fontSize: 14,
     color: appColors.DARK_GRAY,
     marginVertical:8,
@@ -339,7 +340,7 @@ const styles = StyleSheet.create({
   },
   dayText:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
-    fontSize: 18,
+    fontSize: 24,
     color: appColors.BLACK,
     textAlign:'center',
   },

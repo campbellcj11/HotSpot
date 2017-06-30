@@ -161,7 +161,7 @@ export default class ExplodingHeart extends Component {
     this.state.animation.setValue(0);
     this.forceUpdate();
     Animated.timing(this.state.animation, {
-      duration: 750,
+      duration: 1000,
       toValue: 28
     }).start(() => {
       // this.state.animation.setValue(0);

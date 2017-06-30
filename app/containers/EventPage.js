@@ -349,13 +349,13 @@ class EventPage extends Component {
   return(
     <View style={styles.container}>
       <BasicNavBar
-        title={'Discover'}
+        title={''}
         paddingTop={STATUS_BAR_HEIGHT}
         height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
       />
       <ParallaxScrollView
         renderBackground={() => (
-          <Image resizeMode={'cover'} style={{width:width,height:height*.15}} source={{uri:this.props.currentSelection.image}}>
+          <Image resizeMode={'cover'} style={{width:width,height:height*.2}} source={{uri:this.props.currentSelection.image}}>
             <View style={{flex:1,backgroundColor:'#00000020'}}>
               <Text style={{backgroundColor:'transparent',color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.name}</Text>
               <View style={styles.tagsHolder}>
@@ -364,7 +364,7 @@ class EventPage extends Component {
             </View>
           </Image>
         )}
-        parallaxHeaderHeight={height*.15}
+        parallaxHeaderHeight={height*.2}
       >
         <View>
           <View style={{height:55,flexDirection:'row',marginLeft:16,marginRight:16}}>
@@ -382,7 +382,7 @@ class EventPage extends Component {
                   <View style={{flexDirection:'row',flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style={{fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontWeight:'bold',fontSize:15,color:'black'}}>{dateTimeString}</Text>
                   </View>
-                  <Text style={{fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontWeight:'bold',fontSize:10.5,color:appColors.DARK_GRAY}}>{remainingTimeString}</Text>
+                  <Text style={{fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontWeight:'bold',fontSize:10.5,color:appColors.DARK_GRAY,marginTop:2}}>{remainingTimeString}</Text>
                 </View>
               </View>
             </BlankButton>
