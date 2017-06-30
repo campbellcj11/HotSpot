@@ -128,52 +128,70 @@ export function getEvents(filters){
     // })
   }
 }
-// export function getEvents(filters){
-//   return (dispatch, getState) => {
-//     // const params = [
-//     //   'startDate=${encodeURIComponent(filters.startDate)}',
-//     //   'locationID=${encodeURIComponent(filters.locationID)}',
-//     //   'pageLimit=50',
-//     // ].join('&'); //this gets appened to the url
-//     // return Api.get('/events?${params}').then(resp => {
-//     //   console.warn('Success');
-//     //   // dispatch(setFetchedEvents({ events: resp }));
-//     // }).catch( (ex) => {
-//     //   console.warn('Fail');
-//     // })
-//
-//     var currentEventsHash = getState().events.fetchedEventsHash;
-//
-//     pageLimit = 5;
-//     pageNumber = filters.page;
-//     startIndex = pageNumber*pageLimit;
-//     endIndex = startIndex+pageLimit;
-//
-//     eventsToShow = [];
-//
-//     for( i=startIndex ; i < endIndex ; i++ ){
-//       if(filters.locationID == 1){
-//         if(i < FWevents.length){
-//           event = FWevents[i];
-//           event.cityID = filters.locationID;
-//           eventsToShow.push(event);
-//         }
-//       }
-//       else{
-//         if(i < Devents.length){
-//           event = Devents[i];
-//           event.cityID = filters.locationID;
-//           eventsToShow.push(event);
-//         }
-//       }
-//     }
-//     currentEventsHash[filters.locationID] = eventsToShow;
-//
-//     var newEventsHash = currentEventsHash;
-//
-//     dispatch(setFetchedEvents(eventsToShow,filters.locationID,newEventsHash))
-//   }
-// }
+
+export function searchEvents(filters){
+  return (dispatch, getState) => {
+    // firebase.auth().currentUser.getToken().then(token => {
+      var uid = getState().user.user.uid;
+      var token = '0000';
+
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : uid,
+        'token' : token,
+      }
+      var body ={
+      	  "tags": [],
+          "sortBy": "start_date",
+          "pageSize": 20,
+          "pageNumber": filters.page,
+          "count": filters.showCount,
+          "query": [
+          	{
+          		"field": "status",
+          		"operator": "=",
+          		"value": "active",
+          		"logicAfter" : "AND"
+          	},
+          	{
+          		"field": "start_date",
+          		"operator": ">=",
+          		"value": filters.startDate,
+              "logicAfter" : "AND"
+          	},
+            {
+          		"field": "name",
+          		"operator": "=",
+          		"value": filters.searchText,
+          	}
+          ]
+      }
+      return Api.post('/getEvents?',headers,body).then(resp => {
+
+        // console.warn('SearchEvents Success');
+        // console.warn(resp.count);
+        var events = [];
+        if(filters.showCount){
+          events = resp.events;
+        }
+        else {
+          events = resp;
+        }
+
+        return events;
+
+      }).catch( (ex) => {
+        console.warn('Error: ', ex);
+        console.warn('SearchEvents Fail');
+      })
+    // }).catch( (ex) => {
+    //   console.warn('Error: ', ex);
+    //   console.warn('Issue with auth');
+    // })
+  }
+}
 
 export function loadMoreEvents(filters){
   // console.warn('loadingMore');

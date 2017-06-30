@@ -17,8 +17,10 @@ import {
   StatusBar,
   RefreshControl,
   Dimensions,
+  WebView,
 } from 'react-native';
 
+import legalPDF from '../HotSpot-Legal-PDF.pdf'
 //npm packages
 
 //components
@@ -47,6 +49,10 @@ class Legal extends Component {
           paddingTop={STATUS_BAR_HEIGHT}
           height={HEADER_BAR_HEIGHT + STATUS_BAR_HEIGHT}
         />
+        <WebView
+        source={legalPDF}
+        style={{marginTop: 4}}
+      />
       </View>
     )
   }

@@ -137,12 +137,12 @@ export default class Login extends Component {
           underlineColorAndroid='transparent'>
         </TextInput>
       </View>
-      <Button
+      {/*<Button
         onPress={() => this.resetPassword()}
         style={styles.forgotPasswordBlankButton}
         textStyle={styles.forgotPasswordText}>
         {forgotPasswordButtonText}
-      </Button>
+      </Button>*/}
       <Button
         underlayColor={'#F17C49'}
         onPress={() => this.login()}
@@ -150,12 +150,12 @@ export default class Login extends Component {
         textStyle={styles.buttonText}>
         {loginButtonText}
       </Button>
-      <Button
+      {/*<Button
         onPress={() => this.loginWithFacebook()}
         style={styles.blankButton}
         textStyle={styles.buttonBlankText}>
         {loginWithFacebookButtonText}
-      </Button>
+      </Button>*/}
         </View>
     )
   }
@@ -174,7 +174,7 @@ export default class Login extends Component {
             <TouchableHighlight onPress={() => this.goBack()} underlayColor={'transparent'}>
               <View style={{flexDirection:'row',alignItems:'center',marginLeft:4}}>
                 <Image source={backArrow} style={{width:12,height:12,resizeMode:'contain'}}/>
-                <Text style={{color:'white',fontFamily:appStyleVariables.SYSTEM_FONT,fontSize:14}}>Back</Text>
+                <Text style={{color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontSize:14}}>Back</Text>
               </View>
             </TouchableHighlight>
           </View>
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     height: 44,
     backgroundColor: 'transparent',
     color:'white',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     padding: 2,
     paddingLeft: 16,
     borderWidth: 2,
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 10,
     textAlign: 'center',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
   },
   facebookLogin: {
     marginTop: 5,
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     textAlign: 'center',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
   },
   blankButton:{
     marginLeft:32,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     textAlign: 'center',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     backgroundColor: 'transparent',
   },
 })

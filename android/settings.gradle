@@ -1,4 +1,6 @@
 rootProject.name = 'HotSpot'
+include ':react-native-share'
+project(':react-native-share').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-share/android')
 include ':react-native-social-auth'
 project(':react-native-social-auth').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-social-auth/android')
 include ':react-native-image-picker'

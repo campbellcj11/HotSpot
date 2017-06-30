@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 18,
     color: appColors.WHITE,
   },

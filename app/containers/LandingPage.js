@@ -36,8 +36,8 @@ class LandingPage extends Component {
     }
   }
   loginWithoutAccount() {
-    user = {'email': 'test@test.com',
-            'password' : 'password'};
+    user = {'email': 'hsdemo@hsdemo.com',
+            'password' : 'hsdemo1'};
 
     this.props.loginUser(user);
   }
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   buttonBlankText:{
     textAlign:'center',
     color:'white',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 18,
   }
 })

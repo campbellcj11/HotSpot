@@ -40,12 +40,12 @@ var {width,height} = Dimensions.get('window');
 class Home extends Component {
   constructor(props) {
     super(props);
-
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    console.log('Props: ', this.props);
     this.state = {
       user: this.props.user,
       isLoggedIn: this.props.isLoggedIn,
-      userLocations: this.props.userLocations,
+      userLocations: this.props.userLocations ? this.props.userLocations : [],
       currentLocationIndex: 0,
       currentLocation: this.props.userLocations.length != 0 ? this.props.userLocations[0] : {},
       hasCurrentLocation: this.props.userLocations.length != 0  ? true : false,
@@ -55,6 +55,8 @@ class Home extends Component {
       localStartDate: this.props.localStartDate ? this.props.localStartDate : new Date(),
       localEndDate: this.props.localEndDate ? this.props.localEndDate : this.getOneYearOut(),
       shouldReloadLists: false,
+      favorites: this.props.favorites ? this.props.favorites : [],
+      shouldShowOnlyFavorites: false,
     }
   }
   getOneYearOut(){
@@ -71,6 +73,7 @@ class Home extends Component {
     this.props.getLocalInterests();
     this.props.getLocalStartDate();
     this.props.getLocalEndDate();
+    this.props.getLocalFavorites();
     // if(isLoggedIn)
     // {
     //   // this.props.getUserLocations();
@@ -114,12 +117,18 @@ class Home extends Component {
         }
       })
     }
-    if(nextProps.localInterests != this.props.localInterests && nextProps.localInterests.length != 0)
+    if(nextProps.localInterests != this.props.localInterests)
     {
-      this.setState({localInterests: nextProps.localInterests},function(){
-        clearTimeout(this.updateEventsTimeout);
-        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
-      });
+      if(nextProps.localInterests)
+      {
+        if(nextProps.localInterests.length != 0)
+        {
+          this.setState({localInterests: nextProps.localInterests},function(){
+            clearTimeout(this.updateEventsTimeout);
+            this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+          });
+        }
+      }
     }
     if(nextProps.localStartDate != this.props.localStartDate)
     {
@@ -137,6 +146,10 @@ class Home extends Component {
         clearTimeout(this.updateEventsTimeout);
         this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
       });
+    }
+    if(nextProps.favorites != this.props.favorites)
+    {
+      this.setState({favorites: nextProps.favorites})
     }
   }
   goToDiscover(){
@@ -214,6 +227,9 @@ class Home extends Component {
 
     this.setState({menuVisible:false});
   }
+  setFavorites(favorites){
+    this.props.setFavorites(favorites);
+  }
   renderListViews(){
     var arr = [];
     for(var i=0;i<this.state.userLocations.length;i++){
@@ -227,6 +243,9 @@ class Home extends Component {
           onRefresh={(locationID) => this.onRefresh(locationID)}
           loadMore={(filters) => this.loadMore(filters)}
           shouldReloadLists={this.state.shouldReloadLists}
+          favorites={this.state.favorites}
+          setFavorites={(favorites) => this.setFavorites(favorites)}
+          shouldShowOnlyFavorites={this.state.shouldShowOnlyFavorites}
         />
       )
     }
@@ -245,7 +264,7 @@ class Home extends Component {
           showMenu={() => this.showMenu()}
           goToDiscover={() => this.goToDiscover()}
         />
-        <FeedFilterView height={60} interests={this.state.localInterests}/>
+        <FeedFilterView height={60} interests={this.state.localInterests} toggleShouldShowOnlyFavorites={() => this.setState({shouldShowOnlyFavorites: !this.state.shouldShowOnlyFavorites})}/>
         <Swiper
           height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-60}
           showsButtons={false}
@@ -255,7 +274,7 @@ class Home extends Component {
         >
           {this.renderListViews()}
         </Swiper>
-        {this.state.menuVisible ? <FeedMenu userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/> : null}
+        {this.state.menuVisible ? <FeedMenu isDemo={this.state.user.email == 'Hsdemo@hsdemo.com'} userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/> : null}
       </View>
     )
   }
@@ -265,7 +284,7 @@ class Home extends Component {
     )
   }
   render() {
-    if(this.state.isLoggedIn)
+    if(this.state.isLoggedIn && Object.keys(this.state.user).length != 0 )
     {
       return this.renderView();
     }
@@ -290,12 +309,13 @@ function mapStateToProps(state) {
   return {
     user: state.user.user,
     isLoggedIn: state.user.isLoggedIn,
-    userLocations: state.user.user.locales ? state.user.user.locales : [],
+    userLocations: state.user.user && state.user.user.locales ? state.user.user.locales : [],
     fetchedEvents: state.events.fetchedEvents,
     fetchedEventsHash: state.events.fetchedEventsHash,
     localInterests: state.app.localInterests,
     localStartDate: state.app.localStartDate,
     localEndDate: state.app.localEndDate,
+    favorites: state.user.favorites,
   };
 }
 

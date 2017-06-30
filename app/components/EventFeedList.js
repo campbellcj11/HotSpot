@@ -28,6 +28,8 @@ export default class EventFeedList extends Component {
       loadingMore: true,
       outOfEvents: false,
       shouldReload: this.props.shouldReloadLists,
+      favorites: this.props.favorites ? this.props.favorites : [],
+      shouldShowOnlyFavorites: this.props.shouldShowOnlyFavorites,
     }
   }
   componentWillReceiveProps(nextProps){
@@ -68,6 +70,13 @@ export default class EventFeedList extends Component {
         this.reloadTimeout = setTimeout(() => this.reloadList(), 500)
       }
     }
+
+    if(nextProps.favorites != this.props.favorites){
+      this.setState({favorites: nextProps.favorites});
+    }
+    if(nextProps.shouldShowOnlyFavorites != this.props.shouldShowOnlyFavorites){
+      this.setState({shouldShowOnlyFavorites: nextProps.shouldShowOnlyFavorites});
+    }
   }
   reloadList(){
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
@@ -96,9 +105,23 @@ export default class EventFeedList extends Component {
       this.setState({page:nextPage});
     }
   }
+  setFavorites(idOfEventPressed){
+    var favorites = this.state.favorites ? this.state.favorites : [];
+
+    if(favorites.indexOf(idOfEventPressed) == -1){
+      favorites.push(idOfEventPressed);
+    }
+    else
+    {
+      var index = favorites.indexOf(idOfEventPressed);
+      favorites.splice(index,1);
+    }
+    this.props.setFavorites(favorites);
+  }
   renderRow(rowData){
+    var isFavorited = this.state.favorites.indexOf(rowData.id) != -1;
     return (
-      <EventCell rowData={rowData}/>
+      <EventCell rowData={rowData} onlyShowIfFavorited={this.state.shouldShowOnlyFavorites} isFavorited={isFavorited} pressFavorite={(idOfEventPressed) => this.setFavorites(idOfEventPressed)}/>
     )
   }
   renderFooter(){
@@ -132,7 +155,7 @@ export default class EventFeedList extends Component {
   render(){
     return(
       <ListView
-        key={this.props.locationID}
+        key={this.state.shouldShowOnlyFavorites}
         style={{backgroundColor:appColors.GRAY}}
         enableEmptySections={true}
         dataSource={this.state.dataSource}

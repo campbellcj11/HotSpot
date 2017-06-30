@@ -21,6 +21,7 @@ export default class FeedFilterView extends Component {
     super(props);
     this.state = {
       interests: this.props.interests,
+      showingOnlyFavorites: false,
     }
   }
   componentWillReceiveProps(nextProps){
@@ -39,8 +40,8 @@ export default class FeedFilterView extends Component {
           <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => Actions.feedDateFilter()}>
             <Text style={styles.filterButtonText}>Dates</Text>
           </TouchableHighlight>
-          <TouchableHighlight style={styles.filterButton}>
-            <Text style={styles.filterButtonText}>All Events</Text>
+          <TouchableHighlight underlayColor={'transparent'} style={styles.filterButton} onPress={() => {this.setState({showingOnlyFavorites: !this.state.showingOnlyFavorites}),this.props.toggleShouldShowOnlyFavorites()}}>
+            <Text style={styles.filterButtonText}> {this.state.showingOnlyFavorites ? 'Favorites' : 'All Events'} </Text>
           </TouchableHighlight>
         </View>
       </View>
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
     flexDirection:'row',
     marginHorizontal: 8,
     marginVertical:8,
+    justifyContent:'space-between',
   },
   filterButton:{
     marginHorizontal: 8,
@@ -72,7 +74,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   filterButtonText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 14,
     color: appColors.WHITE,
     marginVertical:8,

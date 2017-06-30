@@ -15,13 +15,14 @@ import {
   RefreshControl,
   Dimensions,
   Alert,
-  Share,
+  Linking,
 } from 'react-native';
 
 var { width,height } = Dimensions.get('window');
 
 import RNCalendarEvents from 'react-native-calendar-events'
 import RNFetchBlob from 'react-native-fetch-blob'
+import Share, {ShareSheet} from 'react-native-share';
 import Moment from 'moment'
 
 import ExplodingHeart from '../components/ExplodingHeart'
@@ -57,15 +58,15 @@ export default class EventCell extends Component {
   {
     let current = this.props.rowData
     let imagePath = null
-    console.warn('Image URL: ' + current.image)
+    // console.warn('Image URL: ' + current.image)
     let fileType = current.image.substr(current.image.lastIndexOf('.') + 1)
     fileType = fileType.substr(0, fileType.indexOf('?'))
-    console.log('Parsed file type: ' + fileType)
+    // console.warn('Parsed file type: ' + fileType)
     RNFetchBlob
       .config({
         fileCache: true
       })
-      .fetch('GET', current.Image)
+      .fetch('GET', current.image)
       // store image locally
       .then(resp => {
           imagePath = resp.path()
@@ -93,7 +94,8 @@ export default class EventCell extends Component {
           }
       })
   }
-  addToCalendar(){
+  addToCalendar()
+  {
     let current = this.props.rowData
     // make sure calendar access permission has been granted
     RNCalendarEvents.authorizationStatus()
@@ -112,25 +114,27 @@ export default class EventCell extends Component {
             })
           return
         }
-
         let options = {
-          startDate: (new Date(+current.startDate)).toISOString(), // + is quick cast to Number
-          endDate: (new Date(+current.endDate)).toISOString(),
-          notes: current.Short_Description,
-          description: current.Short_Description,
-          location: current.Address
+          startDate: (new Date(+current.start_date)).toISOString(), // + is quick cast to Number
+          endDate: (new Date(+current.end_date)).toISOString(),
+          notes: current.short_description,
+          description: current.short_description,
+          location: current.address,
+          alarms: [{
+            date: -120
+          }]
         }
         // add event
-        RNCalendarEvents.saveEvent(current.Event_Name, options)
+        RNCalendarEvents.saveEvent(current.name, options)
           .then(id => {
             console.warn('Added event, id: ' + id)
             // open calendar
             if(Platform.OS === 'ios') {
               const referenceDate = Moment.utc('2001-01-01');
-              const secondsSinceRefDate = (+current.Date - referenceDate)/1000;
+              const secondsSinceRefDate = (new Date(+current.start_date) - referenceDate)/1000;
               Linking.openURL('calshow:' + secondsSinceRefDate);
             } else {
-              const msSinceEpoch = this.props.currentSelection.Date.valueOf(); // milliseconds since epoch
+              const msSinceEpoch = this.props.currentSelection.start_date.valueOf(); // milliseconds since epoch
               Linking.openURL('content://com.android.calendar/time/' + msSinceEpoch);
             }
           })
@@ -152,8 +156,9 @@ export default class EventCell extends Component {
       this.refs.heart.explode();
     }
     this.setState({isFavorited: !this.state.isFavorited})
+    this.props.pressFavorite(this.props.rowData.id);
   }
-  render(){
+  renderView(){
     var startDate = Moment(this.props.rowData.start_date);
 
     var startTime = startDate.format('LT');
@@ -175,7 +180,7 @@ export default class EventCell extends Component {
     // console.warn(this.props.rowData.venue_name);
     return(
       <View style={styles.container}>
-        <TouchableHighlight key={this.props.rowData.id}>
+        <TouchableHighlight key={this.props.rowData.id} underlayColor={'transparent'} onPress={() => Actions.eventPage({currentSelection: this.props.rowData})}>
           <View style={{overflow: 'hidden',borderTopLeftRadius:4,borderTopRightRadius:4,}}>
             <Image style={styles.eventImage} source={{uri:this.props.rowData.image}} resizeMode={'cover'}>
               <View style={styles.tagsHolder}>
@@ -223,6 +228,18 @@ export default class EventCell extends Component {
         </TouchableHighlight>
       </View>
     )
+  }
+  render(){
+    var viewToShow = null;
+    if(this.props.onlyShowIfFavorited && this.state.isFavorited)
+    {
+      viewToShow = this.renderView();
+    }
+    else if(! this.props.onlyShowIfFavorited)
+    {
+      viewToShow = this.renderView();
+    }
+    return viewToShow;
   }
 }
 
@@ -287,7 +304,7 @@ const styles = StyleSheet.create({
     color: appColors.BLACK,
   },
   location:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 12,
     color: appColors.BLACK,
     flex:1,
@@ -315,7 +332,7 @@ const styles = StyleSheet.create({
     lineHeight:18,
   },
   monthText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 16,
     color: appColors.BLACK,
     textAlign:'center',
@@ -327,7 +344,7 @@ const styles = StyleSheet.create({
     textAlign:'center',
   },
   dowText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 14,
     color: appColors.BLACK,
     textAlign:'center',

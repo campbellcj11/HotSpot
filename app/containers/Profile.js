@@ -131,12 +131,12 @@ formatDate(date) {
                 customStyles={{
                   placeholderText: {
                     color: '#DCE3E3',
-                    fontFamily: appStyleVariables.SYSTEM_FONT,
+                    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                     fontSize: 16,
                   },
                   dateText:{
                     color: appColors.BLACK,
-                    fontFamily: appStyleVariables.SYSTEM_FONT,
+                    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                     fontSize: 16,
                   },
                   dateInput: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
       height: 44,
       backgroundColor: 'transparent',
       color:'black',
-      fontFamily: appStyleVariables.SYSTEM_FONT,
+      fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
       fontSize: 16,
       padding: 2,
       paddingLeft: 16,

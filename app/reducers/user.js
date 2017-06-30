@@ -6,14 +6,20 @@ const initialState = {
   isLoggedIn: true,
   user: {},
   userLocations: [],
+  favorites: [],
 }
 
 export default function reducer(state = initialState, action) {
   switch (action.type) {
+  case types.SAVE_FAVORITES:
+    return {
+      ...state,
+      favorites: action.favorites
+    }
   case types.UPDATE_USER:
     return {
-        ...state,
-        user: action.user
+      ...state,
+      user: action.user
     }
   case types.GET_USER_LOCATIONS:
     return {

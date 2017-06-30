@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     borderRadius:4,
   },
   interestCellText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 16,
     color: '#848484',
   },

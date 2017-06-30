@@ -42,7 +42,7 @@ export function signUpUser(user, imageUri) {
           'dataType': 'json',
         }
         Api.post('/user/create',headers,user).then(resp => {
-          console.warn('Create Success');
+          // console.warn('Create Success');
           // console.log('Create Response: ', resp);
           // dispatch(stateLogIn(user));
           dispatch(loginUser(user));
@@ -84,7 +84,7 @@ export function signUpUser(user, imageUri) {
   };
 }
 export function loginUser(user){
-  console.warn('Logging in user');
+  // console.warn('Logging in user');
   return (dispatch) => {
     firebase.auth().signInWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
@@ -102,10 +102,10 @@ export function loginUser(user){
           }
           Api.get('/login',headers).then(resp => {
             // console.warn('Login Success');
-            console.warn('Login Response: ', resp);
+            // console.warn('Login Response: ', resp);
             dispatch(stateLogIn(resp.user));
           }).catch( (ex) => {
-            console.warn(ex);
+            console.log(ex);
             console.warn('Login Fail');
             // dispatch(stateLogOut());
           });
@@ -155,7 +155,7 @@ export function updateUser(user)
 }
 
 export function logoutUser(){
-  console.warn('Logging out user');
+  // console.warn('Logging out user');
 
   // var metricQuery = database.ref("metrics/");
   // metricQuery.push({
@@ -168,7 +168,7 @@ export function logoutUser(){
   return (dispatch) => {
     firebase.auth().signOut()
       .then(currentUser => {
-        console.warn('HERE');
+        // console.warn('HERE');
         dispatch(stateLogOut());
       })
   };
@@ -181,14 +181,14 @@ export function getUserLocations(){
           'Content-Type': 'application/json',
           'dataType': 'json',
         }
-        console.warn('Get State: ', getState().user.user);
+        // console.warn('Get State: ', getState().user.user);
         locales = getState().user.user.locales ? getState().user.user.locales : [];
         for (var i=0; i < locales.length; i++)
         {
           var locale = locales[i];
             Api.get('/locale/' + locale, headers).then(resp => {
               // console.warn('Get Locale Success');
-              console.warn('Locales Get Response: ', resp.name);
+              // console.warn('Locales Get Response: ', resp.name);
               dispatch(stateUserLocations(resp));
             }).catch( (ex) => {
             //   console.warn(ex);
@@ -203,8 +203,12 @@ export function loadOfflineUser() {
     offline.get('user').then( (user) => {
       offline.get('isLoggedIn').then( (isLoggedIn) => {
         dispatch(stateSaveLoadedUser(user,isLoggedIn));
+      }).catch( (ex) => {
+        dispatch(stateSaveLoadedUser({},false));
       })
-    })
+    }).catch( (ex) => {
+      dispatch(stateSaveLoadedUser({},false));
+    });
   };
 }
 
@@ -230,6 +234,10 @@ export function stateLogOut(){
   offline.save('isLoggedIn', false);
   offline.save('startDate', new Date());
   offline.save('localInterests', []);
+  offline.save('userFavorites', []);
+  offline.save('localInterests', []);
+  offline.save('startDate', null);
+  offline.save('endDate', null);
   return {
     type: types.LOG_OUT,
   }
@@ -257,5 +265,25 @@ export function stateUserUpdate(userData)
   return {
       type: types.UPDATE_USER,
       user: userData,
+  }
+}
+
+export function setFavorites(favoritesIds){
+  offline.save('userFavorites', favoritesIds);
+  return (dispatch) => {
+    dispatch(stateSaveFavorites(favoritesIds))
+  }
+}
+export function getLocalFavorites(){
+  return (dispatch, getState) => {
+    return offline.get('userFavorites').then(favoritesIds => {
+      dispatch(stateSaveFavorites(favoritesIds));
+    });
+  }
+}
+function stateSaveFavorites(favoritesIds){
+  return {
+    type: types.SAVE_FAVORITES,
+    favorites: favoritesIds,
   }
 }

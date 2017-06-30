@@ -96,17 +96,17 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   title:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 18,
     color: appColors.WHITE,
   },
   leftButtonText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 14,
     color: appColors.ORANGE,
   },
   rightButtonText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 14,
     color: appColors.GREEN,
   },

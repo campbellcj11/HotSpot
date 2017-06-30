@@ -15,6 +15,7 @@ import Stats from './app/containers/Stats'
 import NewEvent from './app/containers/NewEvent'
 import EventFeedInterestFilter from './app/containers/EventFeedInterestFilter'
 import EventFeedDateFilter from './app/containers/EventFeedDateFilter'
+import EventPage from './app/containers/EventPage'
 // import EventView from './app/containers/EventCard'
 // import EventView2 from './app/containers/Profile'
 import configureStore from './app/store/configureStore'
@@ -36,6 +37,7 @@ class App extends Component {
             {/*<Scene key="login" component={Login} title="Login"/>
             <Scene key="register" component={Register} title="Register"/>*/}
             <Scene key="home" component={Home} hideNavBar={true}/>
+            <Scene key="eventPage" component={EventPage} hideNavBar={true}/>
             <Scene key="discover" component={Discover} hideNavBar={true}/>
             <Scene key="profile" component={Profile} hideNavBar={true}/>
             <Scene key="locations" component={Locations} hideNavBar={true}/>

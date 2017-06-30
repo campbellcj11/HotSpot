@@ -29,7 +29,30 @@ export default class FeedMenu extends Component {
   }
   componentWillReceiveProps(nextProps){
   }
-  render(){
+  renderDemoMenu(){
+    return(
+      <View style={styles.container} opacity={.95}>
+        <TouchableHighlight style={styles.closeButton} underlayColor={'transparent'} onPress={() => this.props.hideMenu()} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+          <Image source={closeIcon}/>
+        </TouchableHighlight>
+        <View style={[styles.menuButtonsHolder,{marginTop: 128,marginBottom:128}]}>
+
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.feedback();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+            <Text style={styles.menuButtonText}>Feedback</Text>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {Actions.legal();this.props.hideMenu()}} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
+            <Text style={styles.menuButtonText}>Legal</Text>
+          </TouchableHighlight>
+
+          <TouchableHighlight style={styles.menuButton} underlayColor={'transparent'} onPress={() => {this.props.logout()}}>
+            <Text style={styles.menuButtonText}>Signup</Text>
+          </TouchableHighlight>
+        </View>
+      </View>
+    )
+  }
+  renderFullMenu(){
     return(
       <View style={styles.container} opacity={.95}>
         <TouchableHighlight style={styles.closeButton} underlayColor={'transparent'} onPress={() => this.props.hideMenu()} hitSlop={{top: 30, left: 30, bottom: 30, right: 30}}>
@@ -76,6 +99,14 @@ export default class FeedMenu extends Component {
       </View>
     )
   }
+  render(){
+    if(this.props.isDemo){
+      return this.renderDemoMenu()
+    }
+    else{
+      return this.renderFullMenu()
+    }
+  }
 }
 
 const styles = StyleSheet.create({
@@ -103,7 +134,7 @@ const styles = StyleSheet.create({
 
   },
   menuButtonText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 18,
     color: appColors.WHITE,
   },

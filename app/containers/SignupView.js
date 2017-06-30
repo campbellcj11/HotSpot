@@ -56,7 +56,7 @@ export default class SignupView extends Component {
       firstName: '',
       lastName: '',
       phoneNumber: '',
-      dob: '',
+      dob: new Date(),
       gender: '',
       interests: [],
       city: '',
@@ -321,12 +321,12 @@ export default class SignupView extends Component {
             </TextInput>
           </View>
         <View>
-          <Button
+          {/*<Button
             onPress={() => this.signUpWithFacebook()}
             style={styles.blankButton}
             textStyle={styles.buttonBlankText}>
             {loginWithFacebookButtonText}
-          </Button>
+          </Button>*/}
         </View>
         </KeyboardAwareScrollView>
       </View>
@@ -370,7 +370,7 @@ export default class SignupView extends Component {
       {
           return {
               color:'#DCE3E3',
-              fontFamily: appStyleVariables.SYSTEM_FONT,
+              fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
               fontSize: 16,
               padding: 2,
               paddingTop: 8,
@@ -380,7 +380,7 @@ export default class SignupView extends Component {
       {
           return {
               color:'white',
-              fontFamily: appStyleVariables.SYSTEM_FONT,
+              fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
               fontSize: 16,
               padding: 2,
               paddingTop: 8,
@@ -397,7 +397,7 @@ export default class SignupView extends Component {
         <KeyboardAwareScrollView>
           <Text style={styles.pageTitle}>Optional Info</Text>
           <Text style={styles.pageSubTitle}>Optional Information helps us personalize your experience</Text>
-          <TouchableHighlight style={styles.imageTouch} onPress = {()=> this.renderImage()}>
+          {/*<TouchableHighlight style={styles.imageTouch} onPress = {()=> this.renderImage()}>
             <View style={styles.imageUploadHolder}>
               {
                 (this.state.responseURI)  ?
@@ -412,7 +412,7 @@ export default class SignupView extends Component {
                     <Text style={styles.imageText}> Image </Text>
               }
             </View>
-          </TouchableHighlight>
+          </TouchableHighlight>*/}
           <View style={styles.textInputHolder}>
             <TextInput style={styles.textInput}
               ref='phone'
@@ -437,12 +437,12 @@ export default class SignupView extends Component {
               customStyles={{
                 placeholderText: {
                   color: '#DCE3E3',
-                  fontFamily: appStyleVariables.SYSTEM_FONT,
+                  fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                   fontSize: 16,
                 },
                 dateText:{
                   color: '#FFFFFF',
-                  fontFamily: appStyleVariables.SYSTEM_FONT,
+                  fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                   fontSize: 16,
                 },
                 dateInput: {
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     textAlign: 'center',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
   },
   blankButton:{
     marginLeft:32,
@@ -645,7 +645,7 @@ const styles = StyleSheet.create({
     marginBottom:8,
   },
   pageSubTitle:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 12,
     color: 'white',
     textAlign:'center',
@@ -678,7 +678,7 @@ const styles = StyleSheet.create({
       marginBottom: 16,
   },
   imageText:{
-      fontFamily: appStyleVariables.SYSTEM_FONT,
+      fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
       fontSize: 16,
       color:'white',
       padding: 2,
@@ -688,7 +688,7 @@ const styles = StyleSheet.create({
     height: 44,
     backgroundColor: 'transparent',
     color:'white',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 16,
     padding: 2,
     paddingLeft: 16,
@@ -706,14 +706,14 @@ const styles = StyleSheet.create({
   },
   modalText:{
     color:'white',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 16,
     padding: 2,
     paddingTop: 8,
   },
   noGenderText:{
     color:'#DCE3E3',
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 16,
     padding: 2,
     paddingTop: 8,
@@ -740,7 +740,7 @@ const styles = StyleSheet.create({
     backgroundColor:'#0D5480',
   },
   interestCellText:{
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 18,
     color: '#DCE3E3',
   },

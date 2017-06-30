@@ -162,7 +162,7 @@ class EventFeedDateFilter extends Component {
             customStyles={{
               placeholderText: {
                 color: appStyleVariables.GRAY,
-                fontFamily: appStyleVariables.SYSTEM_FONT,
+                fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                 fontSize: 15,
               },
               dateInput: {
@@ -185,7 +185,7 @@ class EventFeedDateFilter extends Component {
             customStyles={{
               placeholderText: {
                 color: appStyleVariables.GRAY,
-                fontFamily: appStyleVariables.SYSTEM_FONT,
+                fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
                 fontSize: 15,
               },
               dateInput: {
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     borderRadius:4,
   },
   dateCellText: {
-    fontFamily: appStyleVariables.SYSTEM_FONT,
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
     fontSize: 14,
     color: '#848484',
   },
