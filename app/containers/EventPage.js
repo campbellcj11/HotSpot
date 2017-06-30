@@ -479,7 +479,7 @@ class EventPage extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: height - (Platform.OS == 'ios' ? 64:44),
+    height: height,
   },
   image: {
     flex:.25,
