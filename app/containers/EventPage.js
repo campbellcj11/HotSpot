@@ -174,11 +174,15 @@ class EventPage extends Component {
   openShare()
   {
     let current = this.props.currentSelection
-    let imagePath = null
-    // console.warn('Image URL: ' + current.image)
-    let fileType = current.image.substr(current.image.lastIndexOf('.') + 1)
-    fileType = fileType.substr(0, fileType.indexOf('?'))
-    // console.warn('Parsed file type: ' + fileType)
+    let imagePath = null;
+    let fileType = 'png';
+    if(current.image)
+    {
+      // console.warn('Image URL: ' + current.image)
+      fileType = current.image.substr(current.image.lastIndexOf('.') + 1)
+      fileType = fileType.substr(0, fileType.indexOf('?'))
+      // console.warn('Parsed file type: ' + fileType)
+    }
     RNFetchBlob
       .config({
         fileCache: true
@@ -194,10 +198,12 @@ class EventPage extends Component {
           // set header info for base64 image
           let imageUrl = 'data:image/' + fileType + ';base64,' + base64Data
           // share externally
+          var date = Moment(current.start_date).format('l');
+          var time = Moment(current.start_date).format('LT');
           Share.open({
             title: current.name + ' on HotSpot',
             subject: current.name + ' on HotSpot',
-            message: 'I found ' + current.name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.Key + '&l=' + this.props.location,
+            message: 'I found ' + current.name + ' thanks to HotSpot. It\'s happening at ' + current.venue_name + ' on ' + date + ' at ' + time + ' Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + current.locale.id,
             url: imageUrl,
             type: 'image/' + fileType
           })
@@ -209,6 +215,15 @@ class EventPage extends Component {
           if (imagePath) {
             return RNFetchBlob.fs.unlink(imagePath)
           }
+      })
+      .catch(err =>{
+        var date = Moment(current.start_date).format('l');
+        var time = Moment(current.start_date).format('LT');
+        Share.open({
+          title: current.name + ' on HotSpot',
+          subject: current.name + ' on HotSpot',
+          message: 'I found ' + current.name + ' thanks to HotSpot. It\'s happening at ' + current.venue_name + ' on ' + date + ' at ' + time + ' Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + current.locale.id,
+        })
       })
   }
 
@@ -355,7 +370,7 @@ class EventPage extends Component {
       />
       <ParallaxScrollView
         renderBackground={() => (
-          <Image resizeMode={'cover'} style={{width:width,height:height*.2}} source={{uri:this.props.currentSelection.image}}>
+          <Image resizeMode={'cover'} style={{width:width,height:height*.2}} source={{uri:this.props.currentSelection.image ? this.props.currentSelection.image : ''}}>
             <View style={{flex:1,backgroundColor:'#00000020'}}>
               <Text style={{backgroundColor:'transparent',color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontWeight:'bold',fontSize:20,marginLeft:16,marginTop:4}}>{this.props.currentSelection.name}</Text>
               <View style={styles.tagsHolder}>
@@ -486,7 +501,7 @@ const styles = StyleSheet.create({
   },
   tagsHolder:{
     position:'absolute',
-    left:8,
+    left:2,
     bottom:8,
     paddingHorizontal:6,
     paddingVertical:2,
@@ -497,6 +512,7 @@ const styles = StyleSheet.create({
     paddingHorizontal:6,
     paddingVertical:2,
     borderRadius:4,
+    marginRight:2,
   },
   tagText:{
     color:appColors.WHITE,

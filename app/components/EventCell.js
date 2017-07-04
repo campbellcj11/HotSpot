@@ -57,11 +57,15 @@ export default class EventCell extends Component {
   openShare()
   {
     let current = this.props.rowData
-    let imagePath = null
-    // console.warn('Image URL: ' + current.image)
-    let fileType = current.image.substr(current.image.lastIndexOf('.') + 1)
-    fileType = fileType.substr(0, fileType.indexOf('?'))
-    // console.warn('Parsed file type: ' + fileType)
+    let imagePath = null;
+    let fileType = 'png';
+    if(current.image)
+    {
+      // console.warn('Image URL: ' + current.image)
+      fileType = current.image.substr(current.image.lastIndexOf('.') + 1)
+      fileType = fileType.substr(0, fileType.indexOf('?'))
+      // console.warn('Parsed file type: ' + fileType)
+    }
     RNFetchBlob
       .config({
         fileCache: true
@@ -77,10 +81,12 @@ export default class EventCell extends Component {
           // set header info for base64 image
           let imageUrl = 'data:image/' + fileType + ';base64,' + base64Data
           // share externally
+          var date = Moment(current.start_date).format('l');
+          var time = Moment(current.start_date).format('LT');
           Share.open({
             title: current.name + ' on HotSpot',
             subject: current.name + ' on HotSpot',
-            message: 'I found ' + current.name + ' thanks to HotSpot. Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + this.props.location,
+            message: 'I found ' + current.name + ' thanks to HotSpot. It\'s happening at ' + current.venue_name + ' on ' + date + ' at ' + time + ' Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + current.locale.id,
             url: imageUrl,
             type: 'image/' + fileType
           })
@@ -92,6 +98,15 @@ export default class EventCell extends Component {
           if (imagePath) {
             return RNFetchBlob.fs.unlink(imagePath)
           }
+      })
+      .catch(err =>{
+        var date = Moment(current.start_date).format('l');
+        var time = Moment(current.start_date).format('LT');
+        Share.open({
+          title: current.name + ' on HotSpot',
+          subject: current.name + ' on HotSpot',
+          message: 'I found ' + current.name + ' thanks to HotSpot. It\'s happening at ' + current.venue_name + ' on ' + date + ' at ' + time + ' Check it out: https://projectnow-964ba.firebaseapp.com/getHotspot.html?id='+ current.id + '&l=' + current.locale.id,
+        })
       })
   }
   addToCalendar()
@@ -182,9 +197,12 @@ export default class EventCell extends Component {
       <View style={styles.container}>
         <TouchableHighlight key={this.props.rowData.id} underlayColor={'transparent'} onPress={() => Actions.eventPage({currentSelection: this.props.rowData})}>
           <View style={{overflow: 'hidden',borderTopLeftRadius:4,borderTopRightRadius:4,}}>
-            <Image style={styles.eventImage} source={{uri:this.props.rowData.image}} resizeMode={'cover'}>
+            <Image style={styles.eventImage} source={{uri:this.props.rowData.image ? this.props.rowData.image : ''}} resizeMode={'cover'}>
               <View style={styles.tagsHolder}>
                 {arr}
+              </View>
+              <View style={[styles.priceHolder,{backgroundColor:appColors.LIGHT_BLUE}]}>
+                <Text style={styles.priceText}>${this.props.rowData.price}</Text>
               </View>
             </Image>
             <View style={{flexDirection:'row',marginVertical:4,marginHorizontal:8}}>
@@ -259,17 +277,28 @@ const styles = StyleSheet.create({
     position:'absolute',
     left:8,
     bottom:8,
-    paddingHorizontal:6,
-    paddingVertical:2,
-    marginHorizontal:2,
     flexDirection:'row',
   },
   tagTextHolder:{
     paddingHorizontal:6,
     paddingVertical:2,
     borderRadius:4,
+    marginRight:2,
   },
   tagText:{
+    color:appColors.WHITE,
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 14,
+  },
+  priceHolder:{
+    position:'absolute',
+    right:8,
+    bottom:8,
+    paddingHorizontal:6,
+    paddingVertical:2,
+    borderRadius:4,
+  },
+  priceText:{
     color:appColors.WHITE,
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
     fontSize: 14,

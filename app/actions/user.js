@@ -3,6 +3,7 @@ import Api from '../lib/api'
 import offline from 'react-native-simple-store'
 import * as firebase from 'firebase';
 import { Alert } from 'react-native';
+import app from './app';
 
 //Test Images
 import image1 from '../images/image1.png'
@@ -26,7 +27,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 export function signUpUser(user, imageUri) {
-  // console.log('User2: ',user);
+  console.log('User2: ',user);
   return (dispatch) => {
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
@@ -42,13 +43,13 @@ export function signUpUser(user, imageUri) {
           'dataType': 'json',
         }
         Api.post('/user/create',headers,user).then(resp => {
-          // console.warn('Create Success');
-          // console.log('Create Response: ', resp);
+          console.warn('Create Success');
+          console.log('Create Response: ', resp);
           // dispatch(stateLogIn(user));
           dispatch(loginUser(user));
         }).catch( (ex) => {
-          // console.warn(ex);
-          // console.warn('Create Fail');
+          console.warn(ex);
+          console.warn('Create Fail');
           Alert.alert('Signup failed please try again');
         });
         // database.ref('users/' + firebase.auth().currentUser.uid).set({

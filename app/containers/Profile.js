@@ -94,80 +94,86 @@ formatDate(date) {
       />
         <View key={0} style={{flex:1}}>
           <KeyboardAwareScrollView>
-            <View style={styles.textInputHolder}>
-              <TextInput style={styles.textInput}
-                ref='First Name'
-                onChangeText={(firstName) => this.setState({firstName})}
-                placeholder= {this.state.firstName ? this.state.firstName : 'First Name'}
-                placeholderTextColor= {this.state.firstName ? appColors.BLACK : '#DCE3E3'}
-                underlineColorAndroid='transparent'
-                keyboardType={'email-address'}
-                returnKeyType={'next'}
-                onSubmitEditing={() => {this.refs.lastName.focus();}}>
-              </TextInput>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Basic Info</Text>
+              <View style={styles.textInputHolder}>
+                <TextInput style={styles.textInput}
+                  ref='First Name'
+                  onChangeText={(firstName) => this.setState({firstName})}
+                  placeholder= {this.state.firstName ? this.state.firstName : 'First Name'}
+                  placeholderTextColor= {this.state.firstName ? appColors.BLACK : '#DCE3E3'}
+                  underlineColorAndroid='transparent'
+                  keyboardType={'email-address'}
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => {this.refs.lastName.focus();}}>
+                </TextInput>
+              </View>
+              <View style={styles.textInputHolder}>
+                <TextInput style={styles.textInput}
+                  ref='lastName'
+                  onChangeText={(lastName) => this.setState({lastName})}
+                  placeholder= {this.state.lastName ? this.state.lastName : 'Last Name'}
+                  placeholderTextColor= {this.state.lastName ? appColors.BLACK : '#DCE3E3'}
+                  underlineColorAndroid='transparent'
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => {this.refs.dob.focus();}}>
+                </TextInput>
+              </View>
             </View>
-            <View style={styles.textInputHolder}>
-              <TextInput style={styles.textInput}
-                ref='lastName'
-                onChangeText={(lastName) => this.setState({lastName})}
-                placeholder= {this.state.lastName ? this.state.lastName : 'Last Name'}
-                placeholderTextColor= {this.state.lastName ? appColors.BLACK : '#DCE3E3'}
-                underlineColorAndroid='transparent'
-                returnKeyType={'next'}
-                onSubmitEditing={() => {this.refs.dob.focus();}}>
-              </TextInput>
-            </View>
-            <View style={styles.textInputHolder}>
-              <DatePicker
-                ref='dob'
-                style={styles.datePicker}
-                date={new Date(this.state.dob * 1000)}
-                mode="date"
-                placeholder= 'Date of Birth'
-                format="MMMM DD, YYYY"
-                showIcon={false}
-                confirmBtnText="Confirm"
-                cancelBtnText="Cancel"
-                customStyles={{
-                  placeholderText: {
-                    color: '#DCE3E3',
-                    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
-                    fontSize: 16,
-                  },
-                  dateText:{
-                    color: appColors.BLACK,
-                    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
-                    fontSize: 16,
-                  },
-                  dateInput: {
-                    borderWidth: 0,
-                    alignItems: 'flex-start',
-                  }
-                }}
-                onDateChange={(dob) => {this.setState({dob: Date.parse(dob)/1000})}}
-                onSubmitEditing={() => this.refs.gender.focus()}
-              />
-            </View>
-            <View style={styles.textInputHolder}>
-              <TextInput style={styles.textInput}
-                ref='gender'
-                onChangeText={(gender) => this.setState({gender})}
-                placeholder= {this.state.gender ? this.state.gender : 'Gender'}
-                placeholderTextColor= {this.state.gender ? appColors.BLACK : '#DCE3E3'}
-                underlineColorAndroid='transparent'
-                returnKeyType={'next'}
-                onSubmitEditing={() => this.refs.phone.focus()}>
-              </TextInput>
-            </View>
-            <View style={styles.textInputHolder}>
-              <TextInput style={styles.textInput}
-                ref='phone'
-                onChangeText={(phone) => this.setState({phone})}
-                placeholder= {this.state.phone ? this.state.phone : 'Phone'}
-                placeholderTextColor= {this.state.phone ? appColors.BLACK : '#DCE3E3'}
-                underlineColorAndroid='transparent'
-                returnKeyType={'done'}>
-              </TextInput>
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Optional Info</Text>
+              <View style={styles.textInputHolder}>
+                <DatePicker
+                  ref='dob'
+                  style={styles.datePicker}
+                  date={new Date(this.state.dob * 1000)}
+                  mode="date"
+                  placeholder= 'Date of Birth'
+                  format="MMMM DD, YYYY"
+                  showIcon={false}
+                  confirmBtnText="Confirm"
+                  cancelBtnText="Cancel"
+                  customStyles={{
+                    placeholderText: {
+                      color: '#DCE3E3',
+                      fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
+                      fontSize: 16,
+                    },
+                    dateText:{
+                      color: appColors.BLACK,
+                      fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
+                      fontSize: 16,
+                    },
+                    dateInput: {
+                      borderWidth: 0,
+                      alignItems: 'flex-start',
+                    }
+                  }}
+                  onDateChange={(dob) => {this.setState({dob: Date.parse(dob)/1000})}}
+                  onSubmitEditing={() => this.refs.gender.focus()}
+                />
+              </View>
+              <View style={styles.textInputHolder}>
+                <TextInput style={styles.textInput}
+                  ref='gender'
+                  onChangeText={(gender) => this.setState({gender})}
+                  placeholder= {this.state.gender ? this.state.gender : 'Gender'}
+                  placeholderTextColor= {this.state.gender ? appColors.BLACK : '#DCE3E3'}
+                  underlineColorAndroid='transparent'
+                  returnKeyType={'next'}
+                  onSubmitEditing={() => this.refs.phone.focus()}>
+                </TextInput>
+              </View>
+              <View style={styles.textInputHolder}>
+                <TextInput style={styles.textInput}
+                  ref='phone'
+                  onChangeText={(phone) => this.setState({phone})}
+                  placeholder= {this.state.phone ? this.state.phone : 'Phone'}
+                  placeholderTextColor= {this.state.phone ? appColors.BLACK : '#DCE3E3'}
+                  underlineColorAndroid='transparent'
+                  returnKeyType={'done'}>
+                </TextInput>
+              </View>
             </View>
           </KeyboardAwareScrollView>
         </View>
@@ -179,17 +185,22 @@ formatDate(date) {
 const styles = StyleSheet.create({
   scene: {
     flex: 1,
+    backgroundColor: appColors.GRAY,
+  },
+  section: {
+    backgroundColor: appColors.WHITE,
+    marginBottom:16,
+  },
+  sectionTitle:{
+    textAlign: 'center',
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    color: appColors.ORANGE,
+    fontSize: 18,
   },
   basicInfo : {
       flexDirection: 'row',
       justifyContent:'center',
       alignItems:'center',
-  },
-  title: {
-      fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
-      fontSize: 16,
-      color: appColors.ORANGE,
-      fontSize: 24,
   },
   textInputHolder: {
       backgroundColor: appColors.WHITE,

@@ -39,7 +39,7 @@ export default class Button extends Component {
 
 var styles = StyleSheet.create({
   button: {
-    height: 44,
+    minHeight: 44,
     alignSelf: 'stretch',
     justifyContent: 'center',
     overflow: 'hidden',

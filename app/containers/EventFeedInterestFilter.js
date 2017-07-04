@@ -41,7 +41,11 @@ class EventFeedInterestFilter extends Component {
     }
   }
   componentWillReceiveProps(nextProps){
-
+    if(nextProps.selectedInterests != this.props.selectedInterests){
+      this.setState({
+        selectedInterests: nextProps.selectedInterests,
+      })
+    }
   }
   interestSelected(sentInterest){
     if(this.state.selectedInterests.indexOf(sentInterest) == -1)
@@ -56,6 +60,9 @@ class EventFeedInterestFilter extends Component {
       interests.splice(index,1);
       this.setState({selectedInterests:interests});
     }
+  }
+  syncWithProfile(){
+    this.props.setLocalInterests(this.props.user.interests)
   }
   submitPressed(){
     // this.props.submitPressed();
@@ -87,6 +94,11 @@ class EventFeedInterestFilter extends Component {
             <ScrollView>
               <View style={{flexDirection:'row',flexWrap:'wrap'}}>
                 {interestsViews}
+              </View>
+              <View style={{alignItems:'center'}}>
+                <TouchableHighlight style={{marginTop:16}} underlayColor={'transparent'} onPress={() => this.syncWithProfile()}>
+                  <Text style={{fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:14,color:appColors.BLACK}}>Sync with Profile</Text>
+                </TouchableHighlight>
               </View>
             </ScrollView>
           </View>
@@ -133,6 +145,7 @@ function mapDispatchToProps(dispatch) {
 function mapStateToProps(state) {
   return {
     selectedInterests: state.app.localInterests,
+    user: state.user.user,
   };
 }
 

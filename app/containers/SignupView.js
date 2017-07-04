@@ -56,7 +56,7 @@ export default class SignupView extends Component {
       firstName: '',
       lastName: '',
       phoneNumber: '',
-      dob: new Date(),
+      dob: '',
       gender: '',
       interests: [],
       city: '',
@@ -90,16 +90,33 @@ export default class SignupView extends Component {
     // });
   }
   signup(){
-    user = {
-      email: this.state.email,
-      password: this.state.password,
-      first_name: this.state.firstName,
-      last_name: this.state.lastName,
-      dob: (new Date(this.state.dob).getTime()/1000),
-      interests: this.state.interests,
-      phone: this.state.phoneNumber,
-      locales: this.state.userLocations,
-      gender: this.state.gender
+    var dob = this.state.dob != '' ? new Date(this.state.dob).getTime()/1000 : null;
+    var user = {};
+    if(dob)
+    {
+      user = {
+        email: this.state.email,
+        password: this.state.password,
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        dob: dob,
+        interests: this.state.interests,
+        phone: this.state.phoneNumber,
+        locales: this.state.userLocations,
+        gender: this.state.gender
+      }
+    }
+    else{
+      user = {
+        email: this.state.email,
+        password: this.state.password,
+        first_name: this.state.firstName,
+        last_name: this.state.lastName,
+        interests: this.state.interests,
+        phone: this.state.phoneNumber,
+        locales: this.state.userLocations,
+        gender: this.state.gender
+      }
     }
     // userActions.saveInterests(this.state.interests);
     // userActions.saveLocation(this.state.city);

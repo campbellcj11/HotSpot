@@ -120,7 +120,11 @@ class Feedback extends Component {
       }
       else if (this.state.option == 4)
       {
-          type = 'Other'
+          type = 'Missing Event'
+      }
+      else if (this.state.option == 5)
+      {
+        type = 'Other'
       }
       else
       {
@@ -172,11 +176,12 @@ class Feedback extends Component {
           rightButtonText={'Submit'}
           submitPressed={() => this.submitFeedback()}
         />
-        <Text style={styles.titleText}>Let me tell you about...</Text>
+        <Text style={styles.titleText}>I have interesting feedback...</Text>
         <OptionButton onPress={() => this.setState({option:1})} ref={'option1'} title={'Inaccurate Event Information'}/>
-        <OptionButton onPress={() => this.setState({option:2})} ref={'option2'} title={'A bug I found'}/>
-        <OptionButton onPress={() => this.setState({option:3})} ref={'option3'} title={'A feature I want'}/>
-        <OptionButton onPress={() => this.setState({option:4})} ref={'option4'} title={'Something else'}/>
+        <OptionButton onPress={() => this.setState({option:2})} ref={'option2'} title={'I found a bug or problem'}/>
+        <OptionButton onPress={() => this.setState({option:3})} ref={'option3'} title={'I\'d like to suggest a new feature'}/>
+        <OptionButton onPress={() => this.setState({option:4})} ref={'option4'} title={'Missing Event'}/>
+        <OptionButton onPress={() => this.setState({option:5})} ref={'option5'} title={'Miscellaneous'}/>
         <TextInput
           style={styles.textInput}
           multiline={true}

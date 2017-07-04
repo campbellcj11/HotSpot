@@ -91,7 +91,7 @@ export function getEvents(filters){
               "logicAfter" : "AND"
           	},
             {
-          		"field": "end_date",
+          		"field": "start_date",
           		"operator": "<=",
           		"value": filters.endDate
           	}
@@ -113,7 +113,7 @@ export function getEvents(filters){
         currentEventsHash[filters.locationID] = events;
         var newEventsHash = currentEventsHash;
         // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
-        // console.warn('Events: ', events);
+        // console.log('Events: ', events);
         // console.warn('Filters: ', filters.locationID);
         // console.warn('NEH: ', newEventsHash);
         dispatch(setFetchedEvents(events,filters.locationID,newEventsHash))
@@ -128,7 +128,137 @@ export function getEvents(filters){
     // })
   }
 }
+export function getPopular(filters){
+  return (dispatch, getState) => {
+    // firebase.auth().currentUser.getToken().then(token => {
+      var uid = getState().user.user.uid;
+      var token = '0000';
 
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : uid,
+        'token' : token,
+      }
+      var startDate = new Date(filters.startDate);
+      var startDate2 = new Date(filters.startDate);
+      var hours2Later = startDate2.setHours(startDate2.getHours()+2);
+      hours2Later = new Date(hours2Later);
+
+      var body ={
+      	  "tags": [],
+          "sortBy": "interested",
+          "sortOrder": "DESC",
+          "pageSize": filters.pageSize ? filters.pageSize : 20,
+          "pageNumber": filters.page,
+          "count": filters.showCount,
+          "query": [
+          	{
+          		"field": "status",
+          		"operator": "=",
+          		"value": "active",
+          		"logicAfter" : "AND"
+          	},
+          	{
+          		"field": "start_date",
+          		"operator": ">=",
+          		"value": filters.startDate
+          	}
+          ]
+      }
+      return Api.post('/getEvents?',headers,body).then(resp => {
+
+        // console.warn('SearchEvents Success');
+        // console.warn(resp.count);
+        var events = [];
+        if(filters.showCount){
+          events = resp.events;
+        }
+        else {
+          events = resp;
+        }
+        // console.log(events);
+        return events;
+
+      }).catch( (ex) => {
+        console.warn('Error: ', ex);
+        console.warn('Popular Fail');
+      })
+    // }).catch( (ex) => {
+    //   console.warn('Error: ', ex);
+    //   console.warn('Issue with auth');
+    // })
+  }
+}
+export function getNowEvents(filters){
+  return (dispatch, getState) => {
+    // firebase.auth().currentUser.getToken().then(token => {
+      var uid = getState().user.user.uid;
+      var token = '0000';
+
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : uid,
+        'token' : token,
+      }
+      var startDate = new Date(filters.startDate);
+      var startDate2 = new Date(filters.startDate);
+      var hours2Later = startDate2.setHours(startDate2.getHours()+2);
+      hours2Later = new Date(hours2Later);
+
+      var body ={
+      	  "tags": [],
+          "sortBy": "start_date",
+          "pageSize": filters.pageSize ? filters.pageSize : 20,
+          "pageNumber": filters.page,
+          "count": filters.showCount,
+          "query": [
+          	{
+          		"field": "status",
+          		"operator": "=",
+          		"value": "active",
+          		"logicAfter" : "AND"
+          	},
+          	{
+          		"field": "start_date",
+          		"operator": ">=",
+          		"value": filters.startDate,
+              "logicAfter" : "AND"
+          	},
+            {
+          		"field": "start_date",
+          		"operator": "<=",
+          		"value": hours2Later
+          	}
+          ]
+      }
+      return Api.post('/getEvents?',headers,body).then(resp => {
+
+        // console.warn('SearchEvents Success');
+        // console.warn(resp.count);
+        var events = [];
+        if(filters.showCount){
+          events = resp.events;
+        }
+        else {
+          events = resp;
+        }
+
+        return events;
+
+      }).catch( (ex) => {
+        console.warn('Error: ', ex);
+        console.warn('HappeningNow Fail');
+      })
+    // }).catch( (ex) => {
+    //   console.warn('Error: ', ex);
+    //   console.warn('Issue with auth');
+    // })
+  }
+}
 export function searchEvents(filters){
   return (dispatch, getState) => {
     // firebase.auth().currentUser.getToken().then(token => {
@@ -163,7 +293,7 @@ export function searchEvents(filters){
           	},
             {
           		"field": "name",
-          		"operator": "=",
+          		"operator": "LIKE",
           		"value": filters.searchText,
           	}
           ]
@@ -235,7 +365,7 @@ export function loadMoreEvents(filters){
               "logicAfter" : "AND"
             },
             {
-              "field": "end_date",
+              "field": "start_date",
               "operator": "<=",
               "value": filters.endDate
             }

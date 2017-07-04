@@ -30,10 +30,12 @@ export default class EventFeedList extends Component {
       shouldReload: this.props.shouldReloadLists,
       favorites: this.props.favorites ? this.props.favorites : [],
       shouldShowOnlyFavorites: this.props.shouldShowOnlyFavorites,
+      haveLoadedMore: false,
+      shouldLoadMore: true,
     }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps.events != this.props.events){
+    if(nextProps.events != this.props.events && nextProps.events.length > 0){
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           events: nextProps.events,
@@ -46,21 +48,25 @@ export default class EventFeedList extends Component {
           }
         })
     }
-    else{
-      if(this.state.loadingMore){
-        this.setState({
-          loadingMore: false,
-        })
-      }
-      else {
-        if(nextProps.events.length != 0)
-        {
+    else {
+      clearTimeout(this.updateLoadingState);
+      this.updateLoadingState = setTimeout(() => {
+        if(this.state.loadingMore){
           this.setState({
-            outOfEvents: true,
             loadingMore: false,
           })
         }
-      }
+        else {
+          if(nextProps.events.length != 0)
+          {
+            this.setState({
+              outOfEvents: true,
+              loadingMore: false,
+              shouldLoadMore: false,
+            })
+          }
+        }
+      }, 500)
     }
 
     if(nextProps.shouldReloadLists != this.props.shouldReloadLists){
@@ -86,12 +92,13 @@ export default class EventFeedList extends Component {
       page:1,
       loadingMore: true,
       outOfEvents: false,
+      shouldLoadMore: true,
     })
   }
   onRefresh(){
     this.setState({refreshing: true, loadingMore: true});
     this.props.onRefresh(this.props.locationID);
-    this.setState({refreshing: false,page:0});
+    this.setState({refreshing: false,page:0,outOfEvents:false,shouldLoadMore:true});
   }
   loadMore(){
     if(! this.state.refreshing && ! this.state.loadingMore){
@@ -135,14 +142,14 @@ export default class EventFeedList extends Component {
     {
       viewToShow = (
         <TouchableHighlight underlayColor={'transparent'} onPress={() => this.onRefresh()}>
-          <View>
-            <Text>No Events Found</Text>
-            <Text>Try again?</Text>
+          <View style={{justifyContent:'center'}}>
+            <Text style={{textAlign:'center'}}>No Events Found</Text>
+            <Text style={{textAlign:'center'}}>Try changing your filters</Text>
           </View>
         </TouchableHighlight>)
     }
 
-    if(this.state.outOfEvents)
+    if(this.state.outOfEvents && !this.state.loadingMore)
     {
       viewToShow = <Text>That's all for now</Text>
     }
@@ -167,7 +174,7 @@ export default class EventFeedList extends Component {
           />
         }
         onEndReachedThreshold={250}
-        onEndReached={!this.state.loadingMore ? () => this.loadMore() : null}
+        onEndReached={!this.state.loadingMore && this.state.shouldLoadMore ? () => this.loadMore() : null}
         renderFooter={() => this.renderFooter()}
       />
     )

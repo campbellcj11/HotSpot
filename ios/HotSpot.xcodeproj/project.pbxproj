@@ -38,6 +38,7 @@
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		8CE9004A0BF546CF85B706AB /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2BA4A3A87FA416CAB8AAAB3 /* libRNFetchBlob.a */; };
+		90C39F651F0A7D3F00C13827 /* HotSpot-Legal-PDF.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 90C39F641F0A7D3F00C13827 /* HotSpot-Legal-PDF.pdf */; };
 		90CFD5621EF5658B00CA6180 /* EventKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90CFD5611EF5658B00CA6180 /* EventKit.framework */; };
 		90CFD5641EF565B400CA6180 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 90CFD5631EF565B400CA6180 /* CoreFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		90CFD56B1EF565EA00CA6180 /* libRNCalendarEvents.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 90CFD56A1EF565E300CA6180 /* libRNCalendarEvents.a */; };
@@ -306,6 +307,7 @@
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8FD0B41C6F424D58B4727DE3 /* RNImagePicker.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNImagePicker.xcodeproj; path = "../node_modules/react-native-image-picker/ios/RNImagePicker.xcodeproj"; sourceTree = "<group>"; };
 		90C39F031F04D63C00C13827 /* HotSpot.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = HotSpot.entitlements; path = HotSpot/HotSpot.entitlements; sourceTree = "<group>"; };
+		90C39F641F0A7D3F00C13827 /* HotSpot-Legal-PDF.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "HotSpot-Legal-PDF.pdf"; sourceTree = "<group>"; };
 		90CFD5611EF5658B00CA6180 /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		90CFD5631EF565B400CA6180 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
 		90CFD5651EF565E300CA6180 /* RNCalendarEvents.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RNCalendarEvents.xcodeproj; path = "../node_modules/react-native-calendar-events/RNCalendarEvents.xcodeproj"; sourceTree = "<group>"; };
@@ -457,6 +459,7 @@
 		13B07FAE1A68108700A75B9A /* HotSpot */ = {
 			isa = PBXGroup;
 			children = (
+				90C39F641F0A7D3F00C13827 /* HotSpot-Legal-PDF.pdf */,
 				90C39F031F04D63C00C13827 /* HotSpot.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -1045,6 +1048,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				90C39F651F0A7D3F00C13827 /* HotSpot-Legal-PDF.pdf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
