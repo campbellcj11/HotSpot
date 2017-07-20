@@ -91,8 +91,8 @@ export default class EventCell extends Component {
             type: 'image/' + fileType
           })
           .catch(err => {
-            console.log('RNShare promise rejected:')
-            console.log(err)
+            // console.log('RNShare promise rejected:')
+            // console.log(err)
           })
           // remove the file from storage
           if (imagePath) {

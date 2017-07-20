@@ -41,7 +41,7 @@ class Home extends Component {
   constructor(props) {
     super(props);
     const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-    console.log('Props: ', this.props);
+    // console.log('Props: ', this.props);
     this.state = {
       user: this.props.user,
       isLoggedIn: this.props.isLoggedIn,
@@ -84,16 +84,14 @@ class Home extends Component {
     // }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps.fetchedEventsHash){
-      // console.warn('Has new events');
+    if( Object.keys(nextProps.fetchedEventsHash).length != 0 ){
+      // console.warn( 'Has new events' );
       this.setState({
         fetchedEventsHash: nextProps.fetchedEventsHash,
         shouldReloadLists: false,
       })
     }
-    if(nextProps.userLocations != this.props.userLocations){
-      // console.warn('We are getting a new locations');
-      // console.warn(nextProps.userLocations);
+    if(nextProps.userLocations != this.props.userLocations && nextProps.userLocations.length != 0){
       this.setState({
         currentLocation: nextProps.userLocations.length != 0  ? nextProps.userLocations[this.state.currentLocationIndex] : {},
         hasCurrentLocation: nextProps.userLocations.length != 0  ? true : false,
@@ -119,6 +117,7 @@ class Home extends Component {
     }
     if(nextProps.localInterests != this.props.localInterests)
     {
+      // console.warn('localInterests');
       if(nextProps.localInterests)
       {
         if(nextProps.localInterests.length != 0)
@@ -149,6 +148,7 @@ class Home extends Component {
     }
     if(nextProps.favorites != this.props.favorites)
     {
+      // console.warn('favorites');
       this.setState({favorites: nextProps.favorites})
     }
   }

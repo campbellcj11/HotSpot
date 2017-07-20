@@ -36,6 +36,7 @@ export default class EventFeedList extends Component {
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.events != this.props.events && nextProps.events.length > 0){
+      clearTimeout(this.eventsTimeout);
         const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
           events: nextProps.events,
@@ -49,24 +50,24 @@ export default class EventFeedList extends Component {
         })
     }
     else {
-      clearTimeout(this.updateLoadingState);
-      this.updateLoadingState = setTimeout(() => {
-        if(this.state.loadingMore){
-          this.setState({
-            loadingMore: false,
-          })
-        }
-        else {
-          if(nextProps.events.length != 0)
-          {
-            this.setState({
-              outOfEvents: true,
-              loadingMore: false,
-              shouldLoadMore: false,
-            })
-          }
-        }
-      }, 500)
+      // clearTimeout(this.updateLoadingState);
+      // this.updateLoadingState = setTimeout(() => {
+      //   if(this.state.loadingMore){
+      //     this.setState({
+      //       loadingMore: false,
+      //     })
+      //   }
+      //   else {
+      //     if(nextProps.events.length != 0)
+      //     {
+      //       this.setState({
+      //         outOfEvents: true,
+      //         loadingMore: false,
+      //         shouldLoadMore: false,
+      //       })
+      //     }
+      //   }
+      // }, 500)
     }
 
     if(nextProps.shouldReloadLists != this.props.shouldReloadLists){

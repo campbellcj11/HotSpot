@@ -27,7 +27,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 
 export function signUpUser(user, imageUri) {
-  console.log('User2: ',user);
+  // console.log('User2: ',user);
   return (dispatch) => {
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
       .then(currentUser => {
@@ -43,8 +43,8 @@ export function signUpUser(user, imageUri) {
           'dataType': 'json',
         }
         Api.post('/user/create',headers,user).then(resp => {
-          console.warn('Create Success');
-          console.log('Create Response: ', resp);
+          // console.warn('Create Success');
+          // console.log('Create Response: ', resp);
           // dispatch(stateLogIn(user));
           dispatch(loginUser(user));
         }).catch( (ex) => {
@@ -79,7 +79,7 @@ export function signUpUser(user, imageUri) {
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log('ERROR: ' + error.code + ' - ' + error.message);
+        // console.log('ERROR: ' + error.code + ' - ' + error.message);
         Alert.alert('Invalid Signup for ' + user.Email, error.message);
       });
   };
@@ -106,7 +106,7 @@ export function loginUser(user){
             // console.warn('Login Response: ', resp);
             dispatch(stateLogIn(resp.user));
           }).catch( (ex) => {
-            console.log(ex);
+            // console.log(ex);
             console.warn('Login Fail');
             // dispatch(stateLogOut());
           });
@@ -115,7 +115,7 @@ export function loginUser(user){
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        console.log('ERROR: ' + error.code + ' - ' + error.message);
+        // console.log('ERROR: ' + error.code + ' - ' + error.message);
         Alert.alert('Invalid Login for ' + user.email + '. ' + error.message);
     });
   };

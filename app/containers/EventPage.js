@@ -144,7 +144,7 @@ class EventPage extends Component {
 
   callPhone()
   {
-    console.log(this.props.currentSelection);
+    // console.log(this.props.currentSelection);
     if (this.props.currentSelection.phone_contact) {
       Linking.openURL('tel:' + this.props.currentSelection.phone_contact)
     } else {
@@ -208,8 +208,8 @@ class EventPage extends Component {
             type: 'image/' + fileType
           })
           .catch(err => {
-            console.log('RNShare promise rejected:')
-            console.log(err)
+            // console.log('RNShare promise rejected:')
+            // console.log(err)
           })
           // remove the file from storage
           if (imagePath) {

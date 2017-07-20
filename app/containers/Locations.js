@@ -62,8 +62,8 @@ class Locations extends Component {
     }
     var newUser = this.clone(this.props.user);
     newUser.locales = newArray;
-    console.log('LCS: ',newUser.locales);
-    console.log(newUser);
+    // console.log('LCS: ',newUser.locales);
+    // console.log(newUser);
     this.props.updateUserWithNewLocales(newUser);
     Actions.pop();
   }

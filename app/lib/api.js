@@ -33,7 +33,7 @@ class Api {
   static xhr(route, headers, params, verb) {
     const host = 'http://hotspotenv.6qmp7ct7m5.us-east-1.elasticbeanstalk.com'
     const url = `${host}${route}`
-    console.log('url: ', url);
+    // console.log('url: ', url);
     let options = Object.assign({ method: verb }, params ? { body: JSON.stringify(params) } : null );
     options.headers = headers
     return fetch(url, options).then( resp => {

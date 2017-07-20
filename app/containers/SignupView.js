@@ -120,7 +120,7 @@ export default class SignupView extends Component {
     }
     // userActions.saveInterests(this.state.interests);
     // userActions.saveLocation(this.state.city);
-    console.log('User: ', user);
+    // console.log('User: ', user);
     this.props.signUp(user, this.state.responseURI);
   }
   hasCorrectInformation(){
@@ -244,7 +244,7 @@ export default class SignupView extends Component {
   _initFacebookUser(token)
   {
     var user;
-    console.log("Fetching data");
+    // console.log("Fetching data");
     fetch('https://graph.facebook.com/v2.6/me?fields=first_name,last_name,picture,email,locale,timezone,gender&access_token=' + token)
     .then((response) => response.json())
     .then((json) => {
@@ -256,14 +256,14 @@ export default class SignupView extends Component {
         lastName:  json.last_name,
         gender: json.gender,
       });
-      console.log(this.state.email);
-      console.log(this.state.password);
-      console.log(this.state.firstName);
-      console.log(this.state.lastName);
-      console.log(this.state.gender);
+      // console.log(this.state.email);
+      // console.log(this.state.password);
+      // console.log(this.state.firstName);
+      // console.log(this.state.lastName);
+      // console.log(this.state.gender);
     })
     .catch(() => {
-      console.log('ERROR GETTING DATA FROM FACEBOOK')
+      // console.log('ERROR GETTING DATA FROM FACEBOOK')
     })
     //this.state.index = this.state.index+1;
 
@@ -282,12 +282,12 @@ export default class SignupView extends Component {
   renderImage(){
     ImagePicker.showImagePicker((response) => {
       if(response.didCancel) {
-        console.log('User cancelled image picker');
+        // console.log('User cancelled image picker');
       }
       else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
+        // console.log('ImagePicker Error: ', response.error);
       }else {
-        console.log("URI: " + response.uri);
+        // console.log("URI: " + response.uri);
         this.setState({responseURI: response.uri});
         // this.uploadImage(response.uri, 'tempImage' + '.jpg')
         // .then(url => this.setState({imageLocation: url}));

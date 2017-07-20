@@ -112,11 +112,26 @@ export function getEvents(filters){
         var currentEventsHash = getState().events.fetchedEventsHash;
         currentEventsHash[filters.locationID] = events;
         var newEventsHash = currentEventsHash;
+
+        // for(var i=0;i<Object.keys(currentEventsHash);i++)
+        // {
+        //   var key = Object.keys(currentEventsHash)[i];
+        //   if(key == filters.locationID)
+        //   {
+        //     newEventsHash[key] = events
+        //   }
+        //   else {
+        //     newEventsHash[key] = currentEventsHash[key];
+        //   }
+        // }
         // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));
         // console.log('Events: ', events);
         // console.warn('Filters: ', filters.locationID);
         // console.warn('NEH: ', newEventsHash);
-        dispatch(setFetchedEvents(events,filters.locationID,newEventsHash))
+        // console.warn(Object.keys(newEventsHash));
+
+        clearTimeout(this.eventsTimeout);
+        this.eventsTimeout = setTimeout(() => dispatch(setFetchedEvents(events,filters.locationID,newEventsHash)), 500)
 
       }).catch( (ex) => {
         // console.warn('Error: ', ex);

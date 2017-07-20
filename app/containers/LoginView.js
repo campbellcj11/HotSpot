@@ -72,7 +72,7 @@ export default class Login extends Component {
   _initFacebookUser(token)
   {
     var user;
-    console.log("Fetching data");
+    // console.log("Fetching data");
     fetch('https://graph.facebook.com/v2.6/me?fields=first_name,last_name,picture,email,locale,timezone,gender&access_token=' + token)
     .then((response) => response.json())
     .then((json) => {
@@ -83,9 +83,9 @@ export default class Login extends Component {
       this.props.loginUser(user);
     })
     .catch(() => {
-      console.log('ERROR GETTING DATA FROM FACEBOOK')
+      // console.log('ERROR GETTING DATA FROM FACEBOOK')
     })
-    console.log(user);
+    // console.log(user);
   }
   resetPassword(){
     this.props.resetPassword(this.state.email);
