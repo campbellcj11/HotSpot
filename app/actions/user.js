@@ -26,7 +26,7 @@ const firebaseApp = firebase.initializeApp(firebaseConfig);
 //initialize database
 const database = firebase.database();
 
-export function signUpUser(user, imageUri) {
+export function signUpUser(user, stopSignupLoading) {
   // console.log('User2: ',user);
   return (dispatch) => {
     firebase.auth().createUserWithEmailAndPassword(user.email, user.password)
@@ -46,42 +46,54 @@ export function signUpUser(user, imageUri) {
           // console.warn('Create Success');
           // console.log('Create Response: ', resp);
           // dispatch(stateLogIn(user));
-          dispatch(loginUser(user));
+          dispatch(firstLogin(user,stopSignupLoading));
         }).catch( (ex) => {
-          console.warn(ex);
+          console.log(ex);
           console.warn('Create Fail');
           Alert.alert('Signup failed please try again');
+          stopSignupLoading();
+          currentUser.delete().then(function() {
+            // User deleted.
+          }).catch(function(error) {
+            // An error happened.
+          });
         });
-        // database.ref('users/' + firebase.auth().currentUser.uid).set({
-        //   Email: user.email,
-        //   First_Name: user.First_Name,
-        //   Last_Name: user.Last_Name,
-        //   Phone: user.Phone,
-        //   DOB: user.DOB,
-        //   City: user.city,
-        //   Interests: user.interests,
-        //   RegisteredUser: true,
-        //   AdminUser: false,
-        //   Last_Login : firebase.database.ServerValue.TIMESTAMP,
-        //   Gender: user.Gender,
-        //   Image: ''
-        // });
-
-        //check for uploaded image
-        // uploadImage(imageUri, firebase.auth().currentUser.uid + '.jpg')
-        // .then(url => {
-        //     database.ref('users/' + firebase.auth().currentUser.uid).update({
-        //       Image: url
-        //     });
-        // });
-        // dispatch(stateSignUp(user));
       })
       .catch(error => {
         var errorCode = error.code;
         var errorMessage = error.message;
         // console.log('ERROR: ' + error.code + ' - ' + error.message);
         Alert.alert('Invalid Signup for ' + user.Email, error.message);
+        stopSignupLoading();
       });
+  };
+}
+function firstLogin(user,stopSignupLoading){
+  return (dispatch) => {
+    firebase.auth().currentUser.getToken().then(token => {
+      var headers = {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'dataType': 'json',
+        'uid' : firebase.auth().currentUser.uid,
+        'token' : token,
+      }
+      Api.get('/login',headers).then(resp => {
+        console.warn('Login Success');
+        // console.warn('Login Response: ', resp);
+        stopSignupLoading();
+        dispatch(stateLogIn(resp.user));
+      }).catch( (ex) => {
+        console.log(ex);
+        Alert.alert('Signup failed please try again');
+        stopSignupLoading();
+        firebase.auth().currentUser.delete().then(function() {
+          // User deleted.
+        }).catch(function(error) {
+          // An error happened.
+        });
+      });
+    })
   };
 }
 export function loginUser(user){
@@ -106,7 +118,7 @@ export function loginUser(user){
             // console.warn('Login Response: ', resp);
             dispatch(stateLogIn(resp.user));
           }).catch( (ex) => {
-            // console.log(ex);
+            console.log(ex);
             console.warn('Login Fail');
             // dispatch(stateLogOut());
           });

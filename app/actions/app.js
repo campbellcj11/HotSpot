@@ -13,6 +13,7 @@ export function getPossibleLocations(){
       dispatch(setPossibleLocations(resp));
     }).catch( (ex) => {
       console.warn('Failed to get Locations');
+      console.warn('Error: ', ex);
     })
   }
 }
@@ -57,6 +58,10 @@ export function setLocalStartDate(startDate){
 export function getLocalStartDate(){
   return (dispatch, getState) => {
     return offline.get('startDate').then(startDate => {
+      if(startDate < new Date())
+      {
+        startDate = new Date();
+      }
       dispatch(stateSaveLocalStartDate(startDate));
     });
   }
@@ -97,4 +102,24 @@ function getOneYearOut(){
   var todayNextYear = new Date(year + 1, month, day)
 
   return todayNextYear;
+}
+
+export function setDateFilterType(filterType){
+  offline.save('dateFilterType', filterType);
+  return (dispatch) => {
+    dispatch(stateSaveDateFilterType(filterType))
+  }
+}
+export function getDateFilterType(){
+  return (dispatch, getState) => {
+    return offline.get('dateFilterType').then(dateFilterType => {
+      dispatch(stateSaveDateFilterType(dateFilterType));
+    });
+  }
+}
+function stateSaveDateFilterType(filterType){
+  return {
+    type: types.SAVE_DATE_FILTER_TYPE,
+    dateFilterType: filterType,
+  }
 }

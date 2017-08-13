@@ -62,40 +62,35 @@ class LandingPage extends Component {
   renderView(){
     return(
       <View key={0} style={styles.container}>
-        <Image source={landingImage} style={styles.backgroundImage}/>
-        <LinearGradient
-          start={{x: 0.0, y: 1.0}} end={{x: 0.0, y: 0.5}}
-          locations={[0,1]}
-          colors={['#0E476A', '#FFFFFF00']}
-          style={{position:'absolute',left:0,right:0,top:0,bottom:0}}
-        />
-        <Image source={hsGraphic} style={styles.titleImage}/>
-        <View>
-          <View style={{flexDirection:'row',marginHorizontal:16}}>
-          <Button
+        <View style={{alignItems:'flex-end',marginRight:8,marginTop:4}}>
+          <TouchableHighlight
             onPress={() => this.setToLogin()}
-            style={styles.actionButton}
-            textStyle={styles.buttonText}
-            underlayColor={'#F17C49'}
+            style={styles.signInButton}
+            underlayColor={'transparent'}
           >
-            Sign in
-          </Button>
-          <Button
+            <Text style={styles.signInButtonText}>Have an account?</Text>
+          </TouchableHighlight>
+        </View>
+        <View style={{alignItems:'center',marginHorizontal:16}}>
+          <Image source={hsGraphic} style={styles.titleImage}/>
+          <Text style={styles.description}> Welcome to HotSpot. Find all your big ticket and local experiences in one place.</Text>
+        </View>
+        <View style={{flex:1,justifyContent:'flex-end'}}>
+          <Text style={styles.description}>Create your custom experience</Text>
+          <TouchableHighlight
             onPress={() => this.setToSignup()}
-            style={[styles.actionButton,{marginLeft:32}]}
-            textStyle={styles.buttonText}
-            underlayColor={'#F17C49'}
+            style={styles.signUpButton}
+            underlayColor={'#111111'}
           >
-            Sign up
-          </Button>
-          </View>
-          <Button
+            <Text style={styles.signUpButtonText}>Let's Get Started</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
             onPress={() => this.loginWithoutAccount()}
             style={styles.loginBlankButton}
-            textStyle={styles.buttonBlankText}
+            underlayColor={'transparent'}
           >
-            Use without account
-          </Button>
+            <Text style={styles.buttonBlankText}>Use as Guest</Text>
+          </TouchableHighlight>
         </View>
       </View>
     )
@@ -105,6 +100,7 @@ class LandingPage extends Component {
     return(
       <Modal >
         <StatusBar barStyle="light-content"/>
+        <Image source={landingImage} style={styles.backgroundImage}/>
         <Swiper
           ref={'swiper'}
           loop={false}
@@ -121,8 +117,8 @@ class LandingPage extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:appColors.DEEP_BLUE,
-    justifyContent:'flex-end',
+    backgroundColor:'transparent',
+    paddingTop:20,
   },
   backgroundImage:{
     position: 'absolute',
@@ -133,13 +129,46 @@ const styles = StyleSheet.create({
     resizeMode:'cover',
   },
   titleImage: {
-    position:'absolute',
-    top: height*.05,
-    left: width*.2,
-    right: width*.2,
-    width: width*.6,
+    // position:'absolute',
+    // top: height*.05,
+    // left: width*.2,
+    // right: width*.2,
+    // width: width*.6,
     height: 150,
     resizeMode: 'contain', // or 'stretch'
+  },
+  signInButton:{
+
+  },
+  signInButtonText:{
+    textAlign:'center',
+    color:'white',
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 18,
+  },
+  signUpButton:{
+    height:66,
+    borderWidth:1,
+    borderColor: appColors.WHITE,
+    marginHorizontal:32,
+    borderRadius:8,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: '#000000',
+  },
+  signUpButtonText:{
+    textAlign:'center',
+    color:'white',
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 24,
+  },
+  description:{
+    backgroundColor:'transparent',
+    textAlign:'center',
+    color:'white',
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 18,
+    marginBottom:16,
   },
   actionButton:{
     flex:1,
@@ -158,7 +187,7 @@ const styles = StyleSheet.create({
   loginBlankButton:{
     marginLeft:32,
     marginRight:32,
-    marginBottom:40,
+    marginBottom:16,
     marginTop:16,
   },
   buttonBlankText:{

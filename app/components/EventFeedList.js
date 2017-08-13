@@ -11,64 +11,83 @@ import {
   RefreshControl,
   Dimensions,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
-
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import { ActionCreators } from '../actions'
 //components
 import EventCell from './EventCell'
 
-export default class EventFeedList extends Component {
+class EventFeedList extends Component {
   constructor(props){
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      events: this.props.events ? this.props.events : [],
-      dataSource: ds.cloneWithRows(this.props.events),
+      events: this.props.fetchedEventsHash[this.props.locationID] ? this.props.fetchedEventsHash[this.props.locationID] : [],
       refreshing: false,
       page:1,
-      loadingMore: true,
+      loadingMore: false,
       outOfEvents: false,
       shouldReload: this.props.shouldReloadLists,
       favorites: this.props.favorites ? this.props.favorites : [],
       shouldShowOnlyFavorites: this.props.shouldShowOnlyFavorites,
-      haveLoadedMore: false,
-      shouldLoadMore: true,
     }
   }
   componentWillReceiveProps(nextProps){
-    if(nextProps.events != this.props.events && nextProps.events.length > 0){
-      clearTimeout(this.eventsTimeout);
-        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+    var events = nextProps.fetchedEventsHash[this.props.locationID];
+    if( ! this.listsHaveSameObjects(events,this.state.events))
+    {
+      clearTimeout(this.updateEventsTimeout);
+      this.updateEventsTimeout = setTimeout(() => {
         this.setState({
-          events: nextProps.events,
-          dataSource: ds.cloneWithRows(nextProps.events),
-          outOfEvents: false,
-        }, function(){
-          if(this.state.loadingMore){
-            clearTimeout(this.updateEventsTimeout);
-            this.updateEventsTimeout = setTimeout(() => {this.setState({loadingMore:false})}, 500)
-          }
-        })
+          loadingMore:false,
+          events: events,
+          outOfEvents:false,
+        });
+      }, 500);
     }
-    else {
-      // clearTimeout(this.updateLoadingState);
-      // this.updateLoadingState = setTimeout(() => {
-      //   if(this.state.loadingMore){
-      //     this.setState({
-      //       loadingMore: false,
-      //     })
-      //   }
-      //   else {
-      //     if(nextProps.events.length != 0)
-      //     {
-      //       this.setState({
-      //         outOfEvents: true,
-      //         loadingMore: false,
-      //         shouldLoadMore: false,
-      //       })
-      //     }
-      //   }
-      // }, 500)
+    else
+    {
+      if(events.length == 0)
+      {
+        clearTimeout(this.updateEventsTimeout);
+        this.updateEventsTimeout = setTimeout(() => {
+          this.setState({
+            loadingMore:false,
+            outOfEvents: true,
+          });
+        }, 500);
+      }
+      else
+      {
+        this.updateEventsTimeout = setTimeout(() => {
+          this.setState({
+            loadingMore:false,
+            outOfEvents: true,
+          });
+        }, 500);
+      }
     }
+    // if(events != this.props.fetchedEventsHash[this.props.locationID] && events.length > 0){
+    //     this.setState({
+    //       events: events,
+    //       outOfEvents: false,
+    //       loadingMore: true,
+    //     }, function(){
+    //       // if(this.state.loadingMore){
+    //       //   clearTimeout(this.updateEventsTimeout);
+    //       //   this.updateEventsTimeout = setTimeout(() => {this.setState({loadingMore:false})}, 500)
+    //       // }
+    //     })
+    // }
+    // else if(events.length == 0){
+    //   clearTimeout(this.updateEventsTimeout);
+    //     this.setState({
+    //       events: nextProps.events,
+    //       outOfEvents: true,
+    //       loadingMore: false,
+    //     });
+    // }
 
     if(nextProps.shouldReloadLists != this.props.shouldReloadLists){
       if(nextProps.shouldReloadLists)
@@ -85,32 +104,52 @@ export default class EventFeedList extends Component {
       this.setState({shouldShowOnlyFavorites: nextProps.shouldShowOnlyFavorites});
     }
   }
+  listsHaveSameObjects(newList,oldList){
+    var areListsTheSame = true;
+    if(newList.length != oldList.length)
+    {
+      areListsTheSame = false;
+    }
+    else
+    {
+      for(var i=0;i<newList.length;i++)
+      {
+        var newObject = newList[i];
+        var oldObject = oldList[i];
+
+        if(newObject.id != oldObject.id)
+        {
+          areListsTheSame = false;
+          break;
+        }
+      }
+    }
+    return areListsTheSame;
+  }
   reloadList(){
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.setState({
       events: [],
-      dataSource: ds.cloneWithRows([]),
       page:1,
       loadingMore: true,
       outOfEvents: false,
-      shouldLoadMore: true,
     })
   }
   onRefresh(){
     this.setState({refreshing: true, loadingMore: true});
     this.props.onRefresh(this.props.locationID);
-    this.setState({refreshing: false,page:0,outOfEvents:false,shouldLoadMore:true});
+    this.setState({refreshing: false,page:0,outOfEvents:false});
   }
   loadMore(){
-    if(! this.state.refreshing && ! this.state.loadingMore){
-      this.setState({loadingMore:true});
+    // if(! this.state.refreshing && ! this.state.loadingMore && !this.state.outOfEvents){
+    if(! this.state.loadingMore && !this.state.outOfEvents){
       var nextPage = this.state.page + 1;
-      this.props.loadMore({
-        page:nextPage,
-        currentEvents:this.props.events,
-        locationID:this.props.locationID,
+      this.setState({page:nextPage,loadingMore:true}, function(){
+        this.props.loadMore({
+          page:nextPage,
+          currentEvents:this.state.events,
+          locationID:this.props.locationID,
+        });
       });
-      this.setState({page:nextPage});
     }
   }
   setFavorites(idOfEventPressed){
@@ -150,7 +189,7 @@ export default class EventFeedList extends Component {
         </TouchableHighlight>)
     }
 
-    if(this.state.outOfEvents && !this.state.loadingMore)
+    if(this.state.outOfEvents && !this.state.loadingMore && this.state.events.length != 0)
     {
       viewToShow = <Text>That's all for now</Text>
     }
@@ -162,12 +201,13 @@ export default class EventFeedList extends Component {
   }
   render(){
     return(
-      <ListView
+      <FlatList
         key={this.state.shouldShowOnlyFavorites}
         style={{backgroundColor:appColors.GRAY}}
-        enableEmptySections={true}
-        dataSource={this.state.dataSource}
-        renderRow={(rowData) => this.renderRow(rowData)}
+        data={this.state.events}
+        renderItem={({item}) => this.renderRow(item)}
+        keyExtractor={(item, index) => item.id}
+        initialNumToRender={3}
         refreshControl={
           <RefreshControl
             refreshing={this.state.refreshing}
@@ -175,8 +215,8 @@ export default class EventFeedList extends Component {
           />
         }
         onEndReachedThreshold={250}
-        onEndReached={!this.state.loadingMore && this.state.shouldLoadMore ? () => this.loadMore() : null}
-        renderFooter={() => this.renderFooter()}
+        onEndReached={() => this.loadMore()}
+        ListFooterComponent={() => this.renderFooter()}
       />
     )
   }
@@ -185,3 +225,17 @@ export default class EventFeedList extends Component {
 const styles = StyleSheet.create({
 
 });
+
+function mapDispatchToProps(dispatch) {
+  return bindActionCreators(ActionCreators, dispatch);
+}
+
+function mapStateToProps(state) {
+  return {
+    fetchedEvents: state.events.fetchedEvents,
+    fetchedEventsHash: state.events.fetchedEventsHash,
+  };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(EventFeedList);

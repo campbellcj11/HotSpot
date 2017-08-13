@@ -134,7 +134,7 @@ export default class EventCell extends Component {
           endDate: (new Date(+current.end_date)).toISOString(),
           notes: current.short_description,
           description: current.short_description,
-          location: current.address,
+          location: current.venue_name + ' ' + current.address,
           alarms: [{
             date: -120
           }]
@@ -211,7 +211,7 @@ export default class EventCell extends Component {
                 <View style={{flexDirection:'row'}}>
                   <Text style={styles.location} ellipsizeMode={'tail'} numberOfLines={1}>{this.props.rowData.venue_name}</Text>
                 </View>
-                <Text style={styles.shortDescription} numberOfLines={2}>{this.props.rowData.short_description}</Text>
+                <Text style={styles.shortDescription} numberOfLines={3}>{this.props.rowData.short_description}</Text>
                 <View style={styles.bottomView}>
                   <TouchableHighlight underlayColor={'transparent'} onPress={() => this.openShare()}>
                     <View style={styles.actionButtonContentHolder}>
@@ -228,9 +228,9 @@ export default class EventCell extends Component {
                 </View>
               </View>
               <View style={styles.rightView}>
+                <Text style={styles.dowText}>{dow}</Text>
                 <Text style={styles.monthText}>{month}</Text>
                 <Text style={styles.dayText}>{day}</Text>
-                <Text style={styles.dowText}>{dow}</Text>
                 <Text style={styles.time}>{startTime}</Text>
                 <TouchableHighlight underlayColor={'transparent'} style={styles.favoriteButton} onPress={() => this.toggleFavorite()}>
                   <View style={{width:44,height:44}}>
@@ -307,6 +307,7 @@ const styles = StyleSheet.create({
     flex:.7,
     borderRightWidth:1,
     borderRightColor:appColors.GRAY,
+    paddingLeft:4,
   },
   rightView:{
     flex:.3,

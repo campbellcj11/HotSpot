@@ -339,7 +339,6 @@ export function searchEvents(filters){
 }
 
 export function loadMoreEvents(filters){
-  // console.warn('loadingMore');
   return (dispatch, getState) => {
     // firebase.auth().currentUser.getToken().then(token => {
       var uid = getState().user.user.uid;
@@ -393,28 +392,30 @@ export function loadMoreEvents(filters){
 
         var currentEventsHash = getState().events.fetchedEventsHash;
         var currentEvents = currentEventsHash[filters.locationID];
-
+        var newEvents = [];
         // var events = currentEvents;
 
         // console.warn('EB: ',currentEvents.length);
         if(filters.showCount){
-          for(var i=0;i<resp.events.length;i++){
-            currentEvents.push(resp.events[i]);
-          }
+          // for(var i=0;i<resp.events.length;i++){
+          //   currentEvents.push(resp.events[i]);
+          // }
+          newEvents = [...currentEvents,...resp.events];
           // currentEvents.concat(resp.events);
         }
         else {
-          for(var i=0;i<resp.length;i++){
-            currentEvents.push(resp[i]);
-          }
+          // for(var i=0;i<resp.length;i++){
+          //   currentEvents.push(resp[i]);
+          // }
+          newEvents = [...currentEvents,...resp];
           // currentEvents.concat(resp);
         }
         // console.warn('EA: ',currentEvents.length);
         // currentEvents.concat(events);
-        var newEvents = []
-        for(var i=0;i<currentEvents.length;i++){
-          newEvents.push(currentEvents[i])
-        }
+        // var newEvents = []
+        // for(var i=0;i<currentEvents.length;i++){
+        //   newEvents.push(currentEvents[i])
+        // }
         currentEventsHash[filters.locationID] = newEvents;
         // var newEventsHash = currentEventsHash;
         // dispatch(setFetchedEvents(resp,filters.locationID,newEventsHash));

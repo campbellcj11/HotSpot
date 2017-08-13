@@ -37,12 +37,10 @@ class EventFeedDateFilter extends Component {
   constructor(props) {
     super(props);
 
-
-
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
       startDate: this.props.startDate ? this.props.startDate : new Date(),
       endDate: this.props.endDate ? this.props.endDate : new Date(),
+      dateFilterType: this.props.dateFilterType,
     }
   }
   componentDidMount(){
@@ -63,6 +61,7 @@ class EventFeedDateFilter extends Component {
   submitPressed(){
     this.props.setLocalStartDate(this.state.startDate);
     this.props.setLocalEndDate(this.state.endDate);
+    this.props.setDateFilterType(this.state.dateFilterType);
     Actions.pop();
   }
   dateFilterButtonPressed(sentIndex){
@@ -73,7 +72,7 @@ class EventFeedDateFilter extends Component {
       var tomorrow = new Date();
       tomorrow = tomorrow.setDate(tomorrow.getDate() + 1);
 
-      this.setState({startDate: Moment(today),endDate: Moment(tomorrow)})
+      this.setState({startDate: Moment(today),endDate: Moment(tomorrow),dateFilterType: 'Today'})
     }
     else if(sentIndex == 1) //Tomorrow
     {
@@ -82,7 +81,7 @@ class EventFeedDateFilter extends Component {
       var dayAfterTomorrow = new Date();
       dayAfterTomorrow = dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
 
-      this.setState({startDate: Moment(tomorrow),endDate: Moment(dayAfterTomorrow)})
+      this.setState({startDate: Moment(tomorrow),endDate: Moment(dayAfterTomorrow),dateFilterType: 'Tomorrow'})
     }
     else if(sentIndex == 2) //Week
     {
@@ -91,7 +90,7 @@ class EventFeedDateFilter extends Component {
       endOfWeek = endOfWeek.setDate(endOfWeek.getDate() + 7);
       // console.warn(Moment(monday));
 
-      this.setState({startDate: Moment(today),endDate: Moment(endOfWeek)})
+      this.setState({startDate: Moment(today),endDate: Moment(endOfWeek),dateFilterType: 'This Week'})
     }
     else if(sentIndex == 3) //Weekend
     {
@@ -107,7 +106,11 @@ class EventFeedDateFilter extends Component {
       monday = monday.setDate(monday.getDate() + (8-currentDayOfWeek));
       // console.warn(Moment(monday));
 
-      this.setState({startDate: Moment(saturday),endDate: Moment(monday)})
+      this.setState({startDate: Moment(saturday),endDate: Moment(monday),dateFilterType: 'This Weekend'})
+    }
+    else if(sentIndex == 4)
+    {
+      this.setState({dateFilterType: 'Custom'});
     }
     // else if(sentIndex == 4) //Next Week
     // {
@@ -169,7 +172,7 @@ class EventFeedDateFilter extends Component {
                 borderWidth: 0,
               }
             }}
-            onDateChange={(Event_Date) => {this.setState({startDate: Event_Date,dateFilterIndex:4})}}
+            onDateChange={(Event_Date) => {this.setState({startDate: Event_Date,dateFilterIndex:4,dateFilterType:'Custom'})}}
           />
           <Text style={{marginLeft:8,marginRight:8,fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:18}}>-</Text>
           <DatePicker
@@ -192,7 +195,7 @@ class EventFeedDateFilter extends Component {
                 borderWidth: 0,
               }
             }}
-            onDateChange={(Event_Date) => {this.setState({endDate: Event_Date,dateFilterIndex:4})}}
+            onDateChange={(Event_Date) => {this.setState({endDate: Event_Date,dateFilterIndex:4,dateFilterType:'Custom'})}}
           />
         </View>
 
@@ -246,6 +249,7 @@ function mapStateToProps(state) {
   return {
     startDate: state.app.localStartDate,
     endDate: state.app.localEndDate,
+    dateFilterType: state.app.dateFilterType,
   };
 }
 

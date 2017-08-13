@@ -20,27 +20,28 @@ import {
   UIManager,
   LayoutAnimation,
   InteractionManager,
+  ActivityIndicator
 } from 'react-native';
 
 //npm packages
 import Swiper from 'react-native-swiper';
 
 import LandingPage from './LandingPage'
+import FeedFilterView from './FeedFilterView'
 //components
 import EventFeedList from '../components/EventFeedList'
 import FeedNavBar from '../components/FeedNavBar'
-import FeedFilterView from '../components/FeedFilterView'
 import FeedMenu from '../components/FeedMenu'
 
 //Class variables
 const STATUS_BAR_HEIGHT = Platform.OS == 'ios' ? 20 : 0;
 const HEADER_BAR_HEIGHT = 44;
 var {width,height} = Dimensions.get('window');
+import landingImage from '../images/Landing-Image.png'
 
 class Home extends Component {
   constructor(props) {
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     // console.log('Props: ', this.props);
     this.state = {
       user: this.props.user,
@@ -57,6 +58,7 @@ class Home extends Component {
       shouldReloadLists: false,
       favorites: this.props.favorites ? this.props.favorites : [],
       shouldShowOnlyFavorites: false,
+      isFirstLoad: true,
     }
   }
   getOneYearOut(){
@@ -70,26 +72,36 @@ class Home extends Component {
   }
   componentDidMount(){
     this.props.loadOfflineUser();
-    this.props.getLocalInterests();
-    this.props.getLocalStartDate();
-    this.props.getLocalEndDate();
-    this.props.getLocalFavorites();
-    // if(isLoggedIn)
-    // {
-    //   // this.props.getUserLocations();
-    //   // this.props.getUserLocations().then(
-    //   //   this.getStartingEventsForAllLocations();
-    //   // )
-    //   // this.getStartingEventsForAllLocations();
-    // }
   }
   componentWillReceiveProps(nextProps){
     if( Object.keys(nextProps.fetchedEventsHash).length != 0 ){
       // console.warn( 'Has new events' );
+      UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+      LayoutAnimation.easeInEaseOut();
       this.setState({
         fetchedEventsHash: nextProps.fetchedEventsHash,
         shouldReloadLists: false,
+        isFirstLoad: false,
       })
+    }
+    if(nextProps.user != this.props.user){
+      if(nextProps.isLoggedIn)
+      {
+        this.setState({
+          user: nextProps.user,
+          isLoggedIn: nextProps.isLoggedIn,
+        }, function(){
+          this.buildUpTheFilterData();
+        });
+      }
+      else
+      {
+        this.stopGettingEvents();
+        this.setState({
+          user: nextProps.user,
+          isLoggedIn: nextProps.isLoggedIn,
+        });
+      }
     }
     if(nextProps.userLocations != this.props.userLocations && nextProps.userLocations.length != 0){
       this.setState({
@@ -97,53 +109,35 @@ class Home extends Component {
         hasCurrentLocation: nextProps.userLocations.length != 0  ? true : false,
         userLocations: nextProps.userLocations,
       }, function(){
-        clearTimeout(this.getEventsTimeout);
-        this.getEventsTimeout = setTimeout(() => this.getStartingEventsForAllLocations(), 500);
+        this.stopGettingEvents();
+        this.getEventsTimeout = setTimeout(() => this.getEvents(), 1000);
       });
-    }
-    if(nextProps.user != this.props.user){
-      // console.warn('We are getting a new user');
-      // console.warn('User: ', nextProps.user);
-      // console.warn('IsloggedIn: ', nextProps.isLoggedIn);
-      this.setState({
-        user: nextProps.user,
-        isLoggedIn: nextProps.isLoggedIn,
-      },function(){
-        if(this.state.localInterests.length == 0)
-        {
-          // this.props.setLocalInterests(nextProps.user.interests);
-        }
-      })
     }
     if(nextProps.localInterests != this.props.localInterests)
     {
-      // console.warn('localInterests');
       if(nextProps.localInterests)
       {
-        if(nextProps.localInterests.length != 0)
-        {
+        // if(nextProps.localInterests.length != 0)
+        // {
           this.setState({localInterests: nextProps.localInterests},function(){
-            clearTimeout(this.updateEventsTimeout);
-            this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+            this.stopGettingEvents();
+            this.getEventsTimeout = setTimeout(() => this.getEvents(), 1000)
           });
-        }
+        // }
       }
     }
     if(nextProps.localStartDate != this.props.localStartDate)
     {
-      // console.warn('Has new start date');
       this.setState({localStartDate: nextProps.localStartDate},function(){
-        clearTimeout(this.updateEventsTimeout);
-        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+        this.stopGettingEvents();
+        this.getEventsTimeout = setTimeout(() => this.getEvents(), 1000)
       });
     }
     if(nextProps.localEndDate != this.props.localEndDate)
     {
-      // console.warn('Has new end date');
-      // console.warn(nextProps.localEndDate);
       this.setState({localEndDate: nextProps.localEndDate},function(){
-        clearTimeout(this.updateEventsTimeout);
-        this.updateEventsTimeout = setTimeout(() => this.updateEvents(), 500)
+        this.stopGettingEvents();
+        this.getEventsTimeout = setTimeout(() => this.getEvents(), 1000)
       });
     }
     if(nextProps.favorites != this.props.favorites)
@@ -152,7 +146,21 @@ class Home extends Component {
       this.setState({favorites: nextProps.favorites})
     }
   }
+  buildUpTheFilterData(){
+    this.props.getLocalInterests();
+    this.props.getLocalStartDate();
+    this.props.getLocalEndDate();
+    this.props.getLocalFavorites();
+    this.props.getDateFilterType();
+  }
+  stopGettingEvents(){
+    this.setState({
+      gettingEventsWasStopped: true,
+    })
+    clearTimeout(this.getEventsTimeout);
+  }
   goToDiscover(){
+    // this.stopGettingEvents();
     Actions.discover();
   }
   logout(){
@@ -160,23 +168,6 @@ class Home extends Component {
     this.props.logoutUser();
   }
   getEvents(){
-  }
-  getStartingEventsForAllLocations(){
-    for(var i=0;i<this.state.userLocations.length;i++){
-      var location = this.state.userLocations[i];
-      if(location){
-        this.props.getEvents({
-          page:1,
-          locationID:location.id,
-          startDate:this.state.localStartDate ? this.state.localStartDate : new Date(),
-          endDate:this.state.localEndDate ? this.state.localEndDate : this.getOneYearOut(),
-          showCount:true,
-          tags: this.state.localInterests ? this.state.localInterests : [],
-        });
-      }
-    }
-  }
-  updateEvents(){
     for(var i=0;i<this.state.userLocations.length;i++){
       var location = this.state.userLocations[i];
       if(location){
@@ -216,6 +207,8 @@ class Home extends Component {
     this.setState({currentLocationIndex:state.index,currentLocation:this.props.userLocations[state.index]});
   }
   showMenu(){
+    // this.stopGettingEvents();
+
     UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
     LayoutAnimation.easeInEaseOut();
 
@@ -264,7 +257,7 @@ class Home extends Component {
           showMenu={() => this.showMenu()}
           goToDiscover={() => this.goToDiscover()}
         />
-        <FeedFilterView height={60} interests={this.state.localInterests} toggleShouldShowOnlyFavorites={() => this.setState({shouldShowOnlyFavorites: !this.state.shouldShowOnlyFavorites})}/>
+        <FeedFilterView height={60} interests={this.state.localInterests} toggleShouldShowOnlyFavorites={() => {this.setState({shouldShowOnlyFavorites: !this.state.shouldShowOnlyFavorites})}}/>
         <Swiper
           height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-60}
           showsButtons={false}
@@ -274,7 +267,12 @@ class Home extends Component {
         >
           {this.renderListViews()}
         </Swiper>
-        {this.state.menuVisible ? <FeedMenu isDemo={this.state.user.email == 'Hsdemo@hsdemo.com'} userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/> : null}
+        {
+          this.state.menuVisible ?
+            <FeedMenu isDemo={this.state.user.email == 'Hsdemo@hsdemo.com'} userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/>
+          :
+            null
+        }
       </View>
     )
   }
@@ -283,10 +281,26 @@ class Home extends Component {
       <LandingPage/>
     )
   }
+  renderFirstLoad(){
+    return(
+      <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+        <StatusBar barStyle="light-content"/>
+        <Image source={landingImage} style={{position:'absolute',top:0,left:0,right:0,bottom:0}}/>
+        <ActivityIndicator size={'large'} color={appColors.WHITE}/>
+      </View>
+    )
+  }
   render() {
     if(this.state.isLoggedIn && Object.keys(this.state.user).length != 0 )
     {
-      return this.renderView();
+      if(this.state.isFirstLoad)
+      {
+        return this.renderFirstLoad();
+      }
+      else
+      {
+        return this.renderView();
+      }
     }
     else
     {

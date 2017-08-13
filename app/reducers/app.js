@@ -5,6 +5,7 @@ const initialState = {
   localInterests: [],
   localStartDate: new Date(),
   localEndDate: new Date( new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()),
+  getDateFilterType: 'Custom',
 }
 
 export default function reducer(state = initialState, action) {
@@ -28,6 +29,11 @@ export default function reducer(state = initialState, action) {
     return {
       ...state,
       localEndDate: action.endDate,
+    }
+  case types.SAVE_DATE_FILTER_TYPE:
+    return {
+      ...state,
+      dateFilterType: action.dateFilterType,
     }
   default:
     return state

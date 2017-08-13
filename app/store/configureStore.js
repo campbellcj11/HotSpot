@@ -4,7 +4,7 @@ import reducer from '../reducers'
 import syncOffline from './syncOffline'
 import { createLogger } from 'redux-logger'
 
-const logger = createLogger({ predicate: (getState, action) => __DEV__  });
+// const logger = createLogger({ predicate: (getState, action) => __DEV__  });
 
 export default function configureStore(initialState) {
   const enhancer = compose(

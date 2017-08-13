@@ -22,6 +22,7 @@ import { appStyleVariables, appColors } from '../styles';
 import backArrow from '../images/back.png'
 import hsGraphic from '../images/HotSpot-Graphic.png'
 // import SocialAuth from 'react-native-social-auth';
+import landingImage from '../images/Landing-Image.png'
 
 import SignupView from './SignupView'
 
@@ -116,59 +117,8 @@ export default class Login extends Component {
     var loginWithTwitterButtonText = this.state.isSignUp ? 'Signup with Twitter' : 'Login with Twitter';
     var loginWithGoogleButtonText = this.state.isSignUp ? 'Signup with Google' : 'Login with Google';
     return(
-      <View>
-      <View style={styles.userNameView}>
-        <TextInput style={styles.userNameTextInput}
-          ref='email'
-          onChangeText={(email) => this.setState({email})}
-          placeholder='Email'
-          placeholderTextColor='#C6E1E2'
-          underlineColorAndroid='transparent'>
-        </TextInput>
-      </View>
-
-      <View style={styles.passwordView}>
-        <TextInput style={styles.userNameTextInput}
-          secureTextEntry={!this.state.isSignUp}
-          ref='password'
-          onChangeText={(password) => this.setState({password})}
-          placeholder='Password'
-          placeholderTextColor='#C6E1E2'
-          underlineColorAndroid='transparent'>
-        </TextInput>
-      </View>
-      {/*<Button
-        onPress={() => this.resetPassword()}
-        style={styles.forgotPasswordBlankButton}
-        textStyle={styles.forgotPasswordText}>
-        {forgotPasswordButtonText}
-      </Button>*/}
-      <Button
-        underlayColor={'#F17C49'}
-        onPress={() => this.login()}
-        style={styles.loginButton}
-        textStyle={styles.buttonText}>
-        {loginButtonText}
-      </Button>
-      {/*<Button
-        onPress={() => this.loginWithFacebook()}
-        style={styles.blankButton}
-        textStyle={styles.buttonBlankText}>
-        {loginWithFacebookButtonText}
-      </Button>*/}
-        </View>
-    )
-  }
-  renderSignup(){
-    return(
-      <SignupView ref={'signupView'} updateIndex={(newIndex) => this.updateIndex(newIndex)} signUp={(user,responseURI) => this.props.signUpUser(user,responseURI)} possibleLocations={this.props.possibleLocations} getPossibleLocations={() => this.props.getPossibleLocations()}/>
-    )
-  }
-  render() {
-    var viewToShow = this.props.isSignUp ? this.renderSignup() : this.renderLogin();
-    var title = this.props.isSignUp ? 'Sign up' : 'Sign in';
-    return(
       <View style={styles.container}>
+        <Image source={landingImage} style={styles.backgroundImage} blurRadius={25}/>
         <View ref={'topBar'} style={styles.topBar}>
           <View style={{flex:.3}}>
             <TouchableHighlight onPress={() => this.goBack()} underlayColor={'transparent'}>
@@ -178,15 +128,67 @@ export default class Login extends Component {
               </View>
             </TouchableHighlight>
           </View>
-          <Text style={{flex:.4,textAlign:'center',color:'white',fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:24}}>{title}</Text>
+          <Text style={{flex:.4,textAlign:'center',color:'white',fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:24,backgroundColor:'transparent'}}>Sign in</Text>
           <View style={{flex:.3}}>
           </View>
         </View>
         <Image source={hsGraphic} style={styles.titleImage}/>
         <View style={{flex:1,paddingTop:130}}>
-        {viewToShow}
+          <View>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='email'
+                onChangeText={(email) => this.setState({email})}
+                placeholder='Email'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+
+            <View style={styles.passwordView}>
+              <TextInput style={styles.userNameTextInput}
+                secureTextEntry={!this.state.isSignUp}
+                ref='password'
+                onChangeText={(password) => this.setState({password})}
+                placeholder='Password'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            {/*<Button
+              onPress={() => this.resetPassword()}
+              style={styles.forgotPasswordBlankButton}
+              textStyle={styles.forgotPasswordText}>
+              {forgotPasswordButtonText}
+            </Button>*/}
+            <Button
+              underlayColor={'#2D2D2D'}
+              onPress={() => this.login()}
+              style={styles.loginButton}
+              textStyle={styles.buttonText}>
+              Sign in
+            </Button>
+            {/*<Button
+              onPress={() => this.loginWithFacebook()}
+              style={styles.blankButton}
+              textStyle={styles.buttonBlankText}>
+              {loginWithFacebookButtonText}
+            </Button>*/}
+          </View>
         </View>
       </View>
+    )
+  }
+  renderSignup(){
+    return(
+      <SignupView ref={'signupView'} goBack={() => this.goBack()} updateIndex={(newIndex) => this.updateIndex(newIndex)} signUp={(user,responseURI) => this.props.signUpUser(user,responseURI)} possibleLocations={this.props.possibleLocations} getPossibleLocations={() => this.props.getPossibleLocations()}/>
+    )
+  }
+  render() {
+    var viewToShow = this.props.isSignUp ? this.renderSignup() : this.renderLogin();
+
+    return (
+      viewToShow
     )
   }
 }
@@ -194,13 +196,21 @@ export default class Login extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#0E476A',
+    backgroundColor:'transparent',
   },
   topBar:{
     paddingTop:20,
     flexDirection:'row',
     justifyContent:'center',
     alignItems:'center',
+  },
+  backgroundImage:{
+    position: 'absolute',
+    left:0,
+    right:0,
+    top:0,
+    bottom:0,
+    resizeMode:'cover',
   },
   titleImage: {
     position:'absolute',
@@ -212,20 +222,22 @@ const styles = StyleSheet.create({
     resizeMode: 'contain', // or 'stretch'
   },
   userNameView: {
-    backgroundColor:'#0D5480',
     height: 44,
     marginLeft:32,
     marginRight: 32,
     flexDirection: 'row',
-    marginBottom: 15,
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: appColors.BLACK,
   },
   passwordView: {
-    backgroundColor:'#0D5480',
     height: 44,
     marginLeft:32,
     marginRight: 32,
     flexDirection: 'row',
-    marginBottom: 5,
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: appColors.BLACK,
   },
   userNameTextInput: {
     flex: 1,
@@ -233,20 +245,16 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     color:'white',
     fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
-    padding: 2,
-    paddingLeft: 16,
-    borderWidth: 2,
-    borderColor: '#414E5E',
   },
   loginButton: {
-    marginTop: 5,
-    backgroundColor: '#F97237',
-    height: 50,
-    marginLeft:20,
-    marginRight: 20,
+    marginTop:4,
+    backgroundColor: appColors.BLACK,
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
     borderWidth: 2,
-    borderRadius: 25,
-    borderColor: '#EE6436',
+    borderRadius: 8,
+    borderColor: appColors.WHITE,
     alignItems: 'center',
     justifyContent: 'center',
   },

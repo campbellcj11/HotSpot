@@ -17,6 +17,9 @@ import {
   ScrollView,
   Platform,
   TouchableOpacity,
+  UIManager,
+  LayoutAnimation,
+  ActivityIndicator
 } from 'react-native'
 import Button from '../components/Button'
 import { Actions } from 'react-native-router-flux';
@@ -26,7 +29,6 @@ import backArrow from '../images/back.png'
 import hsGraphic from '../images/HotSpot-Graphic.png'
 import forwardArrow from '../images/forward.png'
 import profileIcon from '../images/profile.png'
-import check from '../images/check.png'
 import Swiper from 'react-native-swiper'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import DatePicker from 'react-native-datepicker'
@@ -36,6 +38,7 @@ import ImagePicker from 'react-native-image-picker';
 import RNFetchBlob from 'react-native-fetch-blob';
 import { INTERESTS } from '../lib/constants.js';
 import Moment from 'moment';
+import landingImage from '../images/Landing-Image.png'
 
 // var userActions = require("../actions/userActions.js");
 // var eventActions = require("../actions/eventActions.js");
@@ -65,6 +68,9 @@ export default class SignupView extends Component {
       imageUrl: '',
       possibleLocations: this.props.possibleLocations,
       userLocations: [],
+      possibleLocationsHash: {},
+      loadingLocations: true,
+      signupLoading: false,
     }
   }
   componentDidMount() {
@@ -72,25 +78,40 @@ export default class SignupView extends Component {
   }
   componentWillReceiveProps(nextProps){
     if(nextProps.possibleLocations != this.props.possibleLocations){
+      this.processPossibleLocations(nextProps.possibleLocations);
       this.setState({
         possibleLocations: nextProps.possibleLocations,
-      },function(){
-        this.getPossibleLocations();
-      })
+        loadingLocations: false,
+      });
     }
   }
-  resetSignupState(){
-    // console.warn('resetSignupState');
-    // this.setState({
-    //   email: '',
-    //   password: '',
-    //   confirmPassword: '',
-    //   firstName: '',
-    //   lastName: '',
-    // });
+  processPossibleLocations(sentPossibleLocations)
+  {
+    var hash = {};
+    for(var i=0;i<sentPossibleLocations.length;i++)
+    {
+      var possibleLocation = sentPossibleLocations[i];
+      if(Object.keys(hash).indexOf(possibleLocation.state) == -1)
+      {
+        hash[possibleLocation.state] = [possibleLocation];
+      }
+      else
+      {
+        var hashArray = hash[possibleLocation.state];
+        hashArray.push(possibleLocation);
+        hash[possibleLocation.state] = hashArray;
+      }
+    }
+    this.setState({possibleLocationsHash:hash});
   }
   signup(){
     var dob = this.state.dob != '' ? new Date(this.state.dob).getTime()/1000 : null;
+    var localeIds = [];
+    for(var i=0;i<this.state.userLocations.length;i++)
+    {
+      var locale = this.state.userLocations[i];
+      localeIds.push(locale.id);
+    }
     var user = {};
     if(dob)
     {
@@ -102,7 +123,7 @@ export default class SignupView extends Component {
         dob: dob,
         interests: this.state.interests,
         phone: this.state.phoneNumber,
-        locales: this.state.userLocations,
+        locales: localeIds,
         gender: this.state.gender
       }
     }
@@ -114,43 +135,44 @@ export default class SignupView extends Component {
         last_name: this.state.lastName,
         interests: this.state.interests,
         phone: this.state.phoneNumber,
-        locales: this.state.userLocations,
+        locales: localeIds,
         gender: this.state.gender
       }
     }
     // userActions.saveInterests(this.state.interests);
     // userActions.saveLocation(this.state.city);
     // console.log('User: ', user);
-    this.props.signUp(user, this.state.responseURI);
+    this.props.signUp(user, () => {this.setState({signupLoading: false})});
   }
   hasCorrectInformation(){
 
     var hasAlerted = false;
 
-    if(this.state.index == 0) //loginInfo
+    if(this.state.index == 0) //locations
     {
-      if(this.state.email != '' && this.state.password != '')
+      if(this.state.userLocations.length != 0)
       {
-        if(this.state.password == this.state.confirmPassword)
-        {
-          return true;
-        }
-        else{
-          Alert.alert("Passwords do not match");
-          hasAlerted = true;
-        }
+        return true;
+      }
+      else {
+        Alert.alert("Please select a city");
+        hasAlerted = true;
       }
     }
     else if(this.state.index == 1) //basicInfo
     {
-      if(this.state.firstName != '' && this.state.lastName != '')
+      return true;
+    }
+    else if(this.state.index == 2) //basicInfo
+    {
+      if(this.state.firstName != '' && this.state.lastName != '' && this.state.email != '' && this.state.password != '')
       {
         return true;
       }
-    }
-    else if(this.state.index == 2) //optionalInfo
-    {
-      return true;
+      else {
+        Alert.alert("Some infomation was left blank");
+        hasAlerted = true;
+      }
     }
     else if(this.state.index == 3) //interests
     {
@@ -163,15 +185,18 @@ export default class SignupView extends Component {
         hasAlerted = true;
       }
     }
-    else if(this.state.index == 4) //locations
+    else if(this.state.index == 4) //login info
     {
-      if(this.state.userLocations.length != 0)
+      if(this.state.email != '' && this.state.password != '')
       {
-        return true;
-      }
-      else {
-        Alert.alert("Please select a city");
-        hasAlerted = true;
+        if(this.state.password == this.state.confirmPassword)
+        {
+          return true;
+        }
+        else{
+          Alert.alert("Passwords do not match");
+          hasAlerted = true;
+        }
       }
     }
 
@@ -197,15 +222,22 @@ export default class SignupView extends Component {
     {
       if(this.hasCorrectInformation())
       {
+        this.setState({signupLoading:true});
         this.signup();
       }
     }
   }
   goBack(){
-    this.setState({index: this.state.index-1},function(){
-      this.refs.swiper.scrollBy(-1,true);
-      this.props.updateIndex(this.state.index);
-    })
+    if(this.state.index == 0)
+    {
+      this.props.goBack();
+    }
+    else {
+      this.setState({index: this.state.index-1},function(){
+        this.refs.swiper.scrollBy(-1,true);
+        this.props.updateIndex(this.state.index);
+      })
+    }
   }
   interestSelected(sentInterest){
     if(this.state.interests.indexOf(sentInterest) == -1)
@@ -279,167 +311,83 @@ export default class SignupView extends Component {
 
   }
 
-  renderImage(){
-    ImagePicker.showImagePicker((response) => {
-      if(response.didCancel) {
-        // console.log('User cancelled image picker');
-      }
-      else if (response.error) {
-        // console.log('ImagePicker Error: ', response.error);
-      }else {
-        // console.log("URI: " + response.uri);
-        this.setState({responseURI: response.uri});
-        // this.uploadImage(response.uri, 'tempImage' + '.jpg')
-        // .then(url => this.setState({imageLocation: url}));
-      }
-    })
-  }
-
   renderLoginInfoPage(){
-    var loginWithFacebookButtonText ='Signup with Facebook';
     return(
       <View key={0} style={{flex:1}}>
+        <Text style={styles.pageTitle}>Finish Sign up to begin</Text>
         <KeyboardAwareScrollView>
-          <Text style={styles.pageTitle}>Sign in Info</Text>
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              ref='email'
-              onChangeText={(email) => this.setState({email})}
-              placeholder='Email'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              keyboardType={'email-address'}
-              returnKeyType={'next'}
-              onSubmitEditing={() => {this.refs.password.focus();}}>
-            </TextInput>
-          </View>
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              secureTextEntry={true}
-              ref='password'
-              onChangeText={(password) => this.setState({password})}
-              placeholder='Password'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              returnKeyType={'next'}
-              onSubmitEditing={() => {this.refs.confirmPassword.focus();}}>
-            </TextInput>
-          </View>
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              secureTextEntry={true}
-              ref='confirmPassword'
-              onChangeText={(confirmPassword) => this.setState({confirmPassword})}
-              placeholder='Confirm Password'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              returnKeyType={'done'}
-              onSubmitEditing={() => this.goForward()}>
-            </TextInput>
-          </View>
-        <View>
-          {/*<Button
-            onPress={() => this.signUpWithFacebook()}
-            style={styles.blankButton}
-            textStyle={styles.buttonBlankText}>
-            {loginWithFacebookButtonText}
-          </Button>*/}
-        </View>
-        </KeyboardAwareScrollView>
-      </View>
-    )
-  }
-  renderBasicInfoPage(){
-    return(
-      <View key={1} style={{flex:1}}>
-        <KeyboardAwareScrollView>
-          <Text style={styles.pageTitle}>Basic Info</Text>
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              ref='firstName'
-              onChangeText={(firstName) => this.setState({firstName})}
-              placeholder='First Name'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              returnKeyType={'next'}
-              onSubmitEditing={() => {this.refs.lastName.focus();}}>
-            </TextInput>
-          </View>
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              ref='lastName'
-              onChangeText={(lastName) => this.setState({lastName})}
-              placeholder='Last Name'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              returnKeyType={'done'}
-              onSubmitEditing={() => this.goForward()}>
-            </TextInput>
-          </View>
-        </KeyboardAwareScrollView>
-      </View>
-    )
-  }
+          <View>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='fName'
+                onChangeText={(firstName) => this.setState({firstName})}
+                placeholder='First Name'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='lName'
+                onChangeText={(lastName) => this.setState({lastName})}
+                placeholder='Last Name'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            <View style={styles.userNameView}>
+              <TextInput style={styles.userNameTextInput}
+                ref='email'
+                onChangeText={(email) => this.setState({email})}
+                placeholder='Email'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            <View style={styles.passwordView}>
+              <TextInput style={styles.userNameTextInput}
+                secureTextEntry={!this.state.isSignUp}
+                ref='password'
+                onChangeText={(password) => this.setState({password})}
+                placeholder='Password'
+                placeholderTextColor='#C6E1E2'
+                underlineColorAndroid='transparent'>
+              </TextInput>
+            </View>
+            {
+              this.state.signupLoading ?
+                <ActivityIndicator style={{marginTop:4}}/>
+              :
+                <Button
+                  underlayColor={'#2D2D2D'}
+                  onPress={() => this.goForward()}
+                  style={styles.loginButton}
+                  textStyle={styles.buttonText}>
+                  Sign up
+                </Button>
+            }
 
-  modalStyle()
-  {
-      if (this.state.gender == '')
-      {
-          return {
-              color:'#DCE3E3',
-              fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
-              fontSize: 16,
-              padding: 2,
-              paddingTop: 8,
-          }
-      }
-      else
-      {
-          return {
-              color:'white',
-              fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
-              fontSize: 16,
-              padding: 2,
-              paddingTop: 8,
-          }
-      }
+          </View>
+        </KeyboardAwareScrollView>
+      </View>
+    )
   }
 
   renderOptionalInfoPage(){
-    const genderOptions = [{key: "Male", label: "Male"},
-                           {key: "Female", label: "Female"},
-                           {key: "Other", label: "Other"}];
+    interests = INTERESTS;
+
+    var interestsViews = [];
+    for (i in interests){
+        var interest = interests[i];
+        var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
+        interestsViews.push(
+            <Button ref={interest} underlayColor={'transparent'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest.toUpperCase()}</Button>
+        );
+    }
     return(
       <View key={2} style={{flex:1}}>
-        <KeyboardAwareScrollView>
-          <Text style={styles.pageTitle}>Optional Info</Text>
-          <Text style={styles.pageSubTitle}>Optional Information helps us personalize your experience</Text>
-          {/*<TouchableHighlight style={styles.imageTouch} onPress = {()=> this.renderImage()}>
-            <View style={styles.imageUploadHolder}>
-              {
-                (this.state.responseURI)  ?
-                  <Image source= {{uri: this.state.responseURI}} style={{width:80,height:80,resizeMode:'contain', alignSelf:'center'}}/>
-                :
-                  <Image source={profileIcon} style={{width:44,height:44,resizeMode:'contain', alignSelf:'center', marginTop:10}}/>
-              }
-              {
-                  (this.state.responseURI) ?
-                    <View/>
-                  :
-                    <Text style={styles.imageText}> Image </Text>
-              }
-            </View>
-          </TouchableHighlight>*/}
-          <View style={styles.textInputHolder}>
-            <TextInput style={styles.textInput}
-              ref='phone'
-              onChangeText={(phoneNumber) => this.setState({phoneNumber})}
-              placeholder='Phone Number'
-              placeholderTextColor='#DCE3E3'
-              underlineColorAndroid='transparent'
-              keyboardType={'phone-pad'}>
-            </TextInput>
-          </View>
+          <Text style={styles.pageTitle}>Provide more information to personalize experience</Text>
+          <ScrollView height={250}>
           <View style={styles.textInputHolder}>
             <DatePicker
               ref='dob'
@@ -470,39 +418,7 @@ export default class SignupView extends Component {
               onDateChange={(dob) => {this.setState({dob: dob})}}
             />
           </View>
-          <View style = {styles.textInputHolder}>
-              {/*<ModalPicker style = {styles.modalPicker}
-                selectStyle={{borderRadius:0, borderWidth: 0}}
-                selectTextStyle= {styles.modalText}
-                data={genderOptions}
-                initValue="Select something yummy!"
-                onChange={(gender) => this.setState({gender: gender.label})}>
-
-                <Text style = {this.modalStyle()}>
-                    {this.state.gender.toString() != '' ? this.state.gender.toString() : 'Gender'}
-                </Text>
-              </ModalPicker>*/}
-          </View>
-        </KeyboardAwareScrollView>
-      </View>
-    )
-  }
-  renderInterestsPage(){
-    interests = INTERESTS;
-
-    var interestsViews = [];
-    for (i in interests){
-        var interest = interests[i];
-        var isSelected = this.state.interests.indexOf(interest) == -1 ? false : true;
-        interestsViews.push(
-            <Button ref={interest} underlayColor={'#0D5480'} key={i} style={isSelected ? styles.selectedCell : styles.interestCell} textStyle={isSelected ? styles.selectedCellText : styles.interestCellText} onPress={this.interestSelected.bind(this,interest)}>{interest.toUpperCase()}</Button>
-        );
-    }
-    return(
-      <View key={3} style={{flex:1}}>
-        <Text style={styles.pageTitle}>Interests</Text>
-        <ScrollView style={{marginBottom:130+32+88+16}}>
-          <View style={{flexDirection:'row',flexWrap:'wrap'}}>
+          <View style={{flexDirection:'row',flexWrap:'wrap',marginHorizontal:8}}>
             {interestsViews}
           </View>
         </ScrollView>
@@ -537,75 +453,162 @@ export default class SignupView extends Component {
       </TouchableHighlight>
     )
   }
-  pressRow(rowData){
-    if(this.state.userLocations.indexOf(rowData) == -1){
-      console.warn('Adding location to user locations');
-      var userLocations = this.state.userLocations;
-      userLocations.push(rowData.id);
-      this.setState({
-        userLocations: userLocations,
-      })
-    }
-    else{
-      console.warn('Removing location from user locations');
-      var userLocations = this.state.userLocations;
-      var index = userLocations.indexOf(rowData.id);
-      userLocations.splice(index,1);
-      this.setState({
-        userLocations: userLocations,
-      })
-    }
-    // this.setState({city:rowData});
-  }
-  renderLocationPage(){
-    var possibleLocations = this.getPossibleLocations();
+  toggleLocation(location){
+    var locations = this.state.userLocations;
+    var foundLocation;
+    var wasFound = false;
+    for(var i=0;i<locations.length;i++)
+    {
+      var userLocation = locations[i];
+      if(location.id == userLocation.id)
+      {
+        foundLocation = userLocation;
+        wasFound = true;
+        break;
+      }
 
-    var ds = new ListView.DataSource({rowHasChanged: (r1,r2) => r1 !== r2});
-    return(
-      <View key={4} style={{flex:1}}>
-        <Text style={styles.pageTitle}>Location</Text>
-        <Text style={styles.pageSubTitle}>We only have events in select city at the moment</Text>
-        <View style={styles.textInputHolder}>
-          <TextInput style={styles.textInput}
-            ref='locationSearch'
-            onChangeText={(locationSearch) => this.setState({locationSearch})}
-            placeholder='Search Location'
-            placeholderTextColor='#DCE3E3'
-            underlineColorAndroid='transparent'>
-          </TextInput>
+    }
+    if(wasFound)
+    {
+      var index = locations.indexOf(foundLocation);
+      locations.splice(index,1);
+    }
+    else
+    {
+      locations.push(location);
+    }
+    UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
+    LayoutAnimation.easeInEaseOut();
+    this.setState({userLocations: locations});
+  }
+  renderLocation(location){
+    var boxWidth = (width*.85)/3;
+    var isSelected = false;
+    for(var i=0;i<this.state.userLocations.length;i++)
+    {
+      var userLocation = this.state.userLocations[i];
+      if(location.id == userLocation.id)
+      {
+        isSelected = true;
+        break;
+      }
+    }
+    return (
+      <TouchableHighlight key={location.id} underlayColor={'transparent'} onPress={this.toggleLocation.bind(this,location)}>
+        <View style={{width:boxWidth,height:66,justifyContent:'center',alignItems:'center',marginBottom:8}}>
+          <Image style={{width:44,height:44,borderRadius:22,backgroundColor: isSelected ? appColors.WHITE : '#C3C3C3'}} source={location.image}/>
+          <Text style={{fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontSize:14,color: isSelected ? appColors.WHITE : '#C3C3C3'}}>{location.name}</Text>
         </View>
-        <View style={{height:height*.4}}>
-          <ListView
-            style={styles.locationList}
-            dataSource={ds.cloneWithRows(possibleLocations)}
-            renderRow= {this.renderRow.bind(this)}
-            enableEmptySections={true}>
-          </ListView>
+      </TouchableHighlight>
+    )
+  }
+  renderLocationSection(state,locations){
+    locationsViews = [];
+    for(var i=0;i<locations.length;i++)
+    {
+      var location = locations[i];
+      locationsViews.push(
+        this.renderLocation(location)
+      )
+    }
+    return (
+      <View key={state} style={{flexDirection:'row',alignItems:'center',paddingTop:8,marginHorizontal:8,borderBottomWidth:1,borderBottomColor: '#C3C3C3'}}>
+        <View style={{flex:.1}}>
+          <Text style={{fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,fontSize:24,color:appColors.WHITE}}>{state}</Text>
+        </View>
+        <View style={{flex:.9,flexDirection:'row',flexWrap:'wrap'}}>
+          {locationsViews}
         </View>
       </View>
     )
   }
+  renderPossibleLocations(){
+    var possibleLocationsViews = [];
+    for(var i=0;i<Object.keys(this.state.possibleLocationsHash).length;i++)
+    {
+      var state = Object.keys(this.state.possibleLocationsHash)[i];
+      var locations = this.state.possibleLocationsHash[state];
+      if(locations)
+      {
+        possibleLocationsViews.push(
+          this.renderLocationSection(state,locations)
+        )
+      }
+    }
+    return possibleLocationsViews
+  }
+  renderLocationPage(){
+    return(
+      <View key={4} style={{flex:1}}>
+        <Text style={styles.pageTitle}>Select locations that are of interest to you</Text>
+        {
+          this.state.loadingLocations ?
+            <ActivityIndicator style={{marginTop:4}}/>
+          :
+            <View style={{flex:1}}>
+              <ScrollView width={width}>
+                {this.renderPossibleLocations()}
+              </ScrollView>
+            </View>
+        }
+      </View>
+    )
+  }
   render() {
-    var Arr = [this.renderLoginInfoPage(),this.renderBasicInfoPage(),this.renderOptionalInfoPage(),this.renderInterestsPage(),this.renderLocationPage()]
+    var Arr = [this.renderLocationPage(),this.renderOptionalInfoPage(),this.renderLoginInfoPage()]
     this.lastIndex = Arr.length - 1;
     var isLastIndex = this.state.index == this.lastIndex ? true : false;
 
     return(
       <View style={styles.container}>
+        <Image source={landingImage} style={styles.backgroundImage} blurRadius={25}/>
+        <View ref={'topBar'} style={styles.topBar}>
+          <View style={{flex:.3}}>
+            <TouchableHighlight onPress={() => this.goBack()} underlayColor={'transparent'}>
+              <View style={{flexDirection:'row',alignItems:'center',marginLeft:4}}>
+                <Image source={backArrow} style={{width:12,height:12,resizeMode:'contain'}}/>
+                <Text style={{color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontSize:14}}>Back</Text>
+              </View>
+            </TouchableHighlight>
+          </View>
+          <Text style={{flex:.4,textAlign:'center',color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontSize:16,backgroundColor:'transparent'}}>HotSpot</Text>
+          <View style={{flex:.3}}>
+            {
+              this.state.index == 1 ?
+              <TouchableHighlight onPress={() => this.goForward()} underlayColor={'transparent'}>
+                <View style={{alignItems:'flex-end',marginRight:4}}>
+                  <Text style={{color:'white',fontFamily:appStyleVariables.SYSTEM_REGULAR_FONT,fontSize:14}}>Skip</Text>
+                </View>
+              </TouchableHighlight>
+              :
+                null
+            }
+          </View>
+        </View>
         <Swiper
           ref={'swiper'}
           loop={false}
           showsPagination={false}
           scrollEnabled={false}
           keyboardShouldPersistTaps={'always'}
+          style={{marginTop:8}}
         >
           {Arr}
         </Swiper>
-        <View style={styles.bottomButtonHolder}>
-          <TouchableHighlight underlayColor={isLastIndex ? '#36BE4F' : '#EE6436'} style={isLastIndex ? styles.lastBottomButton : styles.bottomButton} onPress={() => this.goForward()}>
-            <Image source={isLastIndex ? check : forwardArrow} style={{width:22,height:22,resizeMode:'contain'}}/>
-          </TouchableHighlight>
-        </View>
+        {
+          isLastIndex ?
+            null
+          :
+            <View style={styles.bottomButtonHolder}>
+              <TouchableHighlight
+                onPress={() => this.goForward()}
+                style={styles.signUpButton}
+                underlayColor={'#111111'}
+              >
+                <Text style={styles.signUpButtonText}>Continue</Text>
+              </TouchableHighlight>
+            </View>
+        }
       </View>
     )
   }
@@ -614,12 +617,27 @@ export default class SignupView extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor:appColors.BLACK,
+  },
+  topBar:{
+    paddingTop:20,
+    flexDirection:'row',
+    justifyContent:'center',
+    alignItems:'center',
+  },
+  backgroundImage:{
+    position: 'absolute',
+    left:0,
+    right:0,
+    top:0,
+    bottom:0,
+    resizeMode:'cover',
   },
   bottomButtonHolder:{
     position: 'absolute',
     left:32,
     right:32,
-    bottom:32,
+    bottom:16,
     justifyContent:'center',
     alignItems:'center',
   },
@@ -656,10 +674,11 @@ const styles = StyleSheet.create({
   },
   pageTitle:{
     fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
-    fontSize: 20,
+    fontSize: 24,
     color: 'white',
     textAlign:'center',
     marginBottom:8,
+    marginHorizontal:8,
   },
   pageSubTitle:{
     fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
@@ -669,12 +688,13 @@ const styles = StyleSheet.create({
     marginBottom:8,
   },
   textInputHolder:{
-    backgroundColor:'#0D5480',
     height: 44,
-    marginLeft:32,
-    marginRight: 32,
+    marginLeft:12,
+    marginRight: 12,
     flexDirection: 'row',
     marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: appColors.BLACK,
   },
   imageUploadHolder:{
     height: 88,
@@ -739,22 +759,18 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 44,
     backgroundColor: 'transparent',
-    padding: 2,
-    paddingLeft: 16,
-    borderWidth: 2,
-    borderColor: '#414E5E',
   },
   interestCell:{
     margin:8,
     borderWidth:2,
-    borderColor:'#414E5E',
-    backgroundColor:'#0D5480',
+    borderColor:'#C3C3C3',
+    backgroundColor:'transparent',
   },
   selectedCell:{
     margin:8,
     borderWidth:2,
     borderColor:'#FFFFFF',
-    backgroundColor:'#0D5480',
+    backgroundColor:'transparent',
   },
   interestCellText:{
     fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
@@ -800,5 +816,66 @@ const styles = StyleSheet.create({
     fontFamily:appStyleVariables.SYSTEM_BOLD_FONT,
     fontSize:16,
     color:'white',
-  }
+  },
+  userNameView: {
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
+    flexDirection: 'row',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: appColors.BLACK,
+  },
+  passwordView: {
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
+    flexDirection: 'row',
+    marginBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: appColors.BLACK,
+  },
+  userNameTextInput: {
+    flex: 1,
+    height: 44,
+    backgroundColor: 'transparent',
+    color:'white',
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
+  },
+  loginButton: {
+    marginTop:4,
+    backgroundColor: appColors.BLACK,
+    height: 44,
+    marginLeft:32,
+    marginRight: 32,
+    borderWidth: 2,
+    borderRadius: 8,
+    borderColor: appColors.WHITE,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 24,
+    textAlign: 'center',
+    fontFamily: appStyleVariables.SYSTEM_REGULAR_FONT,
+    backgroundColor: 'transparent',
+  },
+  signUpButton:{
+    height:66,
+    borderWidth:1,
+    borderColor: appColors.WHITE,
+    marginHorizontal:32,
+    borderRadius:8,
+    justifyContent:'center',
+    alignItems:'center',
+    backgroundColor: '#000000',
+  },
+  signUpButtonText:{
+    textAlign:'center',
+    color:'white',
+    fontFamily: appStyleVariables.SYSTEM_BOLD_FONT,
+    fontSize: 24,
+    marginHorizontal:24,
+  },
 })

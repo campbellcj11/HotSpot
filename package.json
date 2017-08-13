@@ -21,6 +21,7 @@
     "react-native-router-flux": "^3.39.2",
     "react-native-share": "^1.0.20",
     "react-native-simple-store": "^1.1.0",
+    "react-native-sortable-list": "0.0.16",
     "react-native-sortable-listview": "^0.2.2",
     "react-native-swiper": "^1.5.4",
     "react-redux": "^4.4.5",
