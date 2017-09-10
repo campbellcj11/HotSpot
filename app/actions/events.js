@@ -87,13 +87,13 @@ export function getEvents(filters){
           	{
           		"field": "start_date",
           		"operator": ">=",
-          		"value": filters.startDate,
+          		"value": new Date(filters.startDate).getTime(),
               "logicAfter" : "AND"
           	},
             {
           		"field": "start_date",
           		"operator": "<=",
-          		"value": filters.endDate
+          		"value": new Date(filters.endDate).getTime()
           	}
           ]
       }
@@ -134,7 +134,7 @@ export function getEvents(filters){
         this.eventsTimeout = setTimeout(() => dispatch(setFetchedEvents(events,filters.locationID,newEventsHash)), 500)
 
       }).catch( (ex) => {
-        // console.warn('Error: ', ex);
+        console.warn('Error: ', ex);
         // console.warn('GetEvents Fail');
       })
     // }).catch( (ex) => {
@@ -178,7 +178,7 @@ export function getPopular(filters){
           	{
           		"field": "start_date",
           		"operator": ">=",
-          		"value": filters.startDate
+          		"value": new Date(filters.startDate).getTime()
           	}
           ]
       }
@@ -240,13 +240,13 @@ export function getNowEvents(filters){
           	{
           		"field": "start_date",
           		"operator": ">=",
-          		"value": filters.startDate,
+          		"value": new Date(filters.startDate).getTime(),
               "logicAfter" : "AND"
           	},
             {
           		"field": "start_date",
           		"operator": "<=",
-          		"value": hours2Later
+          		"value": new Date(hours2Later).getTime()
           	}
           ]
       }
@@ -303,13 +303,13 @@ export function searchEvents(filters){
           	{
           		"field": "start_date",
           		"operator": ">=",
-          		"value": filters.startDate,
+          		"value": new Date(filters.startDate).getTime(),
               "logicAfter" : "AND"
           	},
             {
           		"field": "name",
           		"operator": "LIKE",
-          		"value": filters.searchText,
+          		"value": filters.searchText
           	}
           ]
       }
@@ -375,13 +375,13 @@ export function loadMoreEvents(filters){
             {
               "field": "start_date",
               "operator": ">=",
-              "value": filters.startDate,
+              "value": new Date(filters.startDate).getTime(),
               "logicAfter" : "AND"
             },
             {
               "field": "start_date",
               "operator": "<=",
-              "value": filters.endDate
+              "value": new Date(filters.startDate).getTime()
             }
           ]
       }
