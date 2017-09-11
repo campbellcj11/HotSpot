@@ -4,8 +4,8 @@ const initialState = {
   possibleLocations: [],
   localInterests: [],
   localStartDate: new Date(),
-  localEndDate: new Date( new Date().getFullYear() + 1, new Date().getMonth(), new Date().getDate()),
-  getDateFilterType: 'Custom',
+  localEndDate: new Date(new Date().getFullYear() + 5, new Date().getMonth(), new Date().getDate()),
+  getDateFilterType: 'All Dates',
 }
 
 export default function reducer(state = initialState, action) {

@@ -257,7 +257,10 @@ class Home extends Component {
           showMenu={() => this.showMenu()}
           goToDiscover={() => this.goToDiscover()}
         />
-        <FeedFilterView height={60} interests={this.state.localInterests} toggleShouldShowOnlyFavorites={() => {this.setState({shouldShowOnlyFavorites: !this.state.shouldShowOnlyFavorites})}}/>
+        <FeedFilterView
+          height={60}
+          interests={this.state.localInterests}
+          toggleShouldShowOnlyFavorites={() => {this.setState({shouldShowOnlyFavorites: !this.state.shouldShowOnlyFavorites})}}/>
         <Swiper
           height={height-STATUS_BAR_HEIGHT-HEADER_BAR_HEIGHT-60}
           showsButtons={false}
@@ -269,7 +272,11 @@ class Home extends Component {
         </Swiper>
         {
           this.state.menuVisible ?
-            <FeedMenu isDemo={this.state.user.email == 'Hsdemo@hsdemo.com'} userLocations={this.state.userLocations} hideMenu={() => this.hideMenu()} logout={() => this.logout()}/>
+            <FeedMenu
+              isDemo={this.state.user.email == 'Hsdemo@hsdemo.com'}
+              userLocations={this.state.userLocations}
+              hideMenu={() => this.hideMenu()}
+              logout={() => this.logout()}/>
           :
             null
         }

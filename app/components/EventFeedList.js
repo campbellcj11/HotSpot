@@ -168,7 +168,11 @@ class EventFeedList extends Component {
   renderRow(rowData){
     var isFavorited = this.state.favorites.indexOf(rowData.id) != -1;
     return (
-      <EventCell rowData={rowData} onlyShowIfFavorited={this.state.shouldShowOnlyFavorites} isFavorited={isFavorited} pressFavorite={(idOfEventPressed) => this.setFavorites(idOfEventPressed)}/>
+      <EventCell
+        rowData={rowData}
+        onlyShowIfFavorited={this.state.shouldShowOnlyFavorites}
+        isFavorited={isFavorited}
+        pressFavorite={(idOfEventPressed) => this.setFavorites(idOfEventPressed)} />
     )
   }
   renderFooter(){

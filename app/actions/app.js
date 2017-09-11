@@ -113,6 +113,9 @@ export function setDateFilterType(filterType){
 export function getDateFilterType(){
   return (dispatch, getState) => {
     return offline.get('dateFilterType').then(dateFilterType => {
+      if (!dateFilterType) {
+        dateFilterType = 'All Dates'
+      }
       dispatch(stateSaveDateFilterType(dateFilterType));
     });
   }
