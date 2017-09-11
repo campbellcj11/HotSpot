@@ -182,7 +182,7 @@ class EventFeedDateFilter extends Component {
           rightButtonText={'Submit'}
           submitPressed={() => this.submitPressed()}
         />
-        <View style={styles.dateHolder}>
+        <View style={styles.allDatesHolder}>
           <Button
             key={5}
             style={this.state.dateFilterIndex == 5 ? styles.selectedDateCell : styles.dateCell}
@@ -258,6 +258,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     flexDirection: 'row',
     justifyContent: 'space-between'
+  },
+  allDatesHolder: {
+    marginLeft: 8,
+    marginRight: 8
   },
   dateCell: {
     borderWidth:1,

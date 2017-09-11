@@ -25,7 +25,7 @@ export default class FeedNavBar extends Component {
     
     this.state = {
       userLocations: this.props.userLocations,
-      hasCurrentLocation: this.props.currentLocation ? true : false,
+      hasCurrentLocation: !!this.props.currentLocation,
       currentLocation: this.props.currentLocation,
     }
   }
@@ -35,7 +35,7 @@ export default class FeedNavBar extends Component {
     }
     if(nextProps.currentLocation != this.props.currentLocation){
       this.setState({
-        hasCurrentLocation: nextProps.currentLocation ? true : false,
+        hasCurrentLocation: !!nextProps.currentLocation,
         currentLocation: nextProps.currentLocation
       })
     }
@@ -46,7 +46,7 @@ export default class FeedNavBar extends Component {
       var location = this.props.userLocations[i];
       var locationID = location.id;
       var locationName = location.name;
-      var isActive = (this.state.currentLocation.id == locationID) ? true : false;
+      var isActive = this.state.currentLocation.id == locationID;
       arr.push(
         <View key={i} style={isActive ? styles.activeDot : styles.dot}/>
       )
